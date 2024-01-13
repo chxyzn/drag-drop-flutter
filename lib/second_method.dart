@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class SecondMethod extends StatefulWidget {

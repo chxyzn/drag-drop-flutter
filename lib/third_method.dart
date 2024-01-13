@@ -1,20 +1,8 @@
 import 'package:flutter/material.dart';
 
-List<List<int>> shape1 = [
-  [1, 1, 1],
-  [1, 0, 0],
-  [1, 0, 0]
-];
-List<List<int>> shape2 = [
-  [0, 0, 0],
-  [0, 1, 1],
-  [0, 1, 0],
-];
-List<List<int>> shape3 = [
-  [0, 0, 0],
-  [0, 0, 0],
-  [0, 0, 1],
-];
+List<int> shape1 = [2, 1, 1];
+List<int> shape2 = [0, 2, 1];
+List<int> shape3 = [0, 0, 1];
 
 class ThirdMethod extends StatefulWidget {
   const ThirdMethod({super.key});
@@ -69,41 +57,56 @@ class _ThirdMethodState extends State<ThirdMethod> {
     }
   }
 
-  bool canModifyMatrix(MatrixCoords startCoords, List<List<int>> shape) {
+  bool canModifyMatrix(MatrixCoords startCoords, List<int> shape) {
     bool canModify = true;
+    int someting = 0;
     for (int i = 0; i < shape.length; i++) {
-      for (int j = 0; j < shape[i].length; j++) {
-        if (shape[i][j] == 1) {
-          try {
-            if (matrix[startCoords.row + i][startCoords.col + j] == 1) {
-              canModify = false;
-              break;
-            }
-          } on RangeError {
+      try {
+        for (int j = 0; j < shape[i]; j++) {
+          if (matrix[startCoords.row + someting][startCoords.col + j] == 1) {
             canModify = false;
             break;
           }
         }
+        if (shape[i] != 0) {
+          someting++;
+        }
+      } on RangeError catch (e) {
+        debugPrint('out of range canModifyMatrix');
+        debugPrint(e.toString());
+
+        return false;
       }
     }
     return canModify;
   }
 
-  int modifyMatrixFromCoords(MatrixCoords startCoords, List<List<int>> shape) {
+  int modifyMatrixFromCoords(MatrixCoords startCoords, List<int> shape) {
+    int something = 0;
     try {
-      for (int i = startCoords.row; i < matrix.length; i++) {
-        for (int j = startCoords.col; j < matrix[i].length; j++) {
-          matrix[i][j]++;
+      for (int i = 0; i < shape.length; i++) {
+        for (int j = 0; j < shape[i]; j++) {
+          matrix[startCoords.row + something][startCoords.col + j]++;
+        }
+        if (shape[i] != 0) {
+          something++;
         }
       }
-    } on RangeError {
-      debugPrint('out of range');
+      setState(() {
+        debugPrint('matrix updated');
+        printMatrix();
+      });
+      checkForEndofGame();
+    } on RangeError catch (e) {
+      debugPrint('out of range modifyMatrixFromCoords');
+      debugPrint(e.toString());
       return 1;
     }
     return 0;
   }
 
   void resetMatrix() {
+    printMatrix();
     setState(() {
       matrix = [
         [0, 0, 0],
@@ -113,13 +116,26 @@ class _ThirdMethodState extends State<ThirdMethod> {
     });
   }
 
+  void checkForEndofGame() {
+    if (matrix.every((element) => element.every((element) => element == 1))) {
+      debugPrint('Game Over');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.green,
+          content: Text(
+            'Game Over',
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        Stack(
           children: [
             SizedBox(
               height: 180,
@@ -135,7 +151,7 @@ class _ThirdMethodState extends State<ThirdMethod> {
               width: 180,
               child: Center(
                 child: TargetBlockGenerator(
-                  modifyMatrix: modifyMatrix,
+                  modifyMatrix: modifyMatrixFromCoords,
                   canModifyMatrix: canModifyMatrix,
                 ),
               ),
@@ -152,15 +168,15 @@ class _ThirdMethodState extends State<ThirdMethod> {
             padding: const EdgeInsets.only(left: 16),
             scrollDirection: Axis.horizontal,
             children: [
-              CustomDragTarget(shape: shape1),
+              CustomDraggable(shape: shape1),
               const SizedBox(
                 width: 20,
               ),
-              CustomDragTarget(shape: shape2),
+              CustomDraggable(shape: shape2),
               const SizedBox(
                 width: 20,
               ),
-              CustomDragTarget(shape: shape3),
+              CustomDraggable(shape: shape3),
             ],
           ),
         ),
@@ -176,13 +192,13 @@ class _ThirdMethodState extends State<ThirdMethod> {
   }
 }
 
-class CustomDragTarget extends StatelessWidget {
-  final List<List<int>> shape;
-  const CustomDragTarget({super.key, required this.shape});
+class CustomDraggable extends StatelessWidget {
+  final List<int> shape;
+  const CustomDraggable({super.key, required this.shape});
 
   @override
   Widget build(BuildContext context) {
-    return Draggable<List<List<int>>>(
+    return Draggable<List<int>>(
       data: shape,
       feedback: ShapeGenerator(shape: shape),
       childWhenDragging: const Block(),
@@ -192,7 +208,7 @@ class CustomDragTarget extends StatelessWidget {
 }
 
 class ShapeGenerator extends StatelessWidget {
-  final List<List<int>> shape;
+  final List<int> shape;
 
   const ShapeGenerator({super.key, required this.shape});
 
@@ -206,8 +222,8 @@ class ShapeGenerator extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              for (int j = 0; j < shape[i].length; j++) //row traversal
-                shape[i][j] == 1 ? const Block() : const SizedBox.shrink(),
+              for (int j = 0; j < shape[i]; j++) //row traversal
+                const Block(),
             ],
           )
       ],
@@ -260,21 +276,24 @@ class TargetBlockGenerator extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               for (int j = 0; j < 3; j++) //row traversal
-                DragTarget<List<List<int>>>(
-                  onAccept: (List<List<int>> matrix) {
+                DragTarget<List<int>>(
+                  onAccept: (List<int> matrix) {
                     debugPrint('--------------------------\n\n');
                     debugPrint('Target accepted at $i, $j');
+                    debugPrint('Target data: $matrix');
                     if (canModifyMatrix(MatrixCoords(row: i, col: j), matrix)) {
-                      int val = modifyMatrix(matrix);
-                      showSnackbar(val, context);
+                      modifyMatrix(MatrixCoords(row: i, col: j), matrix);
+                      showSnackBar(context, 'Placed Successfully');
                     } else {
-                      debugPrint('cannot modify');
+                      showSnackBar(context, 'Cannot Place at $i, $j');
                     }
 
                     debugPrint('\n\n--------------------------');
                   },
                   builder: (context, candidates, rejects) {
-                    return const Block();
+                    return const Block(
+                      opacity: 0,
+                    );
                   },
                 ),
             ],
@@ -283,22 +302,13 @@ class TargetBlockGenerator extends StatelessWidget {
     );
   }
 
-  void showSnackbar(int val, BuildContext context) {
-    if (val == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Correct!'),
-          duration: Duration(seconds: 1),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Incorrect!'),
-          duration: Duration(seconds: 1),
-        ),
-      );
-    }
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 1),
+      ),
+    );
   }
 }
 
@@ -328,7 +338,7 @@ class Block extends StatelessWidget {
     return Container(
       height: 50,
       width: 50,
-      color: Colors.black.withOpacity(0.7),
+      color: Colors.black.withOpacity(opacity),
     );
   }
 }
