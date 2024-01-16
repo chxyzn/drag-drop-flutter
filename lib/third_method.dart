@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-List<int> shape1 = [2, 1, 1];
+List<int> shape1 = [2, 1, 1]; 
+
 List<int> shape2 = [0, 2, 1];
 List<int> shape3 = [0, 0, 1];
 
@@ -18,38 +19,38 @@ class _ThirdMethodState extends State<ThirdMethod> {
     [0, 0, 0]
   ];
 
-  int modifyMatrix(List<List<int>> referenceMatrix) {
-    List<MatrixCoords> updateCoords = [];
-    bool canUpdate = true;
-    for (int i = 0; i < referenceMatrix.length; i++) {
-      for (int j = 0; j < referenceMatrix[i].length; j++) {
-        if (referenceMatrix[i][j] == 1) {
-          MatrixCoords coords = MatrixCoords(row: i, col: j);
-          updateCoords.add(coords);
-        }
-      }
-    }
+  // int modifyMatrix(List<List<int>> referenceMatrix) {
+  //   List<MatrixCoords> updateCoords = [];
+  //   bool canUpdate = true;
+  //   for (int i = 0; i < referenceMatrix.length; i++) {
+  //     for (int j = 0; j < referenceMatrix[i].length; j++) {
+  //       if (referenceMatrix[i][j] == 1) {
+  //         MatrixCoords coords = MatrixCoords(row: i, col: j);
+  //         updateCoords.add(coords);
+  //       }
+  //     }
+  //   }
 
-    for (MatrixCoords coords in updateCoords) {
-      if (matrix[coords.row][coords.col] == 1) {
-        canUpdate = false;
-        break;
-      }
-    }
+  //   for (MatrixCoords coords in updateCoords) {
+  //     if (matrix[coords.row][coords.col] == 1) {
+  //       canUpdate = false;
+  //       break;
+  //     }
+  //   }
 
-    if (canUpdate) {
-      for (MatrixCoords coords in updateCoords) {
-        matrix[coords.row][coords.col]++;
-      }
-      setState(() {
-        debugPrint('matrix updated');
-        printMatrix();
-      });
-      return 0;
-    }
+  //   if (canUpdate) {
+  //     for (MatrixCoords coords in updateCoords) {
+  //       matrix[coords.row][coords.col]++;
+  //     }
+  //     setState(() {
+  //       debugPrint('matrix updated');
+  //       printMatrix();
+  //     });
+  //     return 0;
+  //   }
 
-    return 1;
-  }
+  //   return 1;
+  // }
 
   void printMatrix() {
     for (int i = 0; i < matrix.length; i++) {
