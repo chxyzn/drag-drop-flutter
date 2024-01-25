@@ -1,4 +1,5 @@
 import 'package:drag_drop/first_method.dart';
+import 'package:drag_drop/fourth_method.dart';
 import 'package:drag_drop/second_method.dart';
 import 'package:drag_drop/third_method.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ final List<Widget> widgetOptions = [
   const FirstMethod(),
   const SecondMethod(),
   const ThirdMethod(),
+  const FourthMethod(),
 ];
 
 GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -75,6 +77,19 @@ class _GameState extends State<Game> {
 
                   setState(() {
                     selectedIndex = 2;
+                  });
+                },
+              ),
+              ListTile(
+                title: const Text(
+                  'Method 4',
+                  textAlign: TextAlign.center,
+                ),
+                onTap: () {
+                  _scaffoldKey.currentState!.openEndDrawer();
+
+                  setState(() {
+                    selectedIndex = 3;
                   });
                 },
               ),
