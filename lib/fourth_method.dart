@@ -5,13 +5,19 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 const int MATRIX_SIZE = 3;
+MatrixCoords pickupCoords = const MatrixCoords(row: 0, col: 0);
 
 List<List<int>> shape2 = [
-  [1, 0, 1],
-  [1, 0, 1],
-  [1, 1, 1]
+  [0, 0, 0],
+  [0, 1, 1],
+  [0, 1, 0]
 ];
 
+// List<List<int>> shape2 = [
+//   [1, 0, 1],
+//   [1, 0, 1],
+//   [1, 1, 1]
+// ];
 class FourthMethod extends StatefulWidget {
   const FourthMethod({super.key});
 
@@ -56,6 +62,63 @@ class _FourthMethodState extends State<FourthMethod> {
       }
     }
     return MatrixCoords(row: row, col: col);
+  }
+
+  void updateBaseMatrixNew(
+    MatrixCoords touchdownCoords,
+    List<List<int>> shapeMatrix,
+  ) {
+    bool canUpdate = true;
+    int num1 = -1;
+    int num2 = -1;
+    for (int x = 0; x < MATRIX_SIZE; x++) {
+      for (int y = 0; y < MATRIX_SIZE; y++) {
+        if (shapeMatrix[x][y] == 1) {
+          num1 = x + touchdownCoords.row - pickupCoords.row;
+          num2 = y + touchdownCoords.col - pickupCoords.col;
+          if (num1 >= 0 &&
+              num1 < MATRIX_SIZE &&
+              num2 >= 0 &&
+              num2 < MATRIX_SIZE) {
+            if (matrix[num1][num2] == 1) {
+              canUpdate = false;
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                backgroundColor: Colors.red,
+                content: Text('Block Clashing!!!'),
+              ));
+              break;
+            }
+          } else {
+            print('---------------------------');
+
+            print('went wrong at x = $x and y = $y');
+            print(
+                'these are pickupCoords now ${pickupCoords.row}, ${pickupCoords.col}');
+            print(
+                ' touchDownCoords ${touchdownCoords.row}, ${touchdownCoords.col}');
+            print('num 1 $num1, num 2 $num2');
+            canUpdate = false;
+            break;
+          }
+        }
+      }
+    }
+
+    if (canUpdate) {
+      setState(() {
+        for (int x = 0; x < MATRIX_SIZE; x++) {
+          for (int y = 0; y < MATRIX_SIZE; y++) {
+            if (shapeMatrix[x][y] == 1) {
+              matrix[x + touchdownCoords.row - pickupCoords.row]
+                  [y + touchdownCoords.col - pickupCoords.col] = 1;
+            }
+          }
+        }
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(backgroundColor: Colors.red, content: Text('Error')));
+    }
   }
 
   void updateBaseMatrix(MatrixCoords touchdownCoords, List<List<int>> data) {
@@ -153,7 +216,7 @@ class _FourthMethodState extends State<FourthMethod> {
               child: Center(
                 child: TargetBlockGenerator(
                   shape: matrix,
-                  onAccept: updateBaseMatrix,
+                  onAccept: updateBaseMatrixNew,
                 ),
               ),
             )
@@ -279,7 +342,32 @@ class ShapeGenerator extends StatelessWidget {
             children: [
               for (int j = 0; j < shape[i].length; j++) //row traversal
                 (shape[i][j] == 1)
-                    ? const Block()
+                    ? GestureDetector(
+                        onTapUp: (_) {
+                          print('onTapUp picked shape at $i, $j');
+                        },
+                        onTapDown: (_) {
+                          print('onTapDown picked shape at $i, $j');
+                          pickupCoords = MatrixCoords(row: i, col: j);
+                        },
+                        // onForcePressStart: (_) {
+                        //   print('picked shape at $i, $j');
+                        // },
+                        // onPanStart: (_) {
+                        //   print('onPanStart picked shape at $i, $j');
+                        // },
+                        // onPanUpdate: (_) {
+                        //   print('onPanUpdate picked shape at $i, $j');
+                        // },
+                        // onTertiaryLongPressStart: (_) {
+                        //   print(
+                        //       'onTertiaryLongPressStart picked shape at $i, $j');
+                        // },
+                        // onTap: () {
+                        //   print('onTap picked shape at $i, $j');
+                        // },
+                        child: const Block(),
+                      )
                     : const Block(
                         opacity: 0,
                       ),
