@@ -4,13 +4,15 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-const int MATRIX_SIZE = 3;
+const int MATRIX_SIZE = 5;
 MatrixCoords pickupCoords = const MatrixCoords(row: 0, col: 0);
 
 List<List<int>> shape2 = [
-  [0, 0, 0],
-  [0, 1, 1],
-  [0, 1, 0]
+  [0, 0, 0, 0, 0],
+  [0, 1, 1, 0, 0],
+  [0, 1, 0, 0, 0],
+  [0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0]
 ];
 
 // List<List<int>> shape2 = [
@@ -30,21 +32,25 @@ class _FourthMethodState extends State<FourthMethod> {
   @override
   void initState() {
     super.initState();
-    shape = generateRandomMatrix(rowSize: 3, coloumnSize: 3);
+    shape = generateRandomMatrix(rowSize: 5, coloumnSize: 5);
   }
 
   List<List<int>> matrix = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0]
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
   ];
 
   void resetMatrix() {
     setState(() {
       matrix = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
       ];
     });
   }
@@ -191,6 +197,18 @@ class _FourthMethodState extends State<FourthMethod> {
     }
   }
 
+  List<List<int>> generate3x3In5x5Matrix() {
+    List<List<int>> returnMatrix =
+        List.generate(5, (index) => List.generate(5, (index) => 0));
+
+    for (int i = 0; i < 2; i++) {
+      for (int j = 0; j < 2; j++) {
+        returnMatrix[i][j] = Random().nextInt(2);
+      }
+    }
+    return returnMatrix;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -202,8 +220,8 @@ class _FourthMethodState extends State<FourthMethod> {
         Stack(
           children: [
             SizedBox(
-              height: 180,
-              width: 180,
+              height: 270,
+              width: 270,
               child: Center(
                 child: BaseBlockGenerator(
                   matrix: matrix,
@@ -211,8 +229,8 @@ class _FourthMethodState extends State<FourthMethod> {
               ),
             ),
             SizedBox(
-              height: 180,
-              width: 180,
+              height: 270,
+              width: 270,
               child: Center(
                 child: TargetBlockGenerator(
                   shape: matrix,
@@ -223,31 +241,75 @@ class _FourthMethodState extends State<FourthMethod> {
           ],
         ),
         const SizedBox(height: 25),
-        Row(
-          children: [
-            CustomDraggable(
-              shape: shape,
-            ),
-            CustomDraggable(
-              shape: shape2,
-            ),
-          ],
-        ),
-        const SizedBox(height: 25),
-        GestureDetector(
-          onTap: () {
-            shape = generateRandomMatrix(rowSize: 3, coloumnSize: 3);
-
-            setState(() {});
-          },
-          child: Container(
-            color: Colors.blue,
-            height: 50,
-            width: 100,
-            child: const Center(
-              child: Text('Randomise'),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: IntrinsicHeight(
+            child: Row(
+              children: [
+                CustomDraggable(
+                  shape: shape,
+                ),
+                const SizedBox(
+                  width: 15,
+                ),
+                const VerticalDivider(
+                  width: 4,
+                  color: Colors.black,
+                  thickness: 2,
+                  endIndent: 4,
+                  indent: 3,
+                ),
+                const SizedBox(
+                  width: 15,
+                ),
+                CustomDraggable(
+                  shape: shape2,
+                ),
+              ],
             ),
           ),
+        ),
+        const SizedBox(height: 25),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            GestureDetector(
+              onTap: () {
+                shape = generateRandomMatrix(rowSize: 5, coloumnSize: 5);
+
+                setState(() {});
+              },
+              child: Container(
+                color: Colors.blue,
+                height: 50,
+                width: 125,
+                child: const Center(
+                  child: Text(
+                    'Randomise 5x5',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                shape2 = generate3x3In5x5Matrix();
+
+                setState(() {});
+              },
+              child: Container(
+                color: Colors.blue,
+                height: 50,
+                width: 125,
+                child: const Center(
+                  child: Text(
+                    'Randomise 3x3',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 25),
         GestureDetector(
@@ -259,7 +321,10 @@ class _FourthMethodState extends State<FourthMethod> {
             height: 50,
             width: 100,
             child: const Center(
-              child: Text('Reset'),
+              child: Text(
+                'Reset',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ),
         ),
@@ -292,6 +357,7 @@ class TargetBlockGenerator extends StatelessWidget {
                   builder: (context, candidates, rejects) {
                     return const Block(
                       opacity: 0,
+                      padding: EdgeInsets.all(1),
                     );
                   },
                 ),
@@ -317,10 +383,13 @@ class CustomDraggable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Draggable<List<List<int>>>(
+    return LongPressDraggable<List<List<int>>>(
       data: shape,
       feedback: ShapeGenerator(shape: shape),
-      childWhenDragging: const Block(),
+      childWhenDragging: SizedBox(
+        height: 50 * MATRIX_SIZE.toDouble(),
+        width: 50 * MATRIX_SIZE.toDouble(),
+      ),
       child: ShapeGenerator(shape: shape),
     );
   }
@@ -398,6 +467,7 @@ class BaseBlockGenerator extends StatelessWidget {
               for (int j = 0; j < matrix[i].length; j++) //row traversal
                 BaseBlock(
                   value: matrix[i][j],
+                  padding: EdgeInsets.all(1),
                 ),
             ],
           )
@@ -408,13 +478,16 @@ class BaseBlockGenerator extends StatelessWidget {
 
 class BaseBlock extends StatelessWidget {
   final int value;
-  const BaseBlock({super.key, required this.value});
+  final EdgeInsets padding;
+  const BaseBlock(
+      {super.key, required this.value, this.padding = EdgeInsets.zero});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 50,
       width: 50,
+      margin: padding,
       color: value == (1)
           ? const Color.fromARGB(255, 245, 146, 54)
           : const Color.fromRGBO(0, 255, 0, 0.4),
@@ -425,11 +498,13 @@ class BaseBlock extends StatelessWidget {
 
 class Block extends StatelessWidget {
   final double opacity;
-  const Block({super.key, this.opacity = 1});
+  final EdgeInsets padding;
+  const Block({super.key, this.opacity = 1, this.padding = EdgeInsets.zero});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: padding,
       height: 50,
       width: 50,
       color: Colors.black.withOpacity(opacity),
