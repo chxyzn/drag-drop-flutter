@@ -2,17 +2,42 @@
 
 import 'dart:math';
 
+import 'package:drag_drop/graph_view.dart';
 import 'package:flutter/material.dart';
 
 const int MATRIX_SIZE = 5;
 MatrixCoords pickupCoords = const MatrixCoords(row: 0, col: 0);
 
-List<List<int>> shape2 = [
+List<List<int>> shape = [
+  [5, 0, 0, 0, 0],
   [0, 0, 0, 0, 0],
-  [0, 1, 1, 0, 0],
-  [0, 1, 0, 0, 0],
+  [0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0],
+];
+
+List<List<int>> shape3x3 = [
+  [3, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0]
+];
+
+List<List<int>> shape4x4 = [
+  [0, 0, 0, 0, 0],
+  [4, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0]
+];
+
+List<List<int>> shape2x2 = [
+  [2, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0],
 ];
 
 // List<List<int>> shape2 = [
@@ -28,14 +53,7 @@ class FourthMethod extends StatefulWidget {
 }
 
 class _FourthMethodState extends State<FourthMethod> {
-  late List<List<int>> shape;
-  @override
-  void initState() {
-    super.initState();
-    shape = generateRandomMatrix(rowSize: 5, coloumnSize: 5);
-  }
-
-  List<List<int>> matrix = [
+  List<List<int>> baseMatrix = [
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
@@ -43,9 +61,9 @@ class _FourthMethodState extends State<FourthMethod> {
     [0, 0, 0, 0, 0],
   ];
 
-  void resetMatrix() {
+  void resetBaseMatrix() {
     setState(() {
-      matrix = [
+      baseMatrix = [
         [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
@@ -53,21 +71,6 @@ class _FourthMethodState extends State<FourthMethod> {
         [0, 0, 0, 0, 0],
       ];
     });
-  }
-
-  MatrixCoords findStartCoords(List<List<int>> shape) {
-    int row = 0;
-    int col = 0;
-    for (int i = 0; i < shape.length; i++) {
-      for (int j = 0; j < shape[i].length; j++) {
-        if (shape[i][j] == 1) {
-          row = i;
-          col = j;
-          return MatrixCoords(row: row, col: col);
-        }
-      }
-    }
-    return MatrixCoords(row: row, col: col);
   }
 
   void updateBaseMatrixNew(
@@ -79,14 +82,14 @@ class _FourthMethodState extends State<FourthMethod> {
     int num2 = -1;
     for (int x = 0; x < MATRIX_SIZE; x++) {
       for (int y = 0; y < MATRIX_SIZE; y++) {
-        if (shapeMatrix[x][y] == 1) {
+        if (shapeMatrix[x][y] > 0) {
           num1 = x + touchdownCoords.row - pickupCoords.row;
           num2 = y + touchdownCoords.col - pickupCoords.col;
           if (num1 >= 0 &&
               num1 < MATRIX_SIZE &&
               num2 >= 0 &&
               num2 < MATRIX_SIZE) {
-            if (matrix[num1][num2] == 1) {
+            if (baseMatrix[num1][num2] > 0) {
               canUpdate = false;
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 backgroundColor: Colors.red,
@@ -114,9 +117,10 @@ class _FourthMethodState extends State<FourthMethod> {
       setState(() {
         for (int x = 0; x < MATRIX_SIZE; x++) {
           for (int y = 0; y < MATRIX_SIZE; y++) {
-            if (shapeMatrix[x][y] == 1) {
-              matrix[x + touchdownCoords.row - pickupCoords.row]
-                  [y + touchdownCoords.col - pickupCoords.col] = 1;
+            if (shapeMatrix[x][y] > 0) {
+              baseMatrix[x + touchdownCoords.row - pickupCoords.row]
+                      [y + touchdownCoords.col - pickupCoords.col] =
+                  shapeMatrix[x][y];
             }
           }
         }
@@ -127,65 +131,63 @@ class _FourthMethodState extends State<FourthMethod> {
     }
   }
 
-  void updateBaseMatrix(MatrixCoords touchdownCoords, List<List<int>> data) {
-    setState(() {
-      MatrixCoords startCoords = findStartCoords(data);
-      //traverse through data martrix starting from start coodrds
-      int i = startCoords.row;
-      int j = startCoords.col;
-
-      print('-------------------------');
-      print('Start coords: ${startCoords.row}, ${startCoords.col}');
-      print('Touchdown coords: ${touchdownCoords.row}, ${touchdownCoords.col}');
-
-      printShape(data, 'data');
-
-      int touchDownCol = touchdownCoords.col;
-
-      int counter = 0;
-      int counter2 = 0;
-      try {
-        for (i; i < MATRIX_SIZE; i++) {
-          for (j; j < MATRIX_SIZE; j++) {
-            if (data[i][j] == 1) {
-              print('$i, $j == 1');
-              print('counter: $counter');
-              print('counter2: $counter2');
-              matrix[touchdownCoords.row + counter2][touchDownCol + counter] =
-                  1;
-            }
-            counter++;
+  List<List<int>> getAdjacentEdges() {
+    List<List<int>> edgesList = [];
+    for (var i = 0; i < MATRIX_SIZE - 1; i++) {
+      for (var j = 0; j < MATRIX_SIZE - 1; j++) {
+        if (baseMatrix[i][j] > 0 &&
+            baseMatrix[i][j + 1] > 0 &&
+            baseMatrix[i][j] != baseMatrix[i][j + 1]) {
+          if (!edgesList.contains([baseMatrix[i][j], baseMatrix[i][j + 1]])) {
+            edgesList.add([baseMatrix[i][j], baseMatrix[i][j + 1]]);
           }
-          j = 0;
-          counter = 0;
-          counter2++;
-          touchDownCol = 0;
         }
-      } on RangeError {
-        print('Out of bounds');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Out of bounds'),
-            duration: Duration(seconds: 1),
-            backgroundColor: Colors.red,
-          ),
-        );
       }
-
-      print('After update');
-      printShape(matrix, 'matrix');
-    });
+    }
+    for (var i = 0; i < MATRIX_SIZE - 1; i++) {
+      for (var j = 0; j < MATRIX_SIZE - 1; j++) {
+        if (baseMatrix[j][i] > 0 &&
+            baseMatrix[j + 1][i] > 0 &&
+            baseMatrix[j][i] != baseMatrix[j + 1][i]) {
+          if (!edgesList.contains([baseMatrix[j][i], baseMatrix[j + 1][i]])) {
+            edgesList.add([baseMatrix[j][i], baseMatrix[j + 1][i]]);
+          }
+        }
+      }
+    }
+    return edgesList;
   }
 
+  // void generateAdjacentGraph(){
+  //   for(int i = 0; i<MATRIX_SIZE; i++){
+  //     for(int j = 0; j<MATRIX_SIZE; j++){
+  //       if(matrix[i][j] == 1){
+  //         if(i-1 >= 0 && matrix[i-1][j] == 1){
+  //           print('adjacent to ${i-1}, $j');
+  //         }
+  //         if(i+1 < MATRIX_SIZE && matrix[i+1][j] == 1){
+  //           print('adjacent to ${i+1}, $j');
+  //         }
+  //         if(j-1 >= 0 && matrix[i][j-1] == 1){
+  //           print('adjacent to $i, ${j-1}');
+  //         }
+  //         if(j+1 < MATRIX_SIZE && matrix[i][j+1] == 1){
+  //           print('adjacent to $i, ${j+1}');
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+
   List<List<int>> generateRandomMatrix(
-      {required int rowSize, required int coloumnSize}) {
+      {required int rowSize, required int coloumnSize, required blockNumber}) {
     List<List<int>> returnMatrix = [];
     returnMatrix = List.generate(
         coloumnSize, (index) => List.generate(rowSize, (index) => -1));
 
     for (int i = 0; i < coloumnSize; i++) {
       for (int j = 0; j < rowSize; j++) {
-        returnMatrix[i][j] = Random().nextInt(2);
+        returnMatrix[i][j] = (Random().nextInt(2) == 0) ? 0 : blockNumber;
       }
     }
     return returnMatrix;
@@ -197,13 +199,14 @@ class _FourthMethodState extends State<FourthMethod> {
     }
   }
 
-  List<List<int>> generate3x3In5x5Matrix() {
+  List<List<int>> generateNxNIn5x5Matrix(
+      {required int N, required int blockNumber}) {
     List<List<int>> returnMatrix =
         List.generate(5, (index) => List.generate(5, (index) => 0));
 
-    for (int i = 0; i < 2; i++) {
-      for (int j = 0; j < 2; j++) {
-        returnMatrix[i][j] = Random().nextInt(2);
+    for (int i = 0; i < N; i++) {
+      for (int j = 0; j < N; j++) {
+        returnMatrix[i][j] = Random().nextInt(2) == 0 ? 0 : blockNumber;
       }
     }
     return returnMatrix;
@@ -211,124 +214,248 @@ class _FourthMethodState extends State<FourthMethod> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 50,
-        ),
-        Stack(
-          children: [
-            SizedBox(
-              height: 270,
-              width: 270,
-              child: Center(
-                child: BaseBlockGenerator(
-                  matrix: matrix,
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 270,
-              width: 270,
-              child: Center(
-                child: TargetBlockGenerator(
-                  shape: matrix,
-                  onAccept: updateBaseMatrixNew,
-                ),
-              ),
-            )
-          ],
-        ),
-        const SizedBox(height: 25),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: IntrinsicHeight(
-            child: Row(
-              children: [
-                CustomDraggable(
-                  shape: shape,
-                ),
-                const SizedBox(
-                  width: 15,
-                ),
-                const VerticalDivider(
-                  width: 4,
-                  color: Colors.black,
-                  thickness: 2,
-                  endIndent: 4,
-                  indent: 3,
-                ),
-                const SizedBox(
-                  width: 15,
-                ),
-                CustomDraggable(
-                  shape: shape2,
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 25),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            GestureDetector(
-              onTap: () {
-                shape = generateRandomMatrix(rowSize: 5, coloumnSize: 5);
-
-                setState(() {});
-              },
-              child: Container(
-                color: Colors.blue,
-                height: 50,
-                width: 125,
-                child: const Center(
-                  child: Text(
-                    'Randomise 5x5',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                shape2 = generate3x3In5x5Matrix();
-
-                setState(() {});
-              },
-              child: Container(
-                color: Colors.blue,
-                height: 50,
-                width: 125,
-                child: const Center(
-                  child: Text(
-                    'Randomise 3x3',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 25),
-        GestureDetector(
-          onTap: () {
-            resetMatrix();
-          },
-          child: Container(
-            color: Colors.red,
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const SizedBox(
             height: 50,
-            width: 100,
-            child: const Center(
-              child: Text(
-                'Reset',
-                style: TextStyle(color: Colors.white),
+          ),
+          Stack(
+            children: [
+              SizedBox(
+                height: 270,
+                width: 270,
+                child: Center(
+                  child: BaseBlockGenerator(
+                    matrix: baseMatrix,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 270,
+                width: 270,
+                child: Center(
+                  child: TargetBlockGenerator(
+                    shape: baseMatrix,
+                    onAccept: updateBaseMatrixNew,
+                  ),
+                ),
+              )
+            ],
+          ),
+          const SizedBox(height: 25),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: IntrinsicHeight(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    CustomDraggable(
+                      shape: shape,
+                    ),
+                    const SizedBox(
+                      width: 15,
+                    ),
+                    const VerticalDivider(
+                      width: 4,
+                      color: Colors.black,
+                      thickness: 2,
+                      endIndent: 4,
+                      indent: 3,
+                    ),
+                    const SizedBox(
+                      width: 15,
+                    ),
+                    CustomDraggable(
+                      shape: shape3x3,
+                    ),
+                    const VerticalDivider(
+                      width: 4,
+                      color: Colors.black,
+                      thickness: 2,
+                      endIndent: 4,
+                      indent: 3,
+                    ),
+                    const SizedBox(
+                      width: 15,
+                    ),
+                    CustomDraggable(
+                      shape: shape4x4,
+                    ),
+                    const VerticalDivider(
+                      width: 4,
+                      color: Colors.black,
+                      thickness: 2,
+                      endIndent: 4,
+                      indent: 3,
+                    ),
+                    const SizedBox(
+                      width: 15,
+                    ),
+                    CustomDraggable(
+                      shape: shape2x2,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 25),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      shape = generateRandomMatrix(
+                          rowSize: 5, coloumnSize: 5, blockNumber: 5);
+
+                      setState(() {});
+                    },
+                    child: Container(
+                      color: Colors.blue,
+                      height: 50,
+                      width: 125,
+                      child: const Center(
+                        child: Text(
+                          'Randomise 5x5',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 15,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      shape3x3 = generateNxNIn5x5Matrix(N: 3, blockNumber: 3);
+
+                      setState(() {});
+                    },
+                    child: Container(
+                      color: Colors.blue,
+                      height: 50,
+                      width: 125,
+                      child: const Center(
+                        child: Text(
+                          'Randomise 3x3',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 15,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      shape4x4 = generateNxNIn5x5Matrix(N: 4, blockNumber: 4);
+
+                      setState(() {});
+                    },
+                    child: Container(
+                      color: Colors.blue,
+                      height: 50,
+                      width: 125,
+                      child: const Center(
+                        child: Text(
+                          'Randomise 4x4',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 15,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      shape2x2 = generateNxNIn5x5Matrix(N: 2, blockNumber: 2);
+
+                      setState(() {});
+                    },
+                    child: Container(
+                      color: Colors.blue,
+                      height: 50,
+                      width: 125,
+                      child: const Center(
+                        child: Text(
+                          'Randomise 2x2',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 25),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  resetBaseMatrix();
+                },
+                child: Container(
+                  color: Colors.red,
+                  height: 50,
+                  width: 100,
+                  child: const Center(
+                    child: Text(
+                      'Reset',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  List<List<int>> edges = getAdjacentEdges();
+                  List<int> nodes = [];
+                  for (List<int> edge in edges) {
+                    for (int node in edge) {
+                      if (!nodes.contains(node)) {
+                        nodes.add(node);
+                      }
+                    }
+                  }
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => GraphViewPage(
+                        baseMatrix: baseMatrix,
+                        nodes: nodes,
+                        edges: edges,
+                      ),
+                    ),
+                  );
+
+                  
+
+                },
+                child: Container(
+                  color: Colors.black,
+                  height: 50,
+                  width: 100,
+                  child: const Center(
+                    child: Text(
+                      'View Graph',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -410,7 +537,7 @@ class ShapeGenerator extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               for (int j = 0; j < shape[i].length; j++) //row traversal
-                (shape[i][j] == 1)
+                (shape[i][j] > 0)
                     ? GestureDetector(
                         onTapUp: (_) {
                           print('onTapUp picked shape at $i, $j');
@@ -488,7 +615,7 @@ class BaseBlock extends StatelessWidget {
       height: 50,
       width: 50,
       margin: padding,
-      color: value == (1)
+      color: value > 0
           ? const Color.fromARGB(255, 245, 146, 54)
           : const Color.fromRGBO(0, 255, 0, 0.4),
       // : const Color.fromARGB(255, 245, 146, 54).withOpacity(0.3),

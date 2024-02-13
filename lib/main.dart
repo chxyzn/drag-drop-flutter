@@ -1,21 +1,11 @@
-import 'package:drag_drop/first_method.dart';
-import 'package:drag_drop/fourth_method.dart';
-import 'package:drag_drop/second_method.dart';
-import 'package:drag_drop/third_method.dart';
+import 'package:drag_drop/final.dart';
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(const Game());
 }
 
-final List<Widget> widgetOptions = [
-  const FirstMethod(),
-  const SecondMethod(),
-  const ThirdMethod(),
-  const FourthMethod(),
-];
-
-GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+final List<Widget> widgetOptions = [];
 
 class Game extends StatefulWidget {
   const Game({super.key});
@@ -25,82 +15,45 @@ class Game extends StatefulWidget {
 }
 
 class _GameState extends State<Game> {
-  int selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        key: _scaffoldKey,
-        drawer: Drawer(
-          child: ListView(
-            children: [
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                ),
-                child: Text(''),
-              ),
-              ListTile(
-                title: const Text(
-                  'Method 1',
-                  textAlign: TextAlign.center,
-                ),
-                onTap: () {
-                  _scaffoldKey.currentState!.openEndDrawer();
-
-                  setState(() {
-                    selectedIndex = 0;
-                  });
-                },
-              ),
-              ListTile(
-                title: const Text(
-                  'Method 2',
-                  textAlign: TextAlign.center,
-                ),
-                onTap: () {
-                  _scaffoldKey.currentState!.openEndDrawer();
-
-                  setState(() {
-                    selectedIndex = 1;
-                  });
-                },
-              ),
-              ListTile(
-                title: const Text(
-                  'Method 3',
-                  textAlign: TextAlign.center,
-                ),
-                onTap: () {
-                  _scaffoldKey.currentState!.openEndDrawer();
-
-                  setState(() {
-                    selectedIndex = 2;
-                  });
-                },
-              ),
-              ListTile(
-                title: const Text(
-                  'Method 4',
-                  textAlign: TextAlign.center,
-                ),
-                onTap: () {
-                  _scaffoldKey.currentState!.openEndDrawer();
-
-                  setState(() {
-                    selectedIndex = 3;
-                  });
-                },
-              ),
-            ],
-          ),
-        ),
         appBar: AppBar(
           title: const Text('Game'),
         ),
-        body: widgetOptions[selectedIndex],
+        body: GameScreen(apiResonse: apiResonse),
       ),
     );
   }
 }
+
+Map<String, dynamic> apiResonse = {
+  "grid": {"row_size": 5, "column_size": 5},
+  "graph": {
+    "nodes": [
+      {
+        "id": 1,
+        "shape": {"name": "Rectangle", "height": 3, "width": 2}
+      },
+      {
+        "id": 2,
+        "shape": {"name": "Rectangle", "height": 2, "width": 2}
+      },
+      {
+        "id": 3,
+        "shape": {"name": "U-Shape", "height": 3, "width": 4}
+      },
+      {
+        "id": 4,
+        "shape": {"name": "T-Shape", "height": 2, "width": 1}
+      }
+    ],
+    "edges": [
+      [1, 2],
+      [2, 3],
+      [1, 4],
+      [2, 4]
+    ]
+  }
+};
