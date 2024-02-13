@@ -34,7 +34,7 @@ Map<String, dynamic> apiResonse = {
     "nodes": [
       {
         "id": 1,
-        "shape": {"name": "Rectangle", "height": 3, "width": 2}
+        "shape": {"name": "Rectangle", "height": 1, "width": 1}
       },
       {
         "id": 2,
@@ -42,11 +42,11 @@ Map<String, dynamic> apiResonse = {
       },
       {
         "id": 3,
-        "shape": {"name": "U-Shape", "height": 3, "width": 4}
+        "shape": {"name": "U-Shape", "height": 2, "width": 4}
       },
       {
         "id": 4,
-        "shape": {"name": "T-Shape", "height": 2, "width": 1}
+        "shape": {"name": "T-Shape", "height": 1, "width": 2}
       }
     ],
     "edges": [

@@ -1,17 +1,16 @@
 // ignore_for_file: non_constant_identifier_names, avoid_function_literals_in_foreach_calls
 
-
 import 'package:drag_drop/fourth_method.dart';
 import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
 
 class GraphViewPage extends StatelessWidget {
-  final List<List<int>> baseMatrix;
+  final bool isSolutionCorrect;
   final List<int> nodes;
   final List<List<int>> edges;
   const GraphViewPage({
     super.key,
-    required this.baseMatrix,
+    required this.isSolutionCorrect,
     required this.nodes,
     required this.edges,
   });
@@ -28,10 +27,9 @@ class GraphViewPage extends StatelessWidget {
             height: 270,
             width: 270,
             child: Center(
-              child: BaseBlockGenerator(
-                matrix: baseMatrix,
-              ),
-            ),
+                child: Text((isSolutionCorrect
+                    ? 'Correct Solution'
+                    : 'Incorrect Solution'))),
           ),
           GraphWidget(
             nodes: nodes,

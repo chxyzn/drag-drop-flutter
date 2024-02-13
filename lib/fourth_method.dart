@@ -419,6 +419,7 @@ class _FourthMethodState extends State<FourthMethod> {
               GestureDetector(
                 onTap: () {
                   List<List<int>> edges = getAdjacentEdges();
+
                   List<int> nodes = [];
                   for (List<int> edge in edges) {
                     for (int node in edge) {
@@ -430,15 +431,12 @@ class _FourthMethodState extends State<FourthMethod> {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => GraphViewPage(
-                        baseMatrix: baseMatrix,
+                        isSolutionCorrect: true,
                         nodes: nodes,
                         edges: edges,
                       ),
                     ),
                   );
-
-                  
-
                 },
                 child: Container(
                   color: Colors.black,
