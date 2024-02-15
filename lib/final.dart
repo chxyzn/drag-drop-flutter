@@ -16,6 +16,8 @@ class _GameScreenState extends State<GameScreen> {
   late int gridRowSize;
   late int gridColumnSize;
   late int maxGridLength;
+  List<int> questionNodes = [];
+  List<List<int>> questionEdges = [];
 
   @override
   void initState() {
@@ -29,6 +31,16 @@ class _GameScreenState extends State<GameScreen> {
       gridRowSize,
       gridColumnSize,
     );
+
+    List apiNodes = widget.apiResonse['graph']['nodes'];
+    for (var element in apiNodes) {
+      questionNodes.add(element['id']);
+    }
+
+    List apiEdges = widget.apiResonse['graph']['edges'];
+    for (var element in apiEdges) {
+      questionEdges.add(element);
+    }
     super.initState();
   }
 
@@ -202,6 +214,7 @@ class _GameScreenState extends State<GameScreen> {
             height: 50,
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               GestureDetector(
                 onTap: () {
@@ -209,10 +222,13 @@ class _GameScreenState extends State<GameScreen> {
                 },
                 child: Container(
                   height: 50,
-                  width: 50,
+                  width: 120,
                   color: Colors.red,
                   child: const Center(
-                    child: Text('Reset'),
+                    child: Text(
+                      'Reset',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ),
@@ -243,15 +259,29 @@ class _GameScreenState extends State<GameScreen> {
                 },
                 child: Container(
                   height: 50,
-                  width: 50,
+                  width: 120,
                   color: Colors.green,
                   child: const Center(
-                    child: Text('Graph View'),
+                    child: Center(
+                        child: Text(
+                      'Submit',
+                      style: TextStyle(color: Colors.white),
+                    )),
                   ),
                 ),
               ),
             ],
-          )
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          GraphWidget(
+            nodes: questionNodes,
+            edges: questionEdges,
+          ),
+          const SizedBox(
+            height: 50,
+          ),
         ],
       ),
     );
@@ -304,9 +334,12 @@ class BlockOptionsWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          const SizedBox(
+            width: 16,
+          ),
           for (int i = 0; i < nodes.length; i++)
             Padding(
-              padding: EdgeInsets.only(right: 16),
+              padding: const EdgeInsets.only(right: 16),
               child: CustomDraggable(shape: getShapeMatrix(nodes[i])),
             )
         ],

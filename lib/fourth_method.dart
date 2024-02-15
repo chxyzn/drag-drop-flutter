@@ -592,7 +592,7 @@ class BaseBlockGenerator extends StatelessWidget {
               for (int j = 0; j < matrix[i].length; j++) //row traversal
                 BaseBlock(
                   value: matrix[i][j],
-                  padding: EdgeInsets.all(1),
+                  padding: const EdgeInsets.all(1),
                 ),
             ],
           )
@@ -616,7 +616,14 @@ class BaseBlock extends StatelessWidget {
       color: value > 0
           ? const Color.fromARGB(255, 245, 146, 54)
           : const Color.fromRGBO(0, 255, 0, 0.4),
-      // : const Color.fromARGB(255, 245, 146, 54).withOpacity(0.3),
+      child: Center(
+          child: Text(
+        value > 0 ? value.toString() : '',
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      )),
     );
   }
 }
