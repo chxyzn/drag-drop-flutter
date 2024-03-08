@@ -18,11 +18,15 @@ class _GameScreenState extends State<GameScreen> {
   late int maxGridLength;
   List<int> questionNodes = [];
   List<List<int>> questionEdges = [];
+  List<Map<String, dynamic>> availableNodes = [];
 
   @override
   void initState() {
     gridRowSize = widget.apiResonse['grid']['row_size'];
     gridColumnSize = widget.apiResonse['grid']['column_size'];
+
+    //set available nodes i.e blocks
+    availableNodes = List.from(widget.apiResonse['graph']['nodes']);
 
     maxGridLength =
         gridRowSize >= gridColumnSize ? gridRowSize : gridColumnSize;
@@ -50,6 +54,13 @@ class _GameScreenState extends State<GameScreen> {
         gridRowSize,
         gridColumnSize,
       );
+
+      availableNodes = widget.apiResonse['graph']['nodes'];
+
+      print(
+          'this is the length of available nodes after reste ${availableNodes.length}');
+      print(
+          ' this is the length of widget.graph.nodes ${widget.apiResonse['graph']['nodes'].length}');
     });
   }
 
@@ -87,10 +98,13 @@ class _GameScreenState extends State<GameScreen> {
     }
 
     if (canUpdate) {
+      int idOfElementToRemove = 0;
+
       setState(() {
         for (int x = 0; x < gridRowSize; x++) {
           for (int y = 0; y < gridColumnSize; y++) {
             if (shapeMatrix[x][y] > 0) {
+              idOfElementToRemove = shapeMatrix[x][y];
               baseMatrix[x + touchdownCoords.row - pickupCoords.row]
                       [y + touchdownCoords.col - pickupCoords.col] =
                   shapeMatrix[x][y];
@@ -98,6 +112,10 @@ class _GameScreenState extends State<GameScreen> {
           }
         }
         for (int i = 0; i < gridRowSize; i++) {}
+
+        availableNodes = availableNodes
+            .where((element) => element['id'] != idOfElementToRemove)
+            .toList();
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -208,7 +226,7 @@ class _GameScreenState extends State<GameScreen> {
           ),
           BlockOptionsWidget(
             maxGridLength: maxGridLength,
-            nodes: widget.apiResonse['graph']['nodes'],
+            nodes: availableNodes,
           ),
           const SizedBox(
             height: 50,

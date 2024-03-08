@@ -78,8 +78,8 @@ class _GraphWidgetState extends State<GraphWidget> {
               child: InteractiveViewer(
                 constrained: false,
                 boundaryMargin: const EdgeInsets.all(0),
-                minScale: 0.001,
-                maxScale: 100,
+                // minScale: 0.001,
+                // maxScale: 100,
                 child: GraphView(
                   graph: graph,
                   algorithm: _algorithm,
