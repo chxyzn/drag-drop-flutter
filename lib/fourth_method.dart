@@ -432,6 +432,7 @@ class _FourthMethodState extends State<FourthMethod> {
                     MaterialPageRoute(
                       builder: (context) => GraphViewPage(
                         isSolutionCorrect: true,
+                        graphTheoryText: '',
                         nodes: nodes,
                         edges: edges,
                       ),
@@ -505,8 +506,13 @@ class TargetBlockGenerator extends StatelessWidget {
 class CustomDraggable extends StatelessWidget {
   final List<List<int>> shape;
   final Color color;
-  const CustomDraggable(
-      {super.key, required this.shape, this.color = Colors.black});
+  final String text;
+  const CustomDraggable({
+    super.key,
+    required this.shape,
+    this.color = Colors.black,
+    this.text = '',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -515,12 +521,17 @@ class CustomDraggable extends StatelessWidget {
       feedback: ShapeGenerator(
         shape: shape,
         color: color,
+        text: text,
       ),
       childWhenDragging: SizedBox(
         height: 50 * MATRIX_SIZE.toDouble(),
         width: 50 * MATRIX_SIZE.toDouble(),
       ),
-      child: ShapeGenerator(shape: shape, color: color),
+      child: ShapeGenerator(
+        shape: shape,
+        color: color,
+        text: text,
+      ),
     );
   }
 }
@@ -528,7 +539,13 @@ class CustomDraggable extends StatelessWidget {
 class ShapeGenerator extends StatelessWidget {
   final List<List<int>> shape;
   final Color color;
-  const ShapeGenerator({super.key, required this.shape, required this.color});
+  final String text;
+  const ShapeGenerator({
+    super.key,
+    required this.shape,
+    required this.color,
+    this.text = '',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -568,6 +585,7 @@ class ShapeGenerator extends StatelessWidget {
                         // },
                         child: Block(
                           color: color,
+                          text: text,
                         ),
                       )
                     : const Block(
@@ -640,11 +658,14 @@ class Block extends StatelessWidget {
   final double opacity;
   final EdgeInsets padding;
   final Color color;
-  const Block(
-      {super.key,
-      this.opacity = 1,
-      this.padding = EdgeInsets.zero,
-      this.color = Colors.black});
+  final String text;
+  const Block({
+    super.key,
+    this.opacity = 1,
+    this.padding = EdgeInsets.zero,
+    this.color = Colors.black,
+    this.text = '',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -653,6 +674,16 @@ class Block extends StatelessWidget {
       height: 50,
       width: 50,
       color: color.withOpacity(opacity),
+      child: Center(
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
+        ),
+      ),
     );
   }
 }

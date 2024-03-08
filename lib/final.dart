@@ -5,6 +5,13 @@ import 'package:drag_drop/game_logic.dart';
 import 'package:drag_drop/graph_view.dart';
 import 'package:flutter/material.dart';
 
+List<String> graphTheoryLessons = [
+  'The total sum of degrees of all the vertices in a graph is equal to twice the number of edges.',
+  'The maximum number of edges in a graph with n vertices is n(n-1)/2.',
+  'Cycle graph, Complete graph, Bipartite graph, and Complete Bipartite graph are some of the special types of graphs.',
+  'A graph is Eulerian if and only if all its vertices are of even degree.',
+];
+
 class GameScreen extends StatefulWidget {
   final Map<String, dynamic> apiResonse;
   const GameScreen({super.key, required this.apiResonse});
@@ -272,6 +279,7 @@ class _GameScreenState extends State<GameScreen> {
                       builder: (context) => GraphViewPage(
                         isSolutionCorrect: isSolutionCorrect(edges),
                         nodes: nodes,
+                        graphTheoryText: graphTheoryLessons[Random().nextInt(4)],
                         edges: edges,
                       ),
                     ),
@@ -364,6 +372,7 @@ class BlockOptionsWidget extends StatelessWidget {
                 shape: getShapeMatrix(nodes[i]),
                 color:
                     Colors.primaries[nodes[i]['id'] % Colors.primaries.length],
+                text: nodes[i]['id'].toString(),
               ),
             )
         ],

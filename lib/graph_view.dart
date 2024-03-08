@@ -6,10 +6,12 @@ import 'package:graphview/GraphView.dart';
 class GraphViewPage extends StatelessWidget {
   final bool isSolutionCorrect;
   final List<int> nodes;
+  final String graphTheoryText;
   final List<List<int>> edges;
   const GraphViewPage({
     super.key,
     required this.isSolutionCorrect,
+    required this.graphTheoryText,
     required this.nodes,
     required this.edges,
   });
@@ -23,12 +25,22 @@ class GraphViewPage extends StatelessWidget {
       body: Column(
         children: [
           SizedBox(
-            height: 270,
-            width: 270,
+            height: 150,
+            width: 150,
             child: Center(
                 child: Text((isSolutionCorrect
                     ? 'Correct Solution'
                     : 'Incorrect Solution'))),
+          ),
+          Center(
+            child: Text(
+              graphTheoryText,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           GraphWidget(
             nodes: nodes,
@@ -65,34 +77,31 @@ class _GraphWidgetState extends State<GraphWidget> {
       graph.addEdge(graphNodes[a_index], graphNodes[b_index]);
     });
 
-    _algorithm = FruchtermanReingoldAlgorithm(iterations: 1000);
+    _algorithm = FruchtermanReingoldAlgorithm(
+      iterations: 1000,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: 300,
+        height: 350,
         child: Column(
           children: [
             Expanded(
-              child: InteractiveViewer(
-                constrained: false,
-                boundaryMargin: const EdgeInsets.all(0),
-                // minScale: 0.001,
-                // maxScale: 100,
-                child: GraphView(
-                  graph: graph,
-                  algorithm: _algorithm,
-                  paint: Paint()
-                    ..color = Colors.green
-                    ..strokeWidth = 1
-                    ..style = PaintingStyle.fill,
-                  builder: (Node node) {
-                    var a = node.key!.value as int?;
+              child: GraphView(
+                // animated: false,
+                graph: graph,
+                algorithm: _algorithm,
+                paint: Paint()
+                  ..color = Colors.green
+                  ..strokeWidth = 1
+                  ..style = PaintingStyle.fill,
+                builder: (Node node) {
+                  var a = node.key!.value as int?;
 
-                    return circularNode(a);
-                  },
-                ),
+                  return circularNode(a);
+                },
               ),
             ),
           ],
