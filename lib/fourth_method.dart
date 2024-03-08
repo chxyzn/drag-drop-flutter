@@ -504,25 +504,31 @@ class TargetBlockGenerator extends StatelessWidget {
 
 class CustomDraggable extends StatelessWidget {
   final List<List<int>> shape;
-  const CustomDraggable({super.key, required this.shape});
+  final Color color;
+  const CustomDraggable(
+      {super.key, required this.shape, this.color = Colors.black});
 
   @override
   Widget build(BuildContext context) {
     return LongPressDraggable<List<List<int>>>(
       data: shape,
-      feedback: ShapeGenerator(shape: shape),
+      feedback: ShapeGenerator(
+        shape: shape,
+        color: color,
+      ),
       childWhenDragging: SizedBox(
         height: 50 * MATRIX_SIZE.toDouble(),
         width: 50 * MATRIX_SIZE.toDouble(),
       ),
-      child: ShapeGenerator(shape: shape),
+      child: ShapeGenerator(shape: shape, color: color),
     );
   }
 }
 
 class ShapeGenerator extends StatelessWidget {
   final List<List<int>> shape;
-  const ShapeGenerator({super.key, required this.shape});
+  final Color color;
+  const ShapeGenerator({super.key, required this.shape, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -560,7 +566,9 @@ class ShapeGenerator extends StatelessWidget {
                         // onTap: () {
                         //   print('onTap picked shape at $i, $j');
                         // },
-                        child: const Block(),
+                        child: Block(
+                          color: color,
+                        ),
                       )
                     : const Block(
                         opacity: 0,
@@ -631,7 +639,12 @@ class BaseBlock extends StatelessWidget {
 class Block extends StatelessWidget {
   final double opacity;
   final EdgeInsets padding;
-  const Block({super.key, this.opacity = 1, this.padding = EdgeInsets.zero});
+  final Color color;
+  const Block(
+      {super.key,
+      this.opacity = 1,
+      this.padding = EdgeInsets.zero,
+      this.color = Colors.black});
 
   @override
   Widget build(BuildContext context) {
@@ -639,7 +652,7 @@ class Block extends StatelessWidget {
       margin: padding,
       height: 50,
       width: 50,
-      color: Colors.black.withOpacity(opacity),
+      color: color.withOpacity(opacity),
     );
   }
 }

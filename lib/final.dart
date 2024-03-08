@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:drag_drop/fourth_method.dart';
 import 'package:drag_drop/game_logic.dart';
 import 'package:drag_drop/graph_view.dart';
@@ -358,7 +360,11 @@ class BlockOptionsWidget extends StatelessWidget {
           for (int i = 0; i < nodes.length; i++)
             Padding(
               padding: const EdgeInsets.only(right: 16),
-              child: CustomDraggable(shape: getShapeMatrix(nodes[i])),
+              child: CustomDraggable(
+                shape: getShapeMatrix(nodes[i]),
+                color:
+                    Colors.primaries[nodes[i]['id'] % Colors.primaries.length],
+              ),
             )
         ],
       ),
