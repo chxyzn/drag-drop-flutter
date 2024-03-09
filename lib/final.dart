@@ -92,11 +92,13 @@ class _GameScreenState extends State<GameScreen> {
               num2 < gridColumnSize) {
             if (baseMatrix[num1][num2] > 0) {
               canUpdate = false;
+              ScaffoldMessenger.of(context).clearSnackBars();
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 backgroundColor: Colors.red,
                 content: Text('Block Clashing!!!'),
               ));
-              break;
+              // break;
+              return;
             }
           } else {
             canUpdate = false;
@@ -127,6 +129,7 @@ class _GameScreenState extends State<GameScreen> {
             .toList();
       });
     } else {
+      ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(backgroundColor: Colors.red, content: Text('Error')));
     }
@@ -279,7 +282,8 @@ class _GameScreenState extends State<GameScreen> {
                       builder: (context) => GraphViewPage(
                         isSolutionCorrect: isSolutionCorrect(edges),
                         nodes: nodes,
-                        graphTheoryText: graphTheoryLessons[Random().nextInt(4)],
+                        graphTheoryText:
+                            graphTheoryLessons[Random().nextInt(4)],
                         edges: edges,
                       ),
                     ),

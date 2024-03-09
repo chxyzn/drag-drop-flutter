@@ -28,13 +28,19 @@ class GraphViewPage extends StatelessWidget {
             height: 150,
             width: 150,
             child: Center(
-                child: Text((isSolutionCorrect
-                    ? 'Correct Solution'
-                    : 'Incorrect Solution'))),
+              child: Text(
+                (isSolutionCorrect) ? 'Correct Solution' : 'Incorrect Solution',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: (isSolutionCorrect) ? Colors.green : Colors.red,
+                ),
+              ),
+            ),
           ),
           Center(
             child: Text(
-              graphTheoryText,
+              (isSolutionCorrect) ? graphTheoryText : "",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 20,
