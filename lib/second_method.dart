@@ -77,9 +77,9 @@ class SecondMethodState extends State<SecondMethod> {
               Random random = Random();
               setState(() {
                 value++;
-                shape1 = [random.nextInt(3), random.nextInt(3), random.nextInt(3)];
-                shape2 = [random.nextInt(3), random.nextInt(3), random.nextInt(3)];
-                shape3 = [random.nextInt(3), random.nextInt(3), random.nextInt(3)];
+                // shape1 = [random.nextInt(3), random.nextInt(3), random.nextInt(3)];
+                // shape2 = [random.nextInt(3), random.nextInt(3), random.nextInt(3)];
+                // shape3 = [random.nextInt(3), random.nextInt(3), random.nextInt(3)];
               });
             },
             child: const Text('Reset'),

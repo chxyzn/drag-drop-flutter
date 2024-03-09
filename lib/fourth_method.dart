@@ -9,8 +9,8 @@ MatrixCoords pickupCoords = const MatrixCoords(row: 0, col: 0);
 
 List<List<int>> shape2 = [
   [0, 0, 0, 0, 0],
-  [0, 1, 1, 0, 0],
-  [0, 1, 0, 0, 0],
+  [0, 0, 0, 0, 0],
+  [0, 1, 1, 1, 0],
   [0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0]
 ];
@@ -32,7 +32,13 @@ class _FourthMethodState extends State<FourthMethod> {
   @override
   void initState() {
     super.initState();
-    shape = generateRandomMatrix(rowSize: 5, coloumnSize: 5);
+    shape = [
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 0],
+      [0, 0, 1, 1, 0],
+      [0, 0, 1, 1, 0],
+    ];
   }
 
   List<List<int>> matrix = [
@@ -252,13 +258,13 @@ class _FourthMethodState extends State<FourthMethod> {
                 const SizedBox(
                   width: 15,
                 ),
-                const VerticalDivider(
-                  width: 4,
-                  color: Colors.black,
-                  thickness: 2,
-                  endIndent: 4,
-                  indent: 3,
-                ),
+                // const VerticalDivider(
+                //   width: 4,
+                //   color: Colors.black,
+                //   thickness: 2,
+                //   endIndent: 4,
+                //   indent: 3,
+                // ),
                 const SizedBox(
                   width: 15,
                 ),
@@ -270,47 +276,47 @@ class _FourthMethodState extends State<FourthMethod> {
           ),
         ),
         const SizedBox(height: 25),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            GestureDetector(
-              onTap: () {
-                shape = generateRandomMatrix(rowSize: 5, coloumnSize: 5);
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+        //   children: [
+        //     GestureDetector(
+        //       onTap: () {
+        //         shape = generateRandomMatrix(rowSize: 5, coloumnSize: 5);
 
-                setState(() {});
-              },
-              child: Container(
-                color: Colors.blue,
-                height: 50,
-                width: 125,
-                child: const Center(
-                  child: Text(
-                    'Randomise 5x5',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                shape2 = generate3x3In5x5Matrix();
+        //         setState(() {});
+        //       },
+        //       child: Container(
+        //         color: Colors.blue,
+        //         height: 50,
+        //         width: 125,
+        //         child: const Center(
+        //           child: Text(
+        //             'Randomise 5x5',
+        //             style: TextStyle(color: Colors.white),
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //     GestureDetector(
+        //       onTap: () {
+        //         shape2 = generate3x3In5x5Matrix();
 
-                setState(() {});
-              },
-              child: Container(
-                color: Colors.blue,
-                height: 50,
-                width: 125,
-                child: const Center(
-                  child: Text(
-                    'Randomise 3x3',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+        //         setState(() {});
+        //       },
+        //       child: Container(
+        //         color: Colors.blue,
+        //         height: 50,
+        //         width: 125,
+        //         child: const Center(
+        //           child: Text(
+        //             'Randomise 3x3',
+        //             style: TextStyle(color: Colors.white),
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //   ],
+        // ),
         const SizedBox(height: 25),
         GestureDetector(
           onTap: () {

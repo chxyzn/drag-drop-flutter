@@ -2,8 +2,22 @@ import 'package:flutter/material.dart';
 
 List<int> shape = [2, 1, 1];
 
-class FirstMethod extends StatelessWidget {
+class FirstMethod extends StatefulWidget {
   const FirstMethod({super.key});
+
+  @override
+  State<FirstMethod> createState() => _FirstMethodState();
+}
+
+class _FirstMethodState extends State<FirstMethod> {
+  late int random;
+
+  @override
+  void initState() {
+    random = 0;
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +31,18 @@ class FirstMethod extends StatelessWidget {
         DraggingObject(
           shape: shape,
         ),
-        const AcceptingGrid(),
+         AcceptingGrid(
+          key: ValueKey(random),
+        ),
+        //create a reset button
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              random++;
+            });
+          },
+          child: const Text('Reset'),
+        ),
       ],
     );
   }
@@ -44,7 +69,6 @@ class DraggingObject extends StatelessWidget {
         maxElement = shape[i];
       }
     }
-    print('this is the max element $maxElement');
     return maxElement * 50;
   }
 
@@ -104,9 +128,9 @@ class Block extends StatelessWidget {
       maxSimultaneousDrags: 3,
       data: 1,
       dragAnchorStrategy: pointerDragAnchorStrategy,
-      feedback:  FractionalTranslation(
+      feedback: FractionalTranslation(
         translation: const Offset(-0.5, -0.5),
-        child:  Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             DraggingObject(shape: shape),
@@ -122,13 +146,31 @@ class Block extends StatelessWidget {
   }
 }
 
-class BlockAcceptor extends StatelessWidget {
+class BlockAcceptor extends StatefulWidget {
   const BlockAcceptor({super.key});
 
   @override
+  State<BlockAcceptor> createState() => _BlockAcceptorState();
+}
+
+class _BlockAcceptorState extends State<BlockAcceptor> {
+  bool showFilledBlock = false;
+  @override
   Widget build(BuildContext context) {
     return DragTarget<int>(
+      onAccept: (data) {
+        setState(() {
+          showFilledBlock = true;
+        });
+      },
       builder: (context, c, r) {
+        if (showFilledBlock) {
+          return Container(
+            color: const Color.fromARGB(255, 0, 0, 0),
+            height: 50,
+            width: 50,
+          );
+        }
         return Container(
           color: (c.isEmpty)
               ? Colors.black.withOpacity(0.2)

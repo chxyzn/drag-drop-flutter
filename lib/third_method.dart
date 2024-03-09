@@ -17,7 +17,7 @@ class _ThirdMethodState extends State<ThirdMethod> {
   List<List<int>> matrix = [
     [0, 0, 0],
     [0, 0, 0],
-    [0, 0, 1]
+    [0, 0, 0]
   ];
 
 
