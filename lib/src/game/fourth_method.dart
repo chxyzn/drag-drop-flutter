@@ -2,7 +2,8 @@
 
 import 'dart:math';
 
-import 'package:drag_drop/graph_view.dart';
+import 'package:drag_drop/src/graph/graph_view.dart';
+import 'package:drag_drop/src/game/game_screen.dart';
 import 'package:flutter/material.dart';
 
 const int MATRIX_SIZE = 5;
@@ -78,8 +79,8 @@ class _FourthMethodState extends State<FourthMethod> {
     List<List<int>> shapeMatrix,
   ) {
     bool canUpdate = true;
-    int num1 = -1;
-    int num2 = -1;
+    int num1 = -2;
+    int num2 = -2;
     for (int x = 0; x < MATRIX_SIZE; x++) {
       for (int y = 0; y < MATRIX_SIZE; y++) {
         if (shapeMatrix[x][y] > 0) {
@@ -503,38 +504,6 @@ class TargetBlockGenerator extends StatelessWidget {
   }
 }
 
-class CustomDraggable extends StatelessWidget {
-  final List<List<int>> shape;
-  final Color color;
-  final String text;
-  const CustomDraggable({
-    super.key,
-    required this.shape,
-    this.color = Colors.black,
-    this.text = '',
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return LongPressDraggable<List<List<int>>>(
-      data: shape,
-      feedback: ShapeGenerator(
-        shape: shape,
-        color: color,
-        text: text,
-      ),
-      childWhenDragging: SizedBox(
-        height: 50 * MATRIX_SIZE.toDouble(),
-        width: 50 * MATRIX_SIZE.toDouble(),
-      ),
-      child: ShapeGenerator(
-        shape: shape,
-        color: color,
-        text: text,
-      ),
-    );
-  }
-}
 
 class ShapeGenerator extends StatelessWidget {
   final List<List<int>> shape;
@@ -688,8 +657,4 @@ class Block extends StatelessWidget {
   }
 }
 
-class MatrixCoords {
-  final int row;
-  final int col;
-  const MatrixCoords({required this.row, required this.col});
-}
+

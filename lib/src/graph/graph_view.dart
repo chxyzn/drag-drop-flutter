@@ -48,9 +48,12 @@ class GraphViewPage extends StatelessWidget {
               ),
             ),
           ),
-          GraphWidget(
-            nodes: nodes,
-            edges: edges,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 100),
+            child: GraphWidget(
+              nodes: nodes,
+              edges: edges,
+            ),
           ),
         ],
       ),
@@ -61,7 +64,11 @@ class GraphViewPage extends StatelessWidget {
 class GraphWidget extends StatefulWidget {
   final List<int> nodes;
   final List<List<int>> edges;
-  const GraphWidget({super.key, required this.nodes, required this.edges});
+  const GraphWidget({
+    super.key,
+    required this.nodes,
+    required this.edges,
+  });
 
   @override
   State<GraphWidget> createState() => _GraphWidgetState();
@@ -78,13 +85,16 @@ class _GraphWidgetState extends State<GraphWidget> {
     widget.edges.forEach((edge) {
       int a = edge.first;
       int b = edge.last;
-      int a_index = widget.nodes.indexOf(a);
-      int b_index = widget.nodes.indexOf(b);
+      int a_index;
+      int b_index;
+      a_index = widget.nodes.indexOf(a);
+      b_index = widget.nodes.indexOf(b);
+
       graph.addEdge(graphNodes[a_index], graphNodes[b_index]);
     });
 
     _algorithm = FruchtermanReingoldAlgorithm(
-      iterations: 1000,
+      iterations: 600,
     );
   }
 
