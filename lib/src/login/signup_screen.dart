@@ -1,28 +1,35 @@
-import 'package:drag_drop/src/constants/Colors.dart';
-import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
-class LoginScreen extends StatefulWidget {
-  LoginScreen({Key? key}) : super(key: key);
+import '../constants/Colors.dart';
+import '../constants/assets.dart';
+
+class SignUpScreen extends StatefulWidget {
+  SignUpScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   late TextEditingController emailController;
   late TextEditingController passwordController;
+  late TextEditingController usernameController;
+  late TextEditingController confirmPasswordController;
+  int _age = 18;
   late bool _passwordVisible;
+  late bool _confirmPasswordVisible;
 
   @override
   void initState() {
     emailController = TextEditingController();
     passwordController = TextEditingController();
+    usernameController = TextEditingController();
+    confirmPasswordController = TextEditingController();
     _passwordVisible = false;
+    _confirmPasswordVisible = false;
+
     super.initState();
   }
 
@@ -30,6 +37,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
+    usernameController.dispose();
+    confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -59,11 +68,37 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 40,
         ),
         Text(
-          'Login',
+          'SignUp',
           style: w700.size24.copyWith(color: CustomColor.primaryColor),
         ),
         SizedBox(
           height: 20,
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Email ID',
+            style: w500.size16.copyWith(color: CustomColor.primary60Color),
+          ),
+        ),
+        TextField(
+          controller: emailController,
+          decoration: InputDecoration(
+            enabledBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              borderSide: BorderSide(width: 1, color: CustomColor.primaryColor),
+            ),
+            focusedBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              borderSide: BorderSide(width: 1, color: CustomColor.primaryColor),
+            ),
+            fillColor: CustomColor.textfieldBGColor,
+            filled: true,
+          ),
+          style: w500.size18.copyWith(color: CustomColor.primaryColor),
+        ),
+        SizedBox(
+          height: 10,
         ),
         Align(
           alignment: Alignment.centerLeft,
@@ -87,6 +122,33 @@ class _LoginScreenState extends State<LoginScreen> {
             filled: true,
           ),
           style: w500.size18.copyWith(color: CustomColor.primaryColor),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Age',
+              style: w500.size16.copyWith(color: CustomColor.primary60Color),
+            ),
+            Text(
+              _age.toString(),
+              style: w700.size16.copyWith(color: CustomColor.primaryColor),
+            ),
+          ],
+        ),
+        Slider(
+          value: _age.toDouble(),
+          min: 0,
+          max: 100,
+          divisions: 100,
+          onChanged: (newValue) {
+            setState(() {
+              _age = newValue.round();
+            });
+          },
         ),
         SizedBox(
           height: 10,
@@ -128,27 +190,62 @@ class _LoginScreenState extends State<LoginScreen> {
           obscureText: !_passwordVisible,
           style: w500.size18.copyWith(color: CustomColor.primaryColor),
         ),
+        SizedBox(
+          height: 10,
+        ),
         Align(
-          alignment: Alignment.centerRight,
+          alignment: Alignment.centerLeft,
           child: Text(
-            'Forgot Password?',
-            style: w500.size16.copyWith(color: CustomColor.primaryColor),
+            'Confirm Password',
+            style: w500.size16.copyWith(color: CustomColor.primary60Color),
           ),
         ),
+        TextField(
+          controller: confirmPasswordController,
+          decoration: InputDecoration(
+              enabledBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                borderSide:
+                    BorderSide(width: 1, color: CustomColor.primaryColor),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                borderSide:
+                    BorderSide(width: 1, color: CustomColor.primaryColor),
+              ),
+              fillColor: CustomColor.textfieldBGColor,
+              filled: true,
+              suffixIcon: IconButton(
+                onPressed: () {
+                  // Update the state i.e. toogle the state of passwordVisible variable
+                  setState(() {
+                    _confirmPasswordVisible = !_confirmPasswordVisible;
+                  });
+                },
+                icon: Icon(
+                  _confirmPasswordVisible
+                      ? Icons.visibility
+                      : Icons.visibility_off,
+                  color: Colors.grey,
+                ),
+              )),
+          obscureText: !_confirmPasswordVisible,
+          style: w500.size18.copyWith(color: CustomColor.primaryColor),
+        ),
         SizedBox(
-          height: 30,
+          height: 25,
         ),
         Container(
-          width: 150,
+          //width: 300,
           decoration: BoxDecoration(
               color: CustomColor.primaryColor,
               borderRadius: BorderRadius.circular(4.0)),
           child: Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15.0),
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Text(
-                'Login',
-                style: w700.size18.colorWhite,
+                'Sign Up',
+                style: w700.size16.colorWhite,
               ),
             ),
           ),
@@ -159,26 +256,15 @@ class _LoginScreenState extends State<LoginScreen> {
             onTap: () {},
             child: RichText(
                 text: TextSpan(
-                    text: "Don't have an account?",
+                    text: "Have an account?",
                     style:
                         w700.size14.copyWith(color: CustomColor.primary60Color),
                     children: <InlineSpan>[
                   TextSpan(
-                      text: ' Sign Up',
+                      text: ' Login',
                       style: w700.size14
                           .copyWith(color: CustomColor.primaryColor)),
                 ])),
-          ),
-        ),
-        SizedBox(
-          height: 40,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40.0),
-          child: Text(
-            "Hipster ipsum tattooed brunch I'm baby. Plant venmo vape squid intelligentsia glossier fanny tilde ",
-            textAlign: TextAlign.center,
-            style: w700.size12.copyWith(color: CustomColor.primary60Color),
           ),
         ),
       ],
