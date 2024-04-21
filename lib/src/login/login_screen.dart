@@ -4,6 +4,7 @@ import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -44,8 +45,8 @@ class _LoginScreenState extends State<LoginScreen> {
       body: [
         Image.asset(
           PngAssets.gplanLogo,
-          width: 150,
-          height: 150,
+          width: 150.w,
+          height: 150.h,
         ),
         Text(
           'GPLAN',
@@ -139,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 30,
         ),
         Container(
-          width: 150,
+          width: 150.w,
           decoration: BoxDecoration(
               color: CustomColor.primaryColor,
               borderRadius: BorderRadius.circular(4.0)),

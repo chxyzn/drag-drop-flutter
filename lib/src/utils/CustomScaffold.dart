@@ -16,28 +16,29 @@ class CustomScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget scaffoldBody = SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            if (body != null)
-              ...body!.map((widget) => Center(child: widget)).toList(),
-          ],
-        ),
+    Widget scaffoldBody = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          if (body != null)
+            ...body!.map((widget) => Center(child: widget)).toList(),
+        ],
       ),
     );
 
-    return Scaffold(
-      appBar: appBar,
-      body: Container(
-        decoration: BoxDecoration(
-          image: backgroundImage,
-          color: backgroundColor,
+    return SafeArea(
+      bottom: false,
+      child: Scaffold(
+        appBar: appBar,
+        body: Container(
+          decoration: BoxDecoration(
+            image: backgroundImage,
+            color: backgroundColor,
+          ),
+          child: SingleChildScrollView(child: scaffoldBody),
         ),
-        child: SingleChildScrollView(child: scaffoldBody),
       ),
     );
   }
