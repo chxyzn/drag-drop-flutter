@@ -1,5 +1,6 @@
 import 'package:drag_drop/src/constants/levels.dart';
 import 'package:drag_drop/src/game/game_screen.dart';
+import 'package:drag_drop/src/home/home.dart';
 import 'package:drag_drop/src/login/login_screen.dart';
 import 'package:drag_drop/src/login/signup_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,7 +18,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: Size(390, 844),
-      child: MaterialApp(home: SignUpScreen()),
+      child: MaterialApp(home: HomeScreen()),
     );
   }
 }
