@@ -1,10 +1,7 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../constants/Colors.dart';
-import '../../constants/assets.dart';
 import '../../constants/textstyles.dart';
 
 class LeaderboardPlaceholder extends StatelessWidget {
@@ -31,7 +28,7 @@ class LeaderboardPlaceholder extends StatelessWidget {
     required this.starCount,
     required this.rank,
     required this.topPadding,
-     this.bottomPadding,
+    this.bottomPadding,
   });
 
   @override
@@ -52,8 +49,8 @@ class LeaderboardPlaceholder extends StatelessWidget {
               // mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
-                  padding:
-                      EdgeInsets.only(top: topPadding, bottom: bottomPadding ?? 0.0),
+                  padding: EdgeInsets.only(
+                      top: topPadding, bottom: bottomPadding ?? 0.0),
                   child: Container(
                     width: profilePicWidth, // Adjust width as needed
                     height: profilePicHeight, // Adjust height as needed
@@ -78,11 +75,16 @@ class LeaderboardPlaceholder extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset(
-                        PngAssets.starIcon,
-                        height: 20,
-                        width: 20,
+                      Icon(
+                        Icons.star,
+                        size: 20.h,
+                        color: CustomColor.goldStarColor,
                       ),
+                      // Image.asset(
+                      //   PngAssets.starIcon,
+                      //   height: 20,
+                      //   width: 20,
+                      // ),
                       Text(
                         starCount.toString(),
                         style: w700.size16.colorWhite,
