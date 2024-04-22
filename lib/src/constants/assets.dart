@@ -13,6 +13,5 @@ class PngAssets {
   static const String settingsLogo = 'assets/png/settings-logo.png';
   static const String trophyLogo = 'assets/png/trophy-logo.png';
 
-  static const String starIcon = 'assets/png/starIcon.png';
-
+  // static const String starIcon = 'assets/png/starIcon.png';
 }
