@@ -46,6 +46,8 @@ extension StyleExt on TextStyle {
 
   TextStyle get size60 => copyWith(fontSize: 60);
 
+  TextStyle get size70 => copyWith(fontSize: 70);
+
   TextStyle get colorWhite => copyWith(color: const Color(0xffffffff));
 
   TextStyle get colorBlack => copyWith(color: const Color(0xff000000));
