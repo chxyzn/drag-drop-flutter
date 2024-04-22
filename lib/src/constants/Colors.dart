@@ -7,6 +7,7 @@ class CustomColor {
   static const Color textfieldBGColor = Color(0xffF2F7FC);
   static const Color goldStarColor = Color(0xffF1C644);
   static const Color greenTextColor = Color(0xff007000);
+  static const Color darkerDarkBlack = Color(0xff111111);
 
   static const List<Color> gradientColor = [
     Colors.white,

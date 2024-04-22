@@ -22,11 +22,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: Size(390, 844),
-
-      
-
-      child: MaterialApp(home: LeaderboardScreen()),
-
+      child: MaterialApp(home: HomeScreen()),
     );
   }
 }
