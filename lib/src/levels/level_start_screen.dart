@@ -1,13 +1,40 @@
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
+import 'package:drag_drop/src/constants/levels.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
+import 'package:drag_drop/src/graph/graph_view.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class LevelStartScreen extends StatelessWidget {
+class LevelStartScreen extends StatefulWidget {
   const LevelStartScreen({super.key});
+
+  @override
+  State<LevelStartScreen> createState() => _LevelStartScreenState();
+}
+
+class _LevelStartScreenState extends State<LevelStartScreen> {
+  List<int> questionNodes = [];
+  List<List<int>> questionEdges = [];
+
+  @override
+  void initState() {
+    List apiNodes = LEVEL1['graph']['nodes'];
+    for (var element in apiNodes) {
+      questionNodes.add(element['id']);
+    }
+
+    List apiEdges = LEVEL1['graph']['edges'];
+    print(apiEdges);
+    for (var element in apiEdges) {
+      element.first += 1;
+      element.last += 1;
+      questionEdges.add(element);
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +86,10 @@ class LevelStartScreen extends StatelessWidget {
                   ),
                   fit: BoxFit.cover,
                 ),
+              ),
+              child: GraphWidget(
+                nodes: questionNodes,
+                edges: questionEdges,
               ),
             ),
             SizedBox(

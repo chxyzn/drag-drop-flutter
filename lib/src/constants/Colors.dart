@@ -15,3 +15,28 @@ class CustomColor {
     Color(0xff0298bf),
   ];
 }
+
+class GraphColors {
+  final Color green = Color(0xff008000);
+  final Color red = Color(0xffff0000);
+  final Color orange = Color(0xffFF7F50);
+  final Color black = Color(0xff000000);
+  final Color blue = Color(0xff1C4C82);
+
+  Color getColorFromId(int id) {
+    switch (id) {
+      case 0:
+        return green;
+      case 1:
+        return red;
+      case 2:
+        return orange;
+      case 3:
+        return black;
+      case 4:
+        return blue;
+      default:
+        return green;
+    }
+  }
+}

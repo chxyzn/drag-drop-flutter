@@ -1,6 +1,8 @@
 // ignore_for_file: non_constant_identifier_names, avoid_function_literals_in_foreach_calls
 
+import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:graphview/GraphView.dart';
 
 class GraphViewPage extends StatelessWidget {
@@ -77,6 +79,7 @@ class GraphWidget extends StatefulWidget {
 class _GraphWidgetState extends State<GraphWidget> {
   final Graph graph = Graph();
   late Algorithm _algorithm;
+  final BuchheimWalkerConfiguration config = BuchheimWalkerConfiguration();
 
   @override
   void initState() {
@@ -94,46 +97,58 @@ class _GraphWidgetState extends State<GraphWidget> {
     });
 
     _algorithm = FruchtermanReingoldAlgorithm(
-      iterations: 600,
+      iterations: 1000,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: 350,
-        child: Column(
-          children: [
-            Expanded(
-              child: GraphView(
-                // animated: false,
-                graph: graph,
-                algorithm: _algorithm,
-                paint: Paint()
-                  ..color = Colors.green
-                  ..strokeWidth = 1
-                  ..style = PaintingStyle.fill,
-                builder: (Node node) {
-                  var a = node.key!.value as int?;
-
-                  return circularNode(a);
-                },
-              ),
-            ),
-          ],
-        ));
+      height: 200,
+      child: Column(
+        children: [
+          Expanded(
+            child: InteractiveViewer(
+                constrained: false,
+                alignment: Alignment.center,
+                boundaryMargin: EdgeInsets.all(10),
+                minScale: 1,
+                maxScale: 1,
+                child: ClipRect(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: GraphView(
+                      graph: graph,
+                      animated: false,
+                      algorithm: _algorithm,
+                      paint: Paint()
+                        ..color = Colors.green
+                        ..strokeWidth = 1
+                        ..style = PaintingStyle.stroke,
+                      builder: (Node node) {
+                        // I can decide what widget should be shown here based on the id
+                        var a = node.key!.value as int?;
+                        return circularNode(a);
+                      },
+                    ),
+                  ),
+                )),
+          ),
+        ],
+      ),
+    );
   }
 }
 
 Widget circularNode(int? i) {
   return Container(
-    height: 43,
-    width: 43,
-    decoration: const ShapeDecoration(
-      color: Color(0xFFFF956C),
-      shape: OvalBorder(
-        side: BorderSide(width: 4.2, color: Color(0xFFC6C5B2)),
-      ),
+    // height: 14.r,
+    // width: 14.r,
+    width: 35,
+    height: 35,
+    decoration: BoxDecoration(
+      color: GraphColors().getColorFromId(i ?? 0),
+      shape: BoxShape.circle,
     ),
     child: Center(
       child: Text(
