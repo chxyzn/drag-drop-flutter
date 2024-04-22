@@ -1,7 +1,7 @@
+import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:flutter/material.dart';
-
-import '../../constants/assets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LeaderboardTileWidget extends StatelessWidget {
   final Color backgroundColor;
@@ -42,10 +42,10 @@ class LeaderboardTileWidget extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      PngAssets.starIcon,
-                      height: 20,
-                      width: 20,
+                    Icon(
+                      Icons.star,
+                      size: 20.h,
+                      color: CustomColor.goldStarColor,
                     ),
                     Text(
                       starCount.toString(),

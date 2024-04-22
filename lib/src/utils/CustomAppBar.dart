@@ -1,5 +1,6 @@
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../constants/textstyles.dart';
@@ -28,7 +29,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+      margin: EdgeInsets.symmetric(horizontal: 30.w, vertical: 20).h,
       color: Colors.transparent,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -36,13 +37,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           GestureDetector(
             onTap: onLeadingPressed,
             child: Container(
-              height: 45,
-              width: 45,
+              height: 45.h,
+              width: 45.w,
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.all(10.h),
               child: SvgPicture.asset(
                 leadingIconName,
-                height: 16,
+                height: 16.h,
               ),
             ),
           ),
@@ -51,7 +52,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   child: Text(
                     title!,
                     style:
-                        w600.size24.copyWith(color: CustomColor.primaryColor),
+                        w700.size24.copyWith(color: CustomColor.primaryColor),
                   ),
                 )
               : titleWidget!,
@@ -59,23 +60,23 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ? GestureDetector(
                   onTap: onTrailingPressed,
                   child: Container(
-                    height: 45,
-                    width: 45,
+                    height: 45.h,
+                    width: 45.w,
                     decoration:
                         BoxDecoration(borderRadius: BorderRadius.circular(6)),
                     padding: EdgeInsets.all(10),
                     child: SvgPicture.asset(
                       trailingIconName,
-                      height: 16,
+                      height: 16.h,
                     ),
                   ),
                 )
-              : Container(height: 24, width: 18)
+              : Container(height: 24.h, width: 75.w)
         ],
       ),
     );
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(150);
+  Size get preferredSize => Size.fromHeight(150.h);
 }

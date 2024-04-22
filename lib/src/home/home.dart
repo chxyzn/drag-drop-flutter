@@ -2,7 +2,9 @@ import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,9 +25,14 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Image(
-                image: AssetImage(PngAssets.cicrcleHelp),
-                height: 24.h,
+              GestureDetector(
+                onTap: () {
+                  print('You tapped \"hints\"');
+                },
+                child: Image(
+                  image: AssetImage(PngAssets.cicrcleHelp),
+                  height: 24.h,
+                ),
               ),
               Row(
                 children: [
@@ -43,9 +50,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              Image(
-                image: AssetImage(PngAssets.cicrcleHelp),
-                height: 24.h,
+              GestureDetector(
+                onTap: () {
+                  print('You tapped \"settings\"');
+                },
+                child: Image(
+                  image: AssetImage(PngAssets.settingsLogo),
+                  height: 24.h,
+                ),
               ),
             ],
           ),
@@ -80,26 +92,151 @@ class _HomeScreenState extends State<HomeScreen> {
           textAlign: TextAlign.center,
           style: w700.size18.copyWith(color: CustomColor.greenTextColor),
         ),
-        Container(
-          margin: EdgeInsets.only(top: 10.h),
-          decoration: BoxDecoration(
-            color: CustomColor.primaryColor,
-            borderRadius: BorderRadius.circular(8.r),
+        GestureDetector(
+          onTap: () {
+            print('You tapped Jump back in!');
+          },
+          child: Container(
+            margin: EdgeInsets.only(top: 10.h),
+            decoration: BoxDecoration(
+              color: CustomColor.primaryColor,
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            padding: EdgeInsets.all(18.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Jump Back In!',
+                  textAlign: TextAlign.center,
+                  style: w700.size16.copyWith(color: CustomColor.white),
+                ),
+                Icon(
+                  Icons.arrow_forward_rounded,
+                  color: CustomColor.white,
+                )
+              ],
+            ),
           ),
-          padding: EdgeInsets.all(18.w),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Jump Back In!',
-                textAlign: TextAlign.center,
-                style: w700.size16.copyWith(color: CustomColor.white),
+        ),
+        GestureDetector(
+          onTap: () {
+            print('You tapped \"All Levels\"');
+          },
+          child: Container(
+            margin: EdgeInsets.symmetric(vertical: 8.h),
+            decoration: BoxDecoration(
+              color: CustomColor.darkerDarkBlack,
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            padding: EdgeInsets.all(18.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'All Levels',
+                  textAlign: TextAlign.center,
+                  style: w700.size16.copyWith(color: CustomColor.white),
+                ),
+                Image.asset(
+                  PngAssets.trophyLogo,
+                  height: 24.h,
+                )
+              ],
+            ),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  print('You tapped \"My Rank: 6\"');
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 18.5.h),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: CustomColor.darkerDarkBlack,
+                      width: 1.h,
+                    ),
+                    borderRadius: BorderRadius.circular(8.r),
+                    color: CustomColor.white,
+                  ),
+                  child: Center(
+                    child: Text(
+                      'My Rank: 6',
+                      textAlign: TextAlign.center,
+                      style: w700.size16.copyWith(
+                        color: CustomColor.darkerDarkBlack,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              Icon(
-                Icons.arrow_forward_rounded,
-                color: CustomColor.white,
-              )
-            ],
+            ),
+            SizedBox(width: 10.w),
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  print('You tapped \"Leaderboard\"');
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 18.5.h),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: CustomColor.darkerDarkBlack,
+                      width: 1.h,
+                    ),
+                    borderRadius: BorderRadius.circular(8.r),
+                    color: CustomColor.white,
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Leaderboard',
+                      textAlign: TextAlign.center,
+                      style: w700.size16.copyWith(
+                        color: CustomColor.darkerDarkBlack,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        GestureDetector(
+          onTap: () {
+            print("You chose to \"Remove Ads!\"");
+          },
+          child: Container(
+            margin: EdgeInsets.symmetric(vertical: 8.h),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: CustomColor.darkerDarkBlack,
+                width: 1.h,
+              ),
+              borderRadius: BorderRadius.circular(8.r),
+              color: CustomColor.white,
+            ),
+            padding: EdgeInsets.all(18.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Remove Ads',
+                  textAlign: TextAlign.center,
+                  style: w700.size16.copyWith(
+                    color: CustomColor.darkerDarkBlack,
+                  ),
+                ),
+                Image.asset(
+                  PngAssets.adRemovalLogo,
+                  height: 24.h,
+                )
+              ],
+            ),
           ),
         ),
       ],

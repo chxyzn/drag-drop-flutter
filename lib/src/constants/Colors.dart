@@ -5,8 +5,13 @@ class CustomColor {
   static const Color primaryColor = Color(0xff1C4C82);
   static const Color primary60Color = Color(0xff7794B4);
   static const Color textfieldBGColor = Color(0xffF2F7FC);
+  static const Color imgBgColorGrey = Color(0xffD9D9D9);
   static const Color goldStarColor = Color(0xffF1C644);
   static const Color greenTextColor = Color(0xff007000);
+  static const Color darkerDarkBlack = Color(0xff111111);
+  static const Color dividerGrey = Color(0xffE6E6E6);
+  static const Color tileBgBlue = Color(0xffF2F7FC);
+  static const Color logOutDangerRed = Color(0xffED4337);
   static const Color backgrondBlue = Color(0xffF2F7FC);
   static const Color gridBorderColor = Color(0xffE2E2E2);
 
