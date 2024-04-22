@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 extension StyleExt on TextStyle {
+  TextStyle get size9 => copyWith(fontSize: 9);
+
   TextStyle get size10 => copyWith(fontSize: 10);
 
   TextStyle get size12 => copyWith(fontSize: 12);

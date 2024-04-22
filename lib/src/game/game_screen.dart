@@ -1,9 +1,17 @@
 import 'dart:math';
 
+import 'package:drag_drop/src/constants/Colors.dart';
+import 'package:drag_drop/src/constants/assets.dart';
+import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/game/fourth_method.dart';
 import 'package:drag_drop/src/game/game_logic.dart';
 import 'package:drag_drop/src/graph/graph_view.dart';
+import 'package:drag_drop/src/utils/CustomAppBar.dart';
+import 'package:drag_drop/src/utils/CustomScaffold.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 List<String> graphTheoryLessons = [
   'The total sum of degrees of all the vertices in a graph is equal to twice the number of edges.',
@@ -22,6 +30,7 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   late List<List<int>> baseMatrix;
+  List<List<List<int>>> baseMatrixStates = [];
   late int gridRowSize;
   late int gridColumnSize;
   late int maxGridLength;
@@ -53,10 +62,12 @@ class _GameScreenState extends State<GameScreen> {
     List apiEdges = widget.apiResonse['graph']['edges'];
     print(apiEdges);
     for (var element in apiEdges) {
-      element.first += 1;
-      element.last += 1;
+      // element.first += 1;
+      // element.last += 1;
       questionEdges.add(element);
     }
+
+    print('these are questionEdges $questionEdges');
 
     super.initState();
   }
@@ -116,6 +127,12 @@ class _GameScreenState extends State<GameScreen> {
       int idOfElementToRemove = 0;
 
       setState(() {
+        List<List<int>> baseMatrixState = GameLogic().initBaseMatrix(
+          gridRowSize,
+          gridColumnSize,
+        );
+        copyMatrix(baseMatrix, baseMatrixState);
+        baseMatrixStates.add(baseMatrixState);
         for (int x = 0; x < gridRowSize; x++) {
           for (int y = 0; y < gridColumnSize; y++) {
             if (shapeMatrix[x][y] > 0) {
@@ -218,129 +235,194 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
+  void undo() {
+    if (baseMatrixStates.isEmpty) return; //add snackbar or something
+    setState(() {
+      copyMatrix(baseMatrixStates.last, baseMatrix);
+      baseMatrixStates.removeLast();
+    });
+  }
+
+  void copyMatrix(
+      List<List<int>> referenceMatrix, List<List<int>> targetMatrix) {
+    setState(() {
+      for (int i = 0; i < gridRowSize; i++) {
+        for (int j = 0; j < gridColumnSize; j++) {
+          targetMatrix[i][j] = referenceMatrix[i][j];
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 50,
+    return CustomScaffold(
+      appBar: CustomAppBar(
+        leadingIconName: SvgAssets.backIcon,
+        trailingIconName: SvgAssets.settingsIcon,
+        onLeadingPressed: () {
+          Navigator.of(context).pop();
+        },
+        title: '<   Level 7   >',
+        onTrailingPressed: () {},
+      ),
+      body: [
+        Container(
+          decoration: BoxDecoration(
+            color: CustomColor.primaryColor,
+            borderRadius: BorderRadius.circular(8.r),
           ),
-          Stack(
-            children: [
-              Center(
-                child: SizedBox(
-                  height: gridRowSize * 52,
-                  width: gridColumnSize * 52,
-                  child: Center(
-                    child: BaseBlockGenerator(
-                      matrix: baseMatrix,
-                    ),
-                  ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustomGameButton(
+                  svgPath: SvgAssets.hintIcon,
+                  text: 'Hint',
                 ),
-              ),
-              Center(
-                child: SizedBox(
-                  height: gridRowSize * 52,
-                  width: gridColumnSize * 52,
-                  child: Center(
-                    child: TargetBlockGenerator(
-                      shape: baseMatrix,
-                      onAccept: onBlockAccept,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 50,
-          ),
-          BlockOptionsWidget(
-            maxGridLength: maxGridLength,
-            nodes: availableNodes,
-          ),
-          const SizedBox(
-            height: 50,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  resetBaseMatrix();
-                },
-                child: Container(
-                  height: 50,
-                  width: 120,
-                  color: Colors.red,
-                  child: const Center(
-                    child: Text(
-                      'Reset',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 50,
-              ),
-              GestureDetector(
-                onTap: () {
-                  List<List<int>> edges = removeDuplicates(getAdjacentEdges());
-
-                  List<int> nodes = [];
-                  for (List<int> edge in edges) {
-                    for (int node in edge) {
-                      if (!nodes.contains(node)) {
-                        nodes.add(node);
-                      }
-                    }
-                  }
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => GraphViewPage(
-                        isSolutionCorrect:
-                            isSolutionCorrect(edges, questionEdges),
-                        nodes: nodes,
-                        graphTheoryText:
-                            graphTheoryLessons[Random().nextInt(4)],
-                        edges: edges,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Time',
+                      style: w600.size15.copyWith(
+                        color: Colors.white,
                       ),
                     ),
-                  );
-                },
-                child: Container(
-                  height: 50,
-                  width: 120,
-                  color: Colors.green,
-                  child: const Center(
-                    child: Center(
-                        child: Text(
-                      'Submit',
-                      style: TextStyle(color: Colors.white),
-                    )),
+                    Text(
+                      '04:00',
+                      style: w700.size24.copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                GestureDetector(
+                  onTap: () {
+                    resetBaseMatrix();
+                  },
+                  child: CustomGameButton(
+                    svgPath: SvgAssets.resetIcon,
+                    text: 'Reset',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 14.h,
+        ),
+        Container(
+          color: CustomColor.backgrondBlue,
+          height: 140.h,
+          width: 321.w,
+          child: GraphWidget(
+            nodes: questionNodes,
+            edges: questionEdges,
+          ),
+        ),
+        SizedBox(
+          height: 10.h,
+        ),
+        Stack(
+          children: [
+            Center(
+              child: SizedBox(
+                height: gridRowSize * 52,
+                width: gridColumnSize * 52,
+                child: Center(
+                  child: BaseBlockGenerator(
+                    matrix: baseMatrix,
                   ),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 100),
-            child: GraphWidget(
-              nodes: questionNodes,
-              edges: questionEdges,
             ),
-          ),
-          const SizedBox(
-            height: 50,
-          ),
-        ],
-      ),
+            Center(
+              child: SizedBox(
+                height: gridRowSize * 52,
+                width: gridColumnSize * 52,
+                child: Center(
+                  child: TargetBlockGenerator(
+                    shape: baseMatrix,
+                    onAccept: onBlockAccept,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 15,
+        ),
+        BlockOptionsWidget(
+          maxGridLength: maxGridLength,
+          nodes: availableNodes,
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () {
+                undo();
+              },
+              child: CustomContainer(
+                color: CustomColor.backgrondBlue,
+                width: 160.w,
+                textColor: CustomColor.primaryColor,
+                primaryText: 'Undo',
+                borderColor: CustomColor.primaryColor,
+              ),
+            ),
+            SizedBox(
+              width: 11.w,
+            ),
+            GestureDetector(
+              onTap: () {
+                List<List<int>> edges = removeDuplicates(getAdjacentEdges());
+
+                List<int> nodes = [];
+                for (List<int> edge in edges) {
+                  for (int node in edge) {
+                    if (!nodes.contains(node)) {
+                      nodes.add(node);
+                    }
+                  }
+                }
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => GraphViewPage(
+                      isSolutionCorrect:
+                          isSolutionCorrect(edges, questionEdges),
+                      nodes: nodes,
+                      graphTheoryText: graphTheoryLessons[Random().nextInt(4)],
+                      edges: edges,
+                    ),
+                  ),
+                );
+              },
+              child: CustomContainer(
+                color: CustomColor.primaryColor,
+                width: 160.w,
+                textColor: CustomColor.white,
+                primaryText: 'Submit',
+                borderColor: CustomColor.primaryColor,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        const SizedBox(
+          height: 50,
+        ),
+      ],
     );
   }
 }
@@ -365,25 +447,27 @@ class BlockOptionsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const SizedBox(
-            width: 16,
-          ),
-          for (int i = 0; i < nodes.length; i++)
-            Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: CustomDraggable(
-                shape: getShapeMatrix(nodes[i]),
-                color:
-                    Colors.primaries[nodes[i]['id'] % Colors.primaries.length],
-                text: nodes[i]['id'].toString(),
-              ),
-            )
-        ],
+    return Container(
+      color: CustomColor.backgrondBlue,
+      padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 18.h),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const SizedBox(
+              width: 16,
+            ),
+            for (int i = 0; i < nodes.length; i++)
+              Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: CustomDraggable(
+                  shape: getShapeMatrix(nodes[i]),
+                  color: GraphColors().getColorFromId(nodes[i]['id']),
+                ),
+              )
+          ],
+        ),
       ),
     );
   }
@@ -423,6 +507,83 @@ class CustomDraggable extends StatelessWidget {
         shape: shape,
         color: color,
         text: text,
+      ),
+    );
+  }
+}
+
+class CustomGameButton extends StatelessWidget {
+  final String svgPath;
+  final String text;
+  const CustomGameButton({
+    super.key,
+    required this.svgPath,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 48.h,
+      width: 44.w,
+      decoration: BoxDecoration(
+        color: CustomColor.backgrondBlue,
+        borderRadius: BorderRadius.circular(4.r),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(svgPath),
+          const SizedBox(
+            height: 10,
+          ),
+          Text(
+            text,
+            style: w700.size9.copyWith(
+              color: CustomColor.primaryColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CustomContainer extends StatelessWidget {
+  final Color color;
+  final Color textColor;
+  final Color borderColor;
+  final String primaryText;
+  final double width;
+  const CustomContainer({
+    super.key,
+    required this.color,
+    required this.width,
+    required this.textColor,
+    required this.primaryText,
+    required this.borderColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 10.h),
+      height: 43.h,
+      width: width,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(
+          color: borderColor,
+          width: 1.w,
+        ),
+      ),
+      child: Center(
+        child: Text(
+          primaryText,
+          textAlign: TextAlign.center,
+          style: w700.size16.copyWith(color: textColor),
+        ),
       ),
     );
   }

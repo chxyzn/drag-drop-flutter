@@ -2,6 +2,7 @@ import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/levels.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
+import 'package:drag_drop/src/game/game_screen.dart';
 import 'package:drag_drop/src/graph/graph_view.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:flutter/material.dart';
@@ -27,10 +28,9 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
     }
 
     List apiEdges = LEVEL1['graph']['edges'];
-    print(apiEdges);
     for (var element in apiEdges) {
-      element.first += 1;
-      element.last += 1;
+      // element.first += 1;
+      // element.last += 1;
       questionEdges.add(element);
     }
     super.initState();
@@ -98,14 +98,25 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                CustomButton(
-                  color: CustomColor.primaryColor,
-                  textColor: CustomColor.white,
-                  svgPath: SvgAssets.startNowIcon,
-                  primaryText: 'Start Now!',
-                  borderColor: CustomColor.primaryColor,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: ((context) {
+                      return GameScreen(apiResonse: LEVEL6);
+                    })));
+                    GameScreen(apiResonse: LEVEL1);
+                  },
+                  child: CustomButton(
+                    width: 342.w,
+                    color: CustomColor.primaryColor,
+                    textColor: CustomColor.white,
+                    svgPath: SvgAssets.startNowIcon,
+                    primaryText: 'Start Now!',
+                    borderColor: CustomColor.primaryColor,
+                  ),
                 ),
                 CustomButton(
+                  width: 342.w,
                   color: CustomColor.backgrondBlue,
                   textColor: CustomColor.primaryColor,
                   primaryText: 'Best Time',
@@ -113,6 +124,7 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
                   secondaryText: '05:00',
                 ),
                 CustomButton(
+                  width: 342.w,
                   color: Colors.white,
                   textColor: Colors.black,
                   primaryText: 'Remove Ads',
@@ -136,11 +148,13 @@ class CustomButton extends StatelessWidget {
   final String? svgPath;
   final String primaryText;
   final String? secondaryText;
+  final double width;
   const CustomButton({
     super.key,
     this.svgPath,
     this.secondaryText,
     required this.color,
+    required this.width,
     required this.textColor,
     required this.primaryText,
     required this.borderColor,
@@ -150,7 +164,7 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(top: 10.h),
-      width: 342.w,
+      width: width,
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(8.r),

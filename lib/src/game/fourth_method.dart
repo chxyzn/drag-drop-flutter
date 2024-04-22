@@ -2,9 +2,11 @@
 
 import 'dart:math';
 
+import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/graph/graph_view.dart';
 import 'package:drag_drop/src/game/game_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 const int MATRIX_SIZE = 5;
 MatrixCoords pickupCoords = const MatrixCoords(row: 0, col: 0);
@@ -504,7 +506,6 @@ class TargetBlockGenerator extends StatelessWidget {
   }
 }
 
-
 class ShapeGenerator extends StatelessWidget {
   final List<List<int>> shape;
   final Color color;
@@ -536,29 +537,15 @@ class ShapeGenerator extends StatelessWidget {
                           print('onTapDown picked shape at $i, $j');
                           pickupCoords = MatrixCoords(row: i, col: j);
                         },
-                        // onForcePressStart: (_) {
-                        //   print('picked shape at $i, $j');
-                        // },
-                        // onPanStart: (_) {
-                        //   print('onPanStart picked shape at $i, $j');
-                        // },
-                        // onPanUpdate: (_) {
-                        //   print('onPanUpdate picked shape at $i, $j');
-                        // },
-                        // onTertiaryLongPressStart: (_) {
-                        //   print(
-                        //       'onTertiaryLongPressStart picked shape at $i, $j');
-                        // },
-                        // onTap: () {
-                        //   print('onTap picked shape at $i, $j');
-                        // },
                         child: Block(
                           color: color,
                           text: text,
+                          border: true,
                         ),
                       )
                     : const Block(
                         opacity: 0,
+                        smallSize: true,
                       ),
             ],
           )
@@ -587,7 +574,7 @@ class BaseBlockGenerator extends StatelessWidget {
               for (int j = 0; j < matrix[i].length; j++) //row traversal
                 BaseBlock(
                   value: matrix[i][j],
-                  padding: const EdgeInsets.all(1),
+                  border: true,
                 ),
             ],
           )
@@ -598,19 +585,21 @@ class BaseBlockGenerator extends StatelessWidget {
 
 class BaseBlock extends StatelessWidget {
   final int value;
-  final EdgeInsets padding;
-  const BaseBlock(
-      {super.key, required this.value, this.padding = EdgeInsets.zero});
+  final bool border;
+  const BaseBlock({super.key, required this.value, this.border = false});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 50,
       width: 50,
-      margin: padding,
-      color: value > 0
-          ? const Color.fromARGB(255, 245, 146, 54)
-          : const Color.fromRGBO(0, 255, 0, 0.4),
+      decoration: BoxDecoration(
+          color: value > 0
+              ? GraphColors().getColorFromId(value)
+              : CustomColor.backgrondBlue,
+          border: border
+              ? Border.all(color: CustomColor.gridBorderColor, width: 1)
+              : null),
       child: Center(
           child: Text(
         value > 0 ? value.toString() : '',
@@ -628,21 +617,30 @@ class Block extends StatelessWidget {
   final EdgeInsets padding;
   final Color color;
   final String text;
+  final bool border;
+  final bool smallSize;
   const Block({
     super.key,
     this.opacity = 1,
     this.padding = EdgeInsets.zero,
     this.color = Colors.black,
     this.text = '',
+    this.border = false,
+    this.smallSize = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: padding,
-      height: 50,
-      width: 50,
-      color: color.withOpacity(opacity),
+      height: (smallSize) ? 0 : 38.w,
+      width: (smallSize) ? 0 : 38.w,
+      decoration: BoxDecoration(
+        color: color.withOpacity(opacity),
+        border: border
+            ? Border.all(color: CustomColor.gridBorderColor, width: 2.w)
+            : null,
+      ),
       child: Center(
         child: Text(
           text,
@@ -656,5 +654,3 @@ class Block extends StatelessWidget {
     );
   }
 }
-
-

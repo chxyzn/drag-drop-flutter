@@ -2,7 +2,6 @@
 
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:graphview/GraphView.dart';
 
 class GraphViewPage extends StatelessWidget {
@@ -85,13 +84,25 @@ class _GraphWidgetState extends State<GraphWidget> {
   void initState() {
     super.initState();
     List<Node> graphNodes = widget.nodes.map((e) => Node.Id(e)).toList();
+
+    print('recieved question edges: ${widget.edges}');
+
     widget.edges.forEach((edge) {
-      int a = edge.first;
-      int b = edge.last;
+      int a = edge.first + 1;
+      int b = edge.last + 1;
       int a_index;
       int b_index;
+
       a_index = widget.nodes.indexOf(a);
       b_index = widget.nodes.indexOf(b);
+
+      if (a_index == -1 || b_index == -1) {
+        print('=================');
+        print(widget.nodes);
+        print(a);
+        print(b);
+      }
+      ;
 
       graph.addEdge(graphNodes[a_index], graphNodes[b_index]);
     });

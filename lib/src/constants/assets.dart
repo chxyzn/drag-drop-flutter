@@ -4,6 +4,9 @@ class SvgAssets {
   static const String starIcon = 'assets/svg/starIcon.svg';
   static const String startNowIcon = 'assets/svg/startNowIcon.svg';
   static const String removeAdsIcon = 'assets/svg/removeAdsIcon.svg';
+  static const String backIcon = 'assets/svg/backIcon.svg';
+  static const String resetIcon = 'assets/svg/resetIcon.svg';
+  static const String hintIcon = 'assets/svg/hintIcon.svg';
 }
 
 class PngAssets {
