@@ -7,6 +7,7 @@ import 'package:drag_drop/src/leaderboard/leaderboard_screen.dart';
 
 import 'package:drag_drop/src/login/login_screen.dart';
 import 'package:drag_drop/src/login/signup_screen.dart';
+import 'package:drag_drop/src/settings/settings.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +23,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: Size(390, 844),
-      child: MaterialApp(home: HomeScreen()),
+      child: MaterialApp(home: SettingsScreen()),
     );
   }
 }
