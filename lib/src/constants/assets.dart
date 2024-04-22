@@ -18,6 +18,7 @@ class PngAssets {
   static const String editUsernameLogo = 'assets/png/edit-username-logo.png';
   static const String hapticsLogo = 'assets/png/haptics-logo.png';
   static const String soundLogo = 'assets/png/sound-logo.png';
+  static const String settingsBg = 'assets/png/settings_bg.png';
 
   // static const String starIcon = 'assets/png/starIcon.png';
 }
