@@ -18,7 +18,7 @@ class CustomScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget scaffoldBody = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25.0.w),
+      padding: EdgeInsets.symmetric(horizontal: 25.0.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.start,
