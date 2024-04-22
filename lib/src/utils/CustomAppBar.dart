@@ -14,15 +14,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Function() onLeadingPressed;
   final Function() onTrailingPressed;
 
-  CustomAppBar(
-      {this.title,
-      required this.leadingIconName,
-      required this.trailingIconName,
-      this.isTrailingRequired = true,
-      required this.onLeadingPressed,
-      required this.onTrailingPressed,
-      this.isTitleString = true,
-      this.titleWidget});
+  CustomAppBar({
+    this.title,
+    required this.leadingIconName,
+    required this.trailingIconName,
+    this.isTrailingRequired = true,
+    required this.onLeadingPressed,
+    required this.onTrailingPressed,
+    this.isTitleString = true,
+    this.titleWidget,
+  });
 
   @override
   Widget build(BuildContext context) {

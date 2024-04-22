@@ -1,0 +1,153 @@
+import 'package:drag_drop/src/constants/Colors.dart';
+import 'package:drag_drop/src/constants/assets.dart';
+import 'package:drag_drop/src/constants/textstyles.dart';
+import 'package:drag_drop/src/utils/CustomAppBar.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+class LevelStartScreen extends StatelessWidget {
+  const LevelStartScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        appBar: CustomAppBar(
+          isTitleString: false,
+          titleWidget: Row(
+            children: [
+              Icon(
+                Icons.star,
+                size: 20.h,
+                color: CustomColor.goldStarColor,
+              ),
+              SizedBox(width: 8.w),
+              Text(
+                '15/24',
+                style: w700.size18.copyWith(
+                  color: CustomColor.primaryColor,
+                ),
+              ),
+            ],
+          ),
+          leadingIconName: SvgAssets.homeIcon,
+          trailingIconName: SvgAssets.settingsIcon,
+          onLeadingPressed: () {},
+          onTrailingPressed: () {},
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 50.h,
+            ),
+            Text(
+              'Level 7',
+              style: w700.size48.copyWith(
+                color: CustomColor.primaryColor,
+                height: 48.sp / 58.h,
+              ),
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: 347.h,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                    PngAssets.graphBackgrond,
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 40.h,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                CustomButton(
+                  color: CustomColor.primaryColor,
+                  textColor: CustomColor.white,
+                  svgPath: SvgAssets.startNowIcon,
+                  primaryText: 'Start Now!',
+                  borderColor: CustomColor.primaryColor,
+                ),
+                CustomButton(
+                  color: CustomColor.backgrondBlue,
+                  textColor: CustomColor.primaryColor,
+                  primaryText: 'Best Time',
+                  borderColor: CustomColor.primaryColor,
+                  secondaryText: '05:00',
+                ),
+                CustomButton(
+                  color: Colors.white,
+                  textColor: Colors.black,
+                  primaryText: 'Remove Ads',
+                  borderColor: Colors.black,
+                  svgPath: SvgAssets.removeAdsIcon,
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// give either svgPath or secondaryText
+class CustomButton extends StatelessWidget {
+  final Color color;
+  final Color textColor;
+  final Color borderColor;
+  final String? svgPath;
+  final String primaryText;
+  final String? secondaryText;
+  const CustomButton({
+    super.key,
+    this.svgPath,
+    this.secondaryText,
+    required this.color,
+    required this.textColor,
+    required this.primaryText,
+    required this.borderColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 10.h),
+      width: 342.w,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(
+          color: borderColor,
+          width: 1.w,
+        ),
+      ),
+      padding: EdgeInsets.all(18.w),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            primaryText,
+            textAlign: TextAlign.center,
+            style: w700.size16.copyWith(color: textColor),
+          ),
+          (svgPath == null && secondaryText != null)
+              ? Text(
+                  secondaryText ?? '',
+                  textAlign: TextAlign.center,
+                  style: w700.size16.copyWith(color: textColor),
+                )
+              : SvgPicture.asset(
+                  svgPath ?? '',
+                )
+        ],
+      ),
+    );
+  }
+}

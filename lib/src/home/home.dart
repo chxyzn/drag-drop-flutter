@@ -37,8 +37,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(width: 8.w),
                   Text(
                     '15/24',
-                    style:
-                        w700.size18.copyWith(color: CustomColor.primaryColor),
+                    style: w700.size18.copyWith(
+                      color: CustomColor.primaryColor,
+                    ),
                   ),
                 ],
               ),
@@ -82,8 +83,9 @@ class _HomeScreenState extends State<HomeScreen> {
         Container(
           margin: EdgeInsets.only(top: 10.h),
           decoration: BoxDecoration(
-              color: CustomColor.primaryColor,
-              borderRadius: BorderRadius.circular(8.r)),
+            color: CustomColor.primaryColor,
+            borderRadius: BorderRadius.circular(8.r),
+          ),
           padding: EdgeInsets.all(18.w),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -99,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
               )
             ],
           ),
-        )
+        ),
       ],
     );
   }

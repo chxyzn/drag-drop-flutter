@@ -141,16 +141,18 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         SizedBox(
           height: 350,
           child: ListView.builder(
-              controller: _scrollController,
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                return LeaderboardTileWidget(
-                    backgroundColor: CustomColor.primary60Color,
-                    textColor: CustomColor.primaryColor,
-                    name: 'name',
-                    starCount: 24,
-                    rank: 5);
-              }),
+            controller: _scrollController,
+            itemCount: 10,
+            itemBuilder: (context, index) {
+              return LeaderboardTileWidget(
+                backgroundColor: CustomColor.primary60Color,
+                textColor: CustomColor.primaryColor,
+                name: 'name',
+                starCount: 24,
+                rank: 5,
+              );
+            },
+          ),
         )
       ],
     );

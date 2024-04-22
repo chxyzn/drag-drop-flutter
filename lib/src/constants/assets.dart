@@ -2,6 +2,8 @@ class SvgAssets {
   static const String homeIcon = 'assets/svg/homeIcon.svg';
   static const String settingsIcon = 'assets/svg/settingsIcon.svg';
   static const String starIcon = 'assets/svg/starIcon.svg';
+  static const String startNowIcon = 'assets/svg/startNowIcon.svg';
+  static const String removeAdsIcon = 'assets/svg/removeAdsIcon.svg';
 }
 
 class PngAssets {
@@ -12,7 +14,6 @@ class PngAssets {
   static const String cicrcleHelp = 'assets/png/circle-help.png';
   static const String settingsLogo = 'assets/png/settings-logo.png';
   static const String trophyLogo = 'assets/png/trophy-logo.png';
-
+  static const String graphBackgrond = 'assets/png/graphBackground.png';
   static const String starIcon = 'assets/png/starIcon.png';
-
 }

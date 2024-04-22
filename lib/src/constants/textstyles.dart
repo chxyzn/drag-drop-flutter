@@ -42,6 +42,8 @@ extension StyleExt on TextStyle {
 
   TextStyle get size36 => copyWith(fontSize: 36);
 
+  TextStyle get size48 => copyWith(fontSize: 48);
+
   TextStyle get size50 => copyWith(fontSize: 50);
 
   TextStyle get size60 => copyWith(fontSize: 60);
