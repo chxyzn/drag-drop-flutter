@@ -102,7 +102,7 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
                   onTap: () {
                     Navigator.of(context)
                         .push(MaterialPageRoute(builder: ((context) {
-                      return GameScreen(apiResonse: LEVEL6);
+                      return GameScreen(apiResonse: LEVEL1);
                     })));
                     GameScreen(apiResonse: LEVEL1);
                   },

@@ -1,4 +1,3 @@
-import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:flutter/material.dart';
 
