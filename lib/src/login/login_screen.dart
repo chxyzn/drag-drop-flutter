@@ -41,6 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
         fit: BoxFit.cover,
       ),
       body: [
+        SizedBox(
+          height: 24.h,
+        ),
         Image.asset(
           PngAssets.gplanLogo,
           width: 150.w,
