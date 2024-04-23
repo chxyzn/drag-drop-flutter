@@ -7,9 +7,7 @@ import 'package:drag_drop/src/game/fourth_method.dart';
 import 'package:drag_drop/src/game/game_logic.dart';
 import 'package:drag_drop/src/graph/graph_view.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
-import 'package:drag_drop/src/utils/CustomScaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -256,173 +254,344 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScaffold(
-      appBar: CustomAppBar(
-        leadingIconName: SvgAssets.backIcon,
-        trailingIconName: SvgAssets.settingsIcon,
-        onLeadingPressed: () {
-          Navigator.of(context).pop();
-        },
-        title: '<   Level 7   >',
-        onTrailingPressed: () {},
-      ),
-      body: [
-        Container(
-          decoration: BoxDecoration(
-            color: CustomColor.primaryColor,
-            borderRadius: BorderRadius.circular(8.r),
-          ),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return SafeArea(
+      child: Scaffold(
+        appBar: CustomAppBar(
+          leadingIconName: SvgAssets.backIcon,
+          trailingIconName: SvgAssets.settingsIcon,
+          onLeadingPressed: () {
+            Navigator.of(context).pop();
+          },
+          title: '<   Level 7   >',
+          onTrailingPressed: () {},
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                CustomGameButton(
-                  svgPath: SvgAssets.hintIcon,
-                  text: 'Hint',
+                Container(
+                  width: 321.w,
+                  margin: EdgeInsets.symmetric(horizontal: 25.0.w),
+                  decoration: BoxDecoration(
+                    color: CustomColor.primaryColor,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                barrierColor: Colors.black.withOpacity(0.3),
+                                barrierDismissible: true,
+                                builder: ((context) {
+                                  return HintWidget();
+                                }));
+                          },
+                          child: CustomGameButton(
+                            svgPath: SvgAssets.hintIcon,
+                            text: 'Hint',
+                          ),
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Time',
+                              style: w600.size15.copyWith(
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              '04:00',
+                              style: w700.size24.copyWith(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            resetBaseMatrix();
+                          },
+                          child: CustomGameButton(
+                            svgPath: SvgAssets.resetIcon,
+                            text: 'Reset',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                SizedBox(
+                  height: 14.h,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: CustomColor.backgrondBlue,
+                    borderRadius: BorderRadius.all(Radius.circular(8.r)),
+                    border: Border.all(
+                      color: CustomColor.dividerGrey,
+                      width: 1.w,
+                    ),
+                  ),
+                  height: 140.h,
+                  width: 321.w,
+                  child: GraphWidget(
+                    nodes: questionNodes,
+                    edges: questionEdges,
+                  ),
+                ),
+                SizedBox(
+                  height: 10.h,
+                ),
+                Stack(
                   children: [
-                    Text(
-                      'Time',
-                      style: w600.size15.copyWith(
-                        color: Colors.white,
+                    Center(
+                      child: SizedBox(
+                        height: gridRowSize * 40.w,
+                        width: gridColumnSize * 40.w,
+                        child: Center(
+                          child: BaseBlockGenerator(
+                            matrix: baseMatrix,
+                          ),
+                        ),
                       ),
                     ),
-                    Text(
-                      '04:00',
-                      style: w700.size24.copyWith(
-                        color: Colors.white,
+                    Center(
+                      child: SizedBox(
+                        height: gridRowSize * 40.w,
+                        width: gridColumnSize * 40.w,
+                        child: Center(
+                          child: TargetBlockGenerator(
+                            shape: baseMatrix,
+                            onAccept: onBlockAccept,
+                          ),
+                        ),
                       ),
                     ),
                   ],
                 ),
-                GestureDetector(
-                  onTap: () {
-                    resetBaseMatrix();
-                  },
-                  child: CustomGameButton(
-                    svgPath: SvgAssets.resetIcon,
-                    text: 'Reset',
+                const SizedBox(
+                  height: 15,
+                ),
+                BlockOptionsWidget(
+                  maxGridLength: maxGridLength,
+                  nodes: availableNodes,
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.only(bottom: 16.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      undo();
+                    },
+                    child: CustomContainer(
+                      color: CustomColor.backgrondBlue,
+                      width: 160.w,
+                      textColor: CustomColor.primaryColor,
+                      primaryText: 'Undo',
+                      borderColor: CustomColor.primaryColor,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 11.w,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      List<List<int>> edges =
+                          removeDuplicates(getAdjacentEdges());
+
+                      List<int> nodes = [];
+                      for (List<int> edge in edges) {
+                        for (int node in edge) {
+                          if (!nodes.contains(node)) {
+                            nodes.add(node);
+                          }
+                        }
+                      }
+                      bool correctSolution =
+                          isSolutionCorrect(edges, questionEdges);
+
+                      if (correctSolution) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => GraphViewPage(
+                              isSolutionCorrect: correctSolution,
+                              nodes: nodes,
+                              graphTheoryText:
+                                  graphTheoryLessons[Random().nextInt(4)],
+                              edges: edges,
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+
+                      showDialog(
+                          context: context,
+                          barrierColor: Colors.black.withOpacity(0.3),
+                          barrierDismissible: true,
+                          builder: ((context) {
+                            return BottomSheetWidget(
+                              resetFunction: resetBaseMatrix,
+                            );
+                          }));
+                    },
+                    child: CustomContainer(
+                      color: CustomColor.primaryColor,
+                      width: 160.w,
+                      textColor: CustomColor.white,
+                      primaryText: 'Submit',
+                      borderColor: CustomColor.primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class BottomSheetWidget extends StatelessWidget {
+  final Function resetFunction;
+  const BottomSheetWidget({
+    super.key,
+    required this.resetFunction,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        height: 409.h,
+        width: 339.w,
+        decoration: BoxDecoration(
+          color: CustomColor.backgrondBlue,
+          borderRadius: BorderRadius.all(Radius.circular(20.r)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                text: 'Oops! Your\nSolution Is\n',
+                style: w700.size36.copyWith(
+                  color: Colors.black,
+                ),
+                children: [
+                  TextSpan(
+                    text: 'Incorrect',
+                    style: w700.size36.copyWith(
+                      color: CustomColor.logOutDangerRed,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 35.w),
+              child: RichText(
+                textAlign: TextAlign.left,
+                text: TextSpan(
+                  text:
+                      'You can reset and try again, or continue with the current time Of',
+                  style: w700.size16.copyWith(
+                    color: CustomColor.primary60Color,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: ' 4:00',
+                      style: w700.size16.copyWith(
+                        color: CustomColor.primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Material(
+                  child: GestureDetector(
+                    onTap: () {
+                      resetFunction();
+                      Navigator.of(context).pop();
+                    },
+                    child: Container(
+                      width: 265.w,
+                      height: 43.h,
+                      decoration: BoxDecoration(
+                        color: CustomColor.backgrondBlue,
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(
+                          width: 1.w,
+                          color: CustomColor.primaryColor,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Reset and Try Again',
+                          style: w700.size16.copyWith(
+                            color: CustomColor.primaryColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 11.h),
+                Material(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Container(
+                      width: 265.w,
+                      height: 43.h,
+                      decoration: BoxDecoration(
+                        color: CustomColor.primaryColor,
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(
+                          width: 1.w,
+                          color: CustomColor.primaryColor,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Continue',
+                          style: w700.size16.copyWith(
+                            color: CustomColor.white,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-        ),
-        SizedBox(
-          height: 14.h,
-        ),
-        Container(
-          color: CustomColor.backgrondBlue,
-          height: 140.h,
-          width: 321.w,
-          child: GraphWidget(
-            nodes: questionNodes,
-            edges: questionEdges,
-          ),
-        ),
-        SizedBox(
-          height: 10.h,
-        ),
-        Stack(
-          children: [
-            Center(
-              child: SizedBox(
-                height: gridRowSize * 52,
-                width: gridColumnSize * 52,
-                child: Center(
-                  child: BaseBlockGenerator(
-                    matrix: baseMatrix,
-                  ),
-                ),
-              ),
-            ),
-            Center(
-              child: SizedBox(
-                height: gridRowSize * 52,
-                width: gridColumnSize * 52,
-                child: Center(
-                  child: TargetBlockGenerator(
-                    shape: baseMatrix,
-                    onAccept: onBlockAccept,
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
-        const SizedBox(
-          height: 15,
-        ),
-        BlockOptionsWidget(
-          maxGridLength: maxGridLength,
-          nodes: availableNodes,
-        ),
-        const SizedBox(
-          height: 16,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: () {
-                undo();
-              },
-              child: CustomContainer(
-                color: CustomColor.backgrondBlue,
-                width: 160.w,
-                textColor: CustomColor.primaryColor,
-                primaryText: 'Undo',
-                borderColor: CustomColor.primaryColor,
-              ),
-            ),
-            SizedBox(
-              width: 11.w,
-            ),
-            GestureDetector(
-              onTap: () {
-                List<List<int>> edges = removeDuplicates(getAdjacentEdges());
-
-                List<int> nodes = [];
-                for (List<int> edge in edges) {
-                  for (int node in edge) {
-                    if (!nodes.contains(node)) {
-                      nodes.add(node);
-                    }
-                  }
-                }
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => GraphViewPage(
-                      isSolutionCorrect:
-                          isSolutionCorrect(edges, questionEdges),
-                      nodes: nodes,
-                      graphTheoryText: graphTheoryLessons[Random().nextInt(4)],
-                      edges: edges,
-                    ),
-                  ),
-                );
-              },
-              child: CustomContainer(
-                color: CustomColor.primaryColor,
-                width: 160.w,
-                textColor: CustomColor.white,
-                primaryText: 'Submit',
-                borderColor: CustomColor.primaryColor,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        const SizedBox(
-          height: 50,
-        ),
-      ],
+      ),
     );
   }
 }
@@ -499,10 +668,7 @@ class CustomDraggable extends StatelessWidget {
         color: color,
         text: text,
       ),
-      childWhenDragging: SizedBox(
-        height: 50 * MATRIX_SIZE.toDouble(),
-        width: 50 * MATRIX_SIZE.toDouble(),
-      ),
+      childWhenDragging: SizedBox.shrink(),
       child: ShapeGenerator(
         shape: shape,
         color: color,
@@ -583,6 +749,70 @@ class CustomContainer extends StatelessWidget {
           primaryText,
           textAlign: TextAlign.center,
           style: w700.size16.copyWith(color: textColor),
+        ),
+      ),
+    );
+  }
+}
+
+class HintWidget extends StatelessWidget {
+  const HintWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        height: 409.h,
+        width: 339.w,
+        decoration: BoxDecoration(
+          color: CustomColor.backgrondBlue,
+          borderRadius: BorderRadius.all(Radius.circular(20.r)),
+        ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                  left: 101.w,
+                  right: 101.w,
+                  top: 73.h,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Hint',
+                      style: w700.size36.copyWith(
+                        color: CustomColor.goldStarColor,
+                      ),
+                    ),
+                    SvgPicture.asset(
+                      SvgAssets.hintIcon,
+                      height: 36.h,
+                      width: 36.h,
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                        CustomColor.goldStarColor,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 35.w, right: 35.w, top: 25.h),
+                child: Text(
+                  'Proident dolore esse do cillum velit ea excepteur mollit tempor adipisicing qui elit ullamco. Labore laborum esse tempor anim deserunt excepteur cupidatat Lorem ea dolor Lorem qui eiusmod ut. Et sunt commodo ea laboris quis dolor dolore.',
+                  textAlign: TextAlign.center,
+                  style: w700.size16.copyWith(
+                    color: CustomColor.primary60Color,
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

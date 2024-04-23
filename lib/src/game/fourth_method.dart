@@ -591,8 +591,8 @@ class BaseBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 50,
-      width: 50,
+      height: 38.w,
+      width: 38.w,
       decoration: BoxDecoration(
           color: value > 0
               ? GraphColors().getColorFromId(value)
