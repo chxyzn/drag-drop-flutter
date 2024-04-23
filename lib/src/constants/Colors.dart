@@ -28,6 +28,13 @@ class GraphColors {
   final Color orange = Color(0xffFF7F50);
   final Color black = Color(0xff000000);
   final Color blue = Color(0xff1C4C82);
+  final Color fungi = Color.fromARGB(255, 22, 231, 144);
+  final Color purple = Color(0xff800080);
+  final Color pink = Color(0xffFFC0CB);
+  final Color brown = Color(0xffA52A2A);
+  final Color cyan = Color(0xff00FFFF);
+  final Color magenta = Color(0xffFF00FF);
+  final Color gray = Color(0xff808080);
 
   Color getColorFromId(int id) {
     switch (id) {
@@ -41,6 +48,20 @@ class GraphColors {
         return black;
       case 4:
         return blue;
+      case 5:
+        return fungi;
+      case 6:
+        return purple;
+      case 7:
+        return pink;
+      case 8:
+        return brown;
+      case 9:
+        return cyan;
+      case 10:
+        return magenta;
+      case 11:
+        return gray;
       default:
         return green;
     }

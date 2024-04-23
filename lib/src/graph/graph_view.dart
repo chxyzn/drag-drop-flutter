@@ -165,6 +165,11 @@ Widget circularNode(int? i) {
       child: Text(
         '$i',
         textAlign: TextAlign.center,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     ),
   );
