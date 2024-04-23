@@ -402,6 +402,7 @@ class _GameScreenState extends State<GameScreen> {
                     },
                     child: CustomContainer(
                       color: CustomColor.backgrondBlue,
+                      height: 43.h,
                       width: 160.w,
                       textColor: CustomColor.primaryColor,
                       primaryText: 'Undo',
@@ -454,6 +455,7 @@ class _GameScreenState extends State<GameScreen> {
                     },
                     child: CustomContainer(
                       color: CustomColor.primaryColor,
+                      height: 43.h,
                       width: 160.w,
                       textColor: CustomColor.white,
                       primaryText: 'Submit',
@@ -721,10 +723,12 @@ class CustomContainer extends StatelessWidget {
   final Color borderColor;
   final String primaryText;
   final double width;
+  final double height;
   const CustomContainer({
     super.key,
     required this.color,
     required this.width,
+    required this.height,
     required this.textColor,
     required this.primaryText,
     required this.borderColor,
@@ -734,7 +738,7 @@ class CustomContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(top: 10.h),
-      height: 43.h,
+      height: height,
       width: width,
       decoration: BoxDecoration(
         color: color,

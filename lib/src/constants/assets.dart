@@ -8,6 +8,7 @@ class SvgAssets {
   static const String resetIcon = 'assets/svg/resetIcon.svg';
   static const String hintIcon = 'assets/svg/hintIcon.svg';
   static const String cicrcleHelp = 'assets/svg/circle-help.svg';
+  static const String hollowStar = 'assets/svg/hollowStar.svg';
 }
 
 class PngAssets {

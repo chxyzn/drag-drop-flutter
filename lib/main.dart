@@ -1,4 +1,5 @@
 import 'package:drag_drop/src/constants/levels.dart';
+import 'package:drag_drop/src/game/game_result_screen.dart';
 import 'package:drag_drop/src/game/game_screen.dart';
 
 import 'package:drag_drop/src/levels/level_start_screen.dart';
@@ -19,7 +20,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: Size(390, 844),
-      child: MaterialApp(home: LevelStartScreen()),
+      child: MaterialApp(home: GameResultScreen()),
     );
   }
 }

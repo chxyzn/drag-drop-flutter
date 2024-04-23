@@ -189,6 +189,9 @@ class CustomButton extends StatelessWidget {
                 )
               : SvgPicture.asset(
                   svgPath ?? '',
+                  height: 24.h,
+                  width: 24.w,
+                  fit: BoxFit.cover,
                 )
         ],
       ),
