@@ -32,10 +32,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 
   double _calculateInitialScrollOffset() {
-    final itemHeight = 50.0; // Adjust this value based on your item height
-    final rankIndex = rank - 1;
-    final maxAboveItems = 5;
-    final maxBelowItems = 4;
+    // final itemHeight = 50.0; // Adjust this value based on your item height
+    // final rankIndex = rank - 1;
+    // final maxAboveItems = 5;
+    // final maxBelowItems = 4;
 
     return 0.0;
 
