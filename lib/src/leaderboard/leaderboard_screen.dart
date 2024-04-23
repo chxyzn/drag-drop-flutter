@@ -1,6 +1,7 @@
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
+import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
 import 'package:drag_drop/src/utils/widgets/leaderboard_placeholder.dart';
@@ -56,8 +57,14 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         title: 'Leaderboard',
         leadingIconName: SvgAssets.homeIcon,
         trailingIconName: SvgAssets.settingsIcon,
-        onLeadingPressed: () {},
-        onTrailingPressed: () {},
+        onLeadingPressed: () {
+          Navigator.of(context).pop();
+        },
+        onTrailingPressed: () {
+          Navigator.of(context).pop();
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => SettingsScreen()));
+        },
       ),
       body: [
         Container(

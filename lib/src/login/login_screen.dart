@@ -1,8 +1,10 @@
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
+import 'package:drag_drop/src/home/home.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -140,17 +142,23 @@ class _LoginScreenState extends State<LoginScreen> {
         SizedBox(
           height: 30,
         ),
-        Container(
-          width: 150.w,
-          decoration: BoxDecoration(
-              color: CustomColor.primaryColor,
-              borderRadius: BorderRadius.circular(4.0)),
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15.0),
-              child: Text(
-                'Login',
-                style: w700.size18.colorWhite,
+        GestureDetector(
+          onTap: () {
+            Navigator.of(context)
+                .pushReplacement(MaterialPageRoute(builder: ((context) => HomeScreen())));
+          },
+          child: Container(
+            width: 150.w,
+            decoration: BoxDecoration(
+                color: CustomColor.primaryColor,
+                borderRadius: BorderRadius.circular(4.0)),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15.0),
+                child: Text(
+                  'Login',
+                  style: w700.size18.colorWhite,
+                ),
               ),
             ),
           ),

@@ -1,11 +1,11 @@
-import 'dart:math';
-
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/game/fourth_method.dart';
 import 'package:drag_drop/src/game/game_logic.dart';
+import 'package:drag_drop/src/game/game_result_screen.dart';
 import 'package:drag_drop/src/graph/graph_view.dart';
+import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,8 +19,9 @@ List<String> graphTheoryLessons = [
 ];
 
 class GameScreen extends StatefulWidget {
+  final int level;
   final Map<String, dynamic> apiResonse;
-  const GameScreen({super.key, required this.apiResonse});
+  const GameScreen({super.key, required this.level, required this.apiResonse});
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -199,20 +200,23 @@ class _GameScreenState extends State<GameScreen> {
 
   bool isSolutionCorrect(
       List<List<int>> inputEdges, List<List<int>> correctEdges) {
-    if (inputEdges.length != correctEdges.length) {
+    List<List<int>> correctEdgesCopy = [];
+    correctEdges.forEach((element) {
+      correctEdgesCopy.add([element[0] + 1, element[1] + 1]);
+    });
+    if (inputEdges.length != correctEdgesCopy.length) {
       print('lengths are not equal');
       return false;
     }
 
-    for (int i = 0; i < correctEdges.length; i++) {
+    for (int i = 0; i < correctEdgesCopy.length; i++) {
       int value1 = uniqueCommutativeBinaryOperation(
-          correctEdges[i][0], correctEdges[i][1]);
+          correctEdgesCopy[i][0], correctEdgesCopy[i][1]);
 
       for (int j = 0; j < inputEdges.length; j++) {
         int value2 = uniqueCommutativeBinaryOperation(
             inputEdges[j][0], inputEdges[j][1]);
         if (value1 == value2) {
-          print('value1 $value1 value2 $value2');
           break;
         }
         if (j == inputEdges.length - 1) {
@@ -262,8 +266,16 @@ class _GameScreenState extends State<GameScreen> {
           onLeadingPressed: () {
             Navigator.of(context).pop();
           },
-          title: '<   Level 7   >',
-          onTrailingPressed: () {},
+          title: '<   Level ${widget.level.toString()}   >',
+          onTrailingPressed: () {
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => SettingsScreen(),
+              ),
+            );
+          },
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -431,12 +443,8 @@ class _GameScreenState extends State<GameScreen> {
                       if (correctSolution) {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => GraphViewPage(
-                              isSolutionCorrect: correctSolution,
-                              nodes: nodes,
-                              graphTheoryText:
-                                  graphTheoryLessons[Random().nextInt(4)],
-                              edges: edges,
+                            builder: (context) => GameResultScreen(
+                              level: widget.level,
                             ),
                           ),
                         );

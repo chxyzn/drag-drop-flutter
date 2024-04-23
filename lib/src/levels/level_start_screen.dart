@@ -4,13 +4,18 @@ import 'package:drag_drop/src/constants/levels.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/game/game_screen.dart';
 import 'package:drag_drop/src/graph/graph_view.dart';
+import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class LevelStartScreen extends StatefulWidget {
-  const LevelStartScreen({super.key});
+  final int level;
+  const LevelStartScreen({
+    super.key,
+    required this.level,
+  });
 
   @override
   State<LevelStartScreen> createState() => _LevelStartScreenState();
@@ -22,15 +27,13 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
 
   @override
   void initState() {
-    List apiNodes = LEVEL1['graph']['nodes'];
+    List apiNodes = levels[widget.level - 1]['graph']['nodes'];
     for (var element in apiNodes) {
       questionNodes.add(element['id']);
     }
 
-    List apiEdges = LEVEL1['graph']['edges'];
+    List apiEdges = levels[widget.level - 1]['graph']['edges'];
     for (var element in apiEdges) {
-      // element.first += 1;
-      // element.last += 1;
       questionEdges.add(element);
     }
     super.initState();
@@ -60,8 +63,14 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
           ),
           leadingIconName: SvgAssets.homeIcon,
           trailingIconName: SvgAssets.settingsIcon,
-          onLeadingPressed: () {},
-          onTrailingPressed: () {},
+          onLeadingPressed: () {
+            Navigator.of(context).pop();
+          },
+          onTrailingPressed: () {
+            Navigator.of(context).pop();
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => SettingsScreen()));
+          },
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -70,7 +79,7 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
               height: 50.h,
             ),
             Text(
-              'Level 7',
+              'Level ${widget.level}',
               style: w700.size48.copyWith(
                 color: CustomColor.primaryColor,
                 height: 48.sp / 58.h,
@@ -100,10 +109,16 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: ((context) {
-                      return GameScreen(apiResonse: LEVEL14);
-                    })));
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: ((context) {
+                          return GameScreen(
+                            level: widget.level,
+                            apiResonse: levels[widget.level - 1],
+                          );
+                        }),
+                      ),
+                    );
                   },
                   child: CustomButton(
                     width: 342.w,

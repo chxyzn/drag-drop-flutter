@@ -1,6 +1,7 @@
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
+import 'package:drag_drop/src/login/login_screen.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         trailingIconName: SvgAssets.cicrcleHelp,
         isTrailingRequired: false,
         onLeadingPressed: () {
-          print('Home Screen');
+          Navigator.of(context).pop();
         },
         onTrailingPressed: () {
           print('object');
@@ -102,6 +103,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         SizedBox(height: 100.h),
         GestureDetector(
+          onTap: () {
+            Navigator.of(context).pop();
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: ((context) => LoginScreen())));
+          },
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 16.h),
             decoration: BoxDecoration(

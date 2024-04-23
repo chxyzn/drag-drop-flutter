@@ -1,10 +1,11 @@
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
+import 'package:drag_drop/src/leaderboard/leaderboard_screen.dart';
+import 'package:drag_drop/src/levels/level_start_screen.dart';
+import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -52,7 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               GestureDetector(
                 onTap: () {
-                  print('You tapped \"settings\"');
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => SettingsScreen()));
                 },
                 child: Image(
                   image: AssetImage(PngAssets.settingsLogo),
@@ -94,7 +96,13 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         GestureDetector(
           onTap: () {
-            print('You tapped Jump back in!');
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => LevelStartScreen(
+                  level: 9,
+                ),
+              ),
+            );
           },
           child: Container(
             margin: EdgeInsets.only(top: 10.h),
@@ -180,7 +188,8 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: GestureDetector(
                 onTap: () {
-                  print('You tapped \"Leaderboard\"');
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => LeaderboardScreen()));
                 },
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 18.5.h),

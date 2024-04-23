@@ -1,10 +1,7 @@
 import 'package:drag_drop/src/constants/levels.dart';
-import 'package:drag_drop/src/game/game_result_screen.dart';
 import 'package:drag_drop/src/game/game_screen.dart';
 
-import 'package:drag_drop/src/levels/level_start_screen.dart';
 import 'package:drag_drop/src/login/login_screen.dart';
-
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
@@ -84,6 +81,7 @@ class _GameState extends State<Game> {
           ),
           body: GameScreen(
             key: ValueKey(currentLevel),
+            level: 1,
             apiResonse: currentLevel,
           ),
         ),

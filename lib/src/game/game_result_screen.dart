@@ -1,16 +1,21 @@
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
+import 'package:drag_drop/src/constants/levels.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/game/game_screen.dart';
+import 'package:drag_drop/src/leaderboard/leaderboard_screen.dart';
 import 'package:drag_drop/src/levels/level_start_screen.dart';
+import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class GameResultScreen extends StatelessWidget {
-  const GameResultScreen({super.key});
+  final int level;
+  const GameResultScreen({super.key, required this.level});
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +25,17 @@ class GameResultScreen extends StatelessWidget {
         trailingIconName: SvgAssets.settingsIcon,
         onLeadingPressed: () {
           Navigator.of(context).pop();
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
         },
-        title: 'Level 7',
-        onTrailingPressed: () {},
+        title: 'Level $level',
+        onTrailingPressed: () {
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => SettingsScreen()));
+        },
       ),
       body: [
         SizedBox(
@@ -67,13 +80,28 @@ class GameResultScreen extends StatelessWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            CustomContainer(
-              color: CustomColor.primaryColor,
-              height: 56.h,
-              width: 342.w,
-              textColor: CustomColor.white,
-              primaryText: 'Next Level',
-              borderColor: CustomColor.primaryColor,
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => GameScreen(
+                      level: level + 1,
+                      apiResonse: levels[level],
+                    ),
+                  ),
+                );
+              },
+              child: CustomContainer(
+                color: CustomColor.primaryColor,
+                height: 56.h,
+                width: 342.w,
+                textColor: CustomColor.white,
+                primaryText: 'Next Level',
+                borderColor: CustomColor.primaryColor,
+              ),
             ),
             CustomButton(
               width: 342.w,
@@ -94,13 +122,22 @@ class GameResultScreen extends StatelessWidget {
                   primaryText: 'Remove Ads',
                   borderColor: CustomColor.primaryColor,
                 ),
-                CustomContainer(
-                  color: CustomColor.backgrondBlue,
-                  height: 43.h,
-                  width: 165.w,
-                  textColor: CustomColor.primaryColor,
-                  primaryText: 'Leaderboard',
-                  borderColor: CustomColor.primaryColor,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => LeaderboardScreen()));
+                  },
+                  child: CustomContainer(
+                    color: CustomColor.backgrondBlue,
+                    height: 43.h,
+                    width: 165.w,
+                    textColor: CustomColor.primaryColor,
+                    primaryText: 'Leaderboard',
+                    borderColor: CustomColor.primaryColor,
+                  ),
                 ),
               ],
             ),
