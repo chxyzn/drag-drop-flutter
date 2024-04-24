@@ -28,6 +28,7 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
+  List<int> shapesPlacedOnGrid = [];
   late List<List<int>> baseMatrix;
   List<List<List<int>>> baseMatrixStates = [];
   late int gridRowSize;
@@ -142,11 +143,12 @@ class _GameScreenState extends State<GameScreen> {
             }
           }
         }
-        for (int i = 0; i < gridRowSize; i++) {}
 
         availableNodes = availableNodes
             .where((element) => element['id'] != idOfElementToRemove)
             .toList();
+
+        shapesPlacedOnGrid.add(idOfElementToRemove);
       });
     } else {
       ScaffoldMessenger.of(context).clearSnackBars();
@@ -242,6 +244,13 @@ class _GameScreenState extends State<GameScreen> {
     setState(() {
       copyMatrix(baseMatrixStates.last, baseMatrix);
       baseMatrixStates.removeLast();
+
+      //adding the shape in options again
+      int idToAdd = shapesPlacedOnGrid.last;
+      Map<String, dynamic> node = widget.apiResonse['graph']['nodes']
+          .firstWhere((element) => element['id'] == idToAdd);
+      availableNodes.insert(0, node);
+      shapesPlacedOnGrid.removeLast();
     });
   }
 
@@ -343,7 +352,7 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ),
                 SizedBox(
-                  height: 14.h,
+                  height: 10.h,
                 ),
                 Container(
                   decoration: BoxDecoration(

@@ -76,7 +76,7 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SizedBox(
-              height: 50.h,
+              height: 15.h,
             ),
             Text(
               'Level ${widget.level}',

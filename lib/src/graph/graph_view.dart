@@ -77,15 +77,11 @@ class GraphWidget extends StatefulWidget {
 
 class _GraphWidgetState extends State<GraphWidget> {
   final Graph graph = Graph();
-  late Algorithm _algorithm;
-  final BuchheimWalkerConfiguration config = BuchheimWalkerConfiguration();
 
   @override
   void initState() {
     super.initState();
     List<Node> graphNodes = widget.nodes.map((e) => Node.Id(e)).toList();
-
-    print('recieved question edges: ${widget.edges}');
 
     widget.edges.forEach((edge) {
       int a = edge.first + 1;
@@ -102,14 +98,10 @@ class _GraphWidgetState extends State<GraphWidget> {
         print(a);
         print(b);
       }
-      ;
 
       graph.addEdge(graphNodes[a_index], graphNodes[b_index]);
     });
-
-    _algorithm = FruchtermanReingoldAlgorithm(
-      iterations: 1000,
-    );
+    graph.isTree = false;
   }
 
   @override
@@ -131,7 +123,7 @@ class _GraphWidgetState extends State<GraphWidget> {
                     child: GraphView(
                       graph: graph,
                       animated: false,
-                      algorithm: _algorithm,
+                      algorithm: FruchtermanReingoldAlgorithm(),
                       paint: Paint()
                         ..color = Colors.green
                         ..strokeWidth = 1
