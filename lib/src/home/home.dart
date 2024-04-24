@@ -99,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => LevelStartScreen(
-                  level: 7,
+                  level: 9,
                 ),
               ),
             );
