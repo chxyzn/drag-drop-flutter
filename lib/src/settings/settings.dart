@@ -84,10 +84,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         CustomTile(
           leadingIcon: Image.asset(PngAssets.soundLogo),
           Text: 'Sound',
+          switchRequired: true,
         ),
         CustomTile(
           leadingIcon: Image.asset(PngAssets.hapticsLogo),
           Text: 'Haptics',
+          switchRequired: true,
         ),
         CustomTile(
           leadingIcon: Icon(
@@ -134,11 +136,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
+// ignore: must_be_immutable
 class CustomTile extends StatefulWidget {
-  CustomTile({super.key, this.leadingIcon, required this.Text});
-
   final Widget? leadingIcon;
   final String Text;
+  bool switchRequired;
+  bool? switchOn;
+
+  CustomTile({
+    super.key,
+    this.leadingIcon,
+    required this.Text,
+    this.switchRequired = false,
+    this.switchOn,
+  });
 
   @override
   State<CustomTile> createState() => _CustomTileState();
@@ -149,7 +160,8 @@ class _CustomTileState extends State<CustomTile> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 16.h),
+        padding: EdgeInsets.symmetric(
+            horizontal: 18.w, vertical: widget.switchRequired ? 6.h : 16.h),
         margin: EdgeInsets.only(bottom: 24.h),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8.r),
@@ -170,6 +182,16 @@ class _CustomTileState extends State<CustomTile> {
                 ),
               ],
             ),
+            widget.switchRequired
+                ? Switch(
+                    value: widget.switchOn ?? false,
+                    onChanged: ((value) {
+                      setState(() {
+                        widget.switchOn = value;
+                      });
+                    }),
+                  )
+                : SizedBox()
           ],
         ),
       ),
