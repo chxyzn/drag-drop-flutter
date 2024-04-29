@@ -144,8 +144,14 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.of(context)
-                .pushReplacement(MaterialPageRoute(builder: ((context) => HomeScreen())));
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: ((context) => HomeScreen(
+                      totalNumberOfLevelsPlayed: 8,
+                      currentNumberOfStars: 15,
+                    )),
+              ),
+            );
           },
           child: Container(
             width: 150.w,

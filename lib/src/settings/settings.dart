@@ -161,11 +161,12 @@ class _CustomTileState extends State<CustomTile> {
     return GestureDetector(
       child: Container(
         padding: EdgeInsets.symmetric(
-            horizontal: 18.w, vertical: widget.switchRequired ? 6.h : 16.h),
+            horizontal: 18.w, vertical: widget.switchRequired ? 8.h : 16.h),
         margin: EdgeInsets.only(bottom: 24.h),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8.r),
-            color: CustomColor.tileBgBlue),
+          borderRadius: BorderRadius.circular(8.r),
+          color: CustomColor.tileBgBlue,
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -190,6 +191,7 @@ class _CustomTileState extends State<CustomTile> {
                         widget.switchOn = value;
                       });
                     }),
+                    activeTrackColor: CustomColor.primaryColor,
                   )
                 : SizedBox()
           ],
