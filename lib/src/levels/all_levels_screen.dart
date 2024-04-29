@@ -75,51 +75,21 @@ class _AllLevelsScreenState extends State<AllLevelsScreen> {
             ],
           ),
         ),
-        Container(
-          padding: EdgeInsets.only(
-            top: 16.h,
-            bottom: 10.h,
-            left: 13.w,
-            right: 13.w,
-          ),
-          decoration: BoxDecoration(
-            color: CustomColor.primaryColor,
-            borderRadius: BorderRadius.circular(10.r),
-          ),
-          child: Column(
-            children: [
-              Text(
-                '2',
-                style: w900.size24.copyWith(
-                  color: CustomColor.white,
-                ),
+        SizedBox(
+          height: 620.h,
+          child: GridView.builder(
+              itemCount: 24,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4, // number of items in each row
               ),
-              SizedBox(height: 10.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.star,
-                    size: 20.h,
-                    color: CustomColor.goldStarColor,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 4.6.h),
-                    child: Icon(
-                      Icons.star,
-                      size: 20.h,
-                      color: CustomColor.goldStarColor,
-                    ),
-                  ),
-                  Icon(
-                    Icons.star,
-                    size: 20.h,
-                    color: CustomColor.goldStarColor,
-                  ),
-                ],
-              ),
-            ],
-          ),
+              itemBuilder: (context, index) {
+                return LevelGridTile(
+                  level: index + 1,
+                  stars: 2,
+                  isLocked: false,
+                  isNext: false,
+                );
+              }),
         )
       ],
     );
@@ -141,6 +111,82 @@ class LevelGridTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return !isLocked
+        ? Container(
+            margin: EdgeInsets.symmetric(horizontal: 6.w, vertical: 6.h),
+            width: 75.w,
+            height: 75.h,
+            padding: EdgeInsets.only(
+              top: 9.h,
+              bottom: 01.h,
+              left: 5.w,
+              right: 5.w,
+            ),
+            decoration: BoxDecoration(
+              color: CustomColor.primaryColor,
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  level.toString(),
+                  style: w900.size24.copyWith(
+                    color: CustomColor.white,
+                  ),
+                ),
+                SizedBox(height: isNext ? 6.h : 3.h),
+                isNext
+                    ? Text(
+                        'Up Next',
+                        style: w600.size12.copyWith(
+                          color: CustomColor.white,
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.star,
+                            size: 20.h,
+                            color: stars >= 1
+                                ? CustomColor.goldStarColor
+                                : CustomColor.white,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 4.6.h),
+                            child: Icon(
+                              Icons.star,
+                              size: 20.h,
+                              color: stars >= 2
+                                  ? CustomColor.goldStarColor
+                                  : CustomColor.white,
+                            ),
+                          ),
+                          Icon(
+                            Icons.star,
+                            size: 20.h,
+                            color: stars == 3
+                                ? CustomColor.goldStarColor
+                                : CustomColor.white,
+                          ),
+                        ],
+                      ),
+              ],
+            ),
+          )
+        : Container(
+            width: 75.w,
+            height: 75.h,
+            decoration: BoxDecoration(
+              color: CustomColor.imgBgColorGrey,
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            child: Icon(
+              Icons.lock_outline_rounded,
+              size: 48.h,
+              color: CustomColor.white,
+              weight: 2.h,
+            ),
+          );
   }
 }
