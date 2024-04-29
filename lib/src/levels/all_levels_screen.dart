@@ -11,11 +11,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class AllLevelsScreen extends StatefulWidget {
   final int totalNumberOfLevelsPlayed;
   final int currentNumberOfStars;
+  final int currentLevel;
 
   const AllLevelsScreen({
     super.key,
     required this.totalNumberOfLevelsPlayed,
     required this.currentNumberOfStars,
+    required this.currentLevel,
   });
 
   @override
@@ -23,6 +25,39 @@ class AllLevelsScreen extends StatefulWidget {
 }
 
 class _AllLevelsScreenState extends State<AllLevelsScreen> {
+  Map<int, int> levelsVSstars = {
+    1: 2,
+    2: 2,
+    3: 1,
+    4: 1,
+    5: 0,
+    6: 3,
+    7: 0,
+    8: 2,
+    9: 3,
+    10: 1,
+    11: 1,
+    12: 1,
+    13: 0,
+    14: 3,
+    15: 2,
+    16: 1,
+    17: 2,
+    18: 1,
+    19: 0,
+    20: 2,
+    21: 0,
+    22: 3,
+    23: 2,
+    24: 0,
+    25: 2,
+    26: 1,
+    27: 2,
+    28: 1,
+    29: 0,
+    30: 21,
+  };
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -42,6 +77,7 @@ class _AllLevelsScreenState extends State<AllLevelsScreen> {
               builder: ((context) => HomeScreen(
                     totalNumberOfLevelsPlayed: widget.totalNumberOfLevelsPlayed,
                     currentNumberOfStars: widget.currentNumberOfStars,
+                    currentLevel: widget.currentLevel,
                   )),
             ),
           );
@@ -85,9 +121,9 @@ class _AllLevelsScreenState extends State<AllLevelsScreen> {
               itemBuilder: (context, index) {
                 return LevelGridTile(
                   level: index + 1,
-                  stars: 2,
-                  isLocked: false,
-                  isNext: false,
+                  stars: levelsVSstars.values.elementAt(index),
+                  isLocked: index > widget.currentLevel,
+                  isNext: index == widget.currentLevel,
                 );
               }),
         )
@@ -175,6 +211,7 @@ class LevelGridTile extends StatelessWidget {
             ),
           )
         : Container(
+            margin: EdgeInsets.symmetric(horizontal: 6.w, vertical: 6.h),
             width: 75.w,
             height: 75.h,
             decoration: BoxDecoration(

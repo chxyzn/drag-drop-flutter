@@ -12,10 +12,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class HomeScreen extends StatefulWidget {
   final int totalNumberOfLevelsPlayed;
   final int currentNumberOfStars;
+  final int currentLevel;
+
   const HomeScreen({
     super.key,
     required this.totalNumberOfLevelsPlayed,
     required this.currentNumberOfStars,
+    required this.currentLevel,
   });
 
   @override
@@ -149,6 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 builder: (context) => AllLevelsScreen(
                   totalNumberOfLevelsPlayed: widget.totalNumberOfLevelsPlayed,
                   currentNumberOfStars: widget.currentNumberOfStars,
+                  currentLevel: widget.currentLevel,
                 ),
               ),
             );

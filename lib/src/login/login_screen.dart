@@ -149,6 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 builder: ((context) => HomeScreen(
                       totalNumberOfLevelsPlayed: 8,
                       currentNumberOfStars: 15,
+                      currentLevel: 12,
                     )),
               ),
             );
