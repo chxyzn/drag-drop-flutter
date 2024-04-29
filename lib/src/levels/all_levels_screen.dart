@@ -2,6 +2,7 @@ import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/home/home.dart';
+import 'package:drag_drop/src/levels/level_start_screen.dart';
 import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
@@ -9,15 +10,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AllLevelsScreen extends StatefulWidget {
-  final int totalNumberOfLevelsPlayed;
   final int currentNumberOfStars;
-  final int currentLevel;
+  final int lastLevelCompleted;
+  final int totalNumberOfLevels;
 
   const AllLevelsScreen({
     super.key,
-    required this.totalNumberOfLevelsPlayed,
     required this.currentNumberOfStars,
-    required this.currentLevel,
+    required this.lastLevelCompleted,
+    required this.totalNumberOfLevels,
   });
 
   @override
@@ -55,7 +56,11 @@ class _AllLevelsScreenState extends State<AllLevelsScreen> {
     27: 2,
     28: 1,
     29: 0,
-    30: 21,
+    30: 2,
+    31: 2,
+    32: 3,
+    33: 0,
+    34: 1
   };
 
   @override
@@ -75,9 +80,9 @@ class _AllLevelsScreenState extends State<AllLevelsScreen> {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: ((context) => HomeScreen(
-                    totalNumberOfLevelsPlayed: widget.totalNumberOfLevelsPlayed,
                     currentNumberOfStars: widget.currentNumberOfStars,
-                    currentLevel: widget.currentLevel,
+                    lastLevelCompleted: widget.lastLevelCompleted,
+                    totalNumberOfLevels: widget.totalNumberOfLevels,
                   )),
             ),
           );
@@ -103,8 +108,8 @@ class _AllLevelsScreenState extends State<AllLevelsScreen> {
               ),
               SizedBox(width: 08.w),
               Text(
-                '${widget.currentNumberOfStars}/${widget.totalNumberOfLevelsPlayed * 3}',
-                style: w700.size18.copyWith(
+                '${widget.currentNumberOfStars}/${(widget.lastLevelCompleted) * 3}',
+                style: w700.size24.copyWith(
                   color: CustomColor.primaryColor,
                 ),
               ),
@@ -114,16 +119,17 @@ class _AllLevelsScreenState extends State<AllLevelsScreen> {
         SizedBox(
           height: 620.h,
           child: GridView.builder(
-              itemCount: 24,
+              itemCount: widget.totalNumberOfLevels,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4, // number of items in each row
               ),
+              physics: BouncingScrollPhysics(),
               itemBuilder: (context, index) {
                 return LevelGridTile(
                   level: index + 1,
                   stars: levelsVSstars.values.elementAt(index),
-                  isLocked: index > widget.currentLevel,
-                  isNext: index == widget.currentLevel,
+                  isLocked: index > widget.lastLevelCompleted,
+                  isNext: index == widget.lastLevelCompleted,
                 );
               }),
         )
@@ -148,66 +154,77 @@ class LevelGridTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return !isLocked
-        ? Container(
-            margin: EdgeInsets.symmetric(horizontal: 6.w, vertical: 6.h),
-            width: 75.w,
-            height: 75.h,
-            padding: EdgeInsets.only(
-              top: 9.h,
-              bottom: 01.h,
-              left: 5.w,
-              right: 5.w,
-            ),
-            decoration: BoxDecoration(
-              color: CustomColor.primaryColor,
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            child: Column(
-              children: [
-                Text(
-                  level.toString(),
-                  style: w900.size24.copyWith(
-                    color: CustomColor.white,
+        ? GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => LevelStartScreen(
+                    level: level,
                   ),
                 ),
-                SizedBox(height: isNext ? 6.h : 3.h),
-                isNext
-                    ? Text(
-                        'Up Next',
-                        style: w600.size12.copyWith(
-                          color: CustomColor.white,
-                        ),
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.star,
-                            size: 20.h,
-                            color: stars >= 1
-                                ? CustomColor.goldStarColor
-                                : CustomColor.white,
+              );
+            },
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 6.w, vertical: 6.h),
+              width: 75.w,
+              height: 75.h,
+              padding: EdgeInsets.only(
+                top: 9.h,
+                bottom: 01.h,
+                left: 5.w,
+                right: 5.w,
+              ),
+              decoration: BoxDecoration(
+                color: CustomColor.primaryColor,
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    level.toString(),
+                    style: w900.size24.copyWith(
+                      color: CustomColor.white,
+                    ),
+                  ),
+                  SizedBox(height: isNext ? 6.h : 3.h),
+                  isNext
+                      ? Text(
+                          'Up Next',
+                          style: w600.size12.copyWith(
+                            color: CustomColor.white,
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(bottom: 4.6.h),
-                            child: Icon(
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
                               Icons.star,
                               size: 20.h,
-                              color: stars >= 2
+                              color: stars >= 1
                                   ? CustomColor.goldStarColor
                                   : CustomColor.white,
                             ),
-                          ),
-                          Icon(
-                            Icons.star,
-                            size: 20.h,
-                            color: stars == 3
-                                ? CustomColor.goldStarColor
-                                : CustomColor.white,
-                          ),
-                        ],
-                      ),
-              ],
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 4.6.h),
+                              child: Icon(
+                                Icons.star,
+                                size: 20.h,
+                                color: stars >= 2
+                                    ? CustomColor.goldStarColor
+                                    : CustomColor.white,
+                              ),
+                            ),
+                            Icon(
+                              Icons.star,
+                              size: 20.h,
+                              color: stars == 3
+                                  ? CustomColor.goldStarColor
+                                  : CustomColor.white,
+                            ),
+                          ],
+                        ),
+                ],
+              ),
             ),
           )
         : Container(

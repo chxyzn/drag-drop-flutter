@@ -10,15 +10,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeScreen extends StatefulWidget {
-  final int totalNumberOfLevelsPlayed;
   final int currentNumberOfStars;
-  final int currentLevel;
+  final int lastLevelCompleted;
+  final int totalNumberOfLevels;
 
   const HomeScreen({
     super.key,
-    required this.totalNumberOfLevelsPlayed,
     required this.currentNumberOfStars,
-    required this.currentLevel,
+    required this.lastLevelCompleted,
+    required this.totalNumberOfLevels,
   });
 
   @override
@@ -59,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   SizedBox(width: 8.w),
                   Text(
-                    '15/24',
+                    '${widget.currentNumberOfStars}/${(widget.lastLevelCompleted) * 3}',
                     style: w700.size18.copyWith(
                       color: CustomColor.primaryColor,
                     ),
@@ -150,9 +150,9 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => AllLevelsScreen(
-                  totalNumberOfLevelsPlayed: widget.totalNumberOfLevelsPlayed,
                   currentNumberOfStars: widget.currentNumberOfStars,
-                  currentLevel: widget.currentLevel,
+                  lastLevelCompleted: widget.lastLevelCompleted,
+                  totalNumberOfLevels: widget.totalNumberOfLevels,
                 ),
               ),
             );

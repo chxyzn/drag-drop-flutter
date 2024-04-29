@@ -147,9 +147,9 @@ class _LoginScreenState extends State<LoginScreen> {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: ((context) => HomeScreen(
-                      totalNumberOfLevelsPlayed: 8,
                       currentNumberOfStars: 15,
-                      currentLevel: 12,
+                      lastLevelCompleted: 12,
+                      totalNumberOfLevels: 34,
                     )),
               ),
             );
