@@ -1,7 +1,8 @@
+import 'dart:async';
+
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
-import 'package:drag_drop/src/game/fourth_method.dart';
 import 'package:drag_drop/src/game/game_logic.dart';
 import 'package:drag_drop/src/game/game_result_screen.dart';
 import 'package:drag_drop/src/graph/graph_view.dart';
@@ -49,10 +50,7 @@ class _GameScreenState extends State<GameScreen> {
     maxGridLength =
         gridRowSize >= gridColumnSize ? gridRowSize : gridColumnSize;
 
-    baseMatrix = GameLogic().initBaseMatrix(
-      gridRowSize,
-      gridColumnSize,
-    );
+    baseMatrix = GameLogic().initBaseMatrix(gridRowSize, gridColumnSize);
 
     List apiNodes = widget.apiResonse['graph']['nodes'];
     for (var element in apiNodes) {
@@ -330,12 +328,7 @@ class _GameScreenState extends State<GameScreen> {
                                 color: Colors.white,
                               ),
                             ),
-                            Text(
-                              '04:00',
-                              style: w700.size24.copyWith(
-                                color: Colors.white,
-                              ),
-                            ),
+                            TimerText(),
                           ],
                         ),
                         GestureDetector(
@@ -484,6 +477,55 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class TimerText extends StatefulWidget {
+  const TimerText({
+    super.key,
+  });
+
+  @override
+  State<TimerText> createState() => _TimerTextState();
+}
+
+class _TimerTextState extends State<TimerText> {
+  int totalTime = 240;
+
+  String formattedTime({required int timeInSecond}) {
+    int sec = timeInSecond % 60;
+    int min = (timeInSecond / 60).floor();
+    String minute = min.toString().length <= 1 ? "0$min" : "$min";
+    String second = sec.toString().length <= 1 ? "0$sec" : "$sec";
+    return "$minute : $second";
+  }
+
+  late Timer timer;
+
+  @override
+  void initState() {
+    super.initState();
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        totalTime--;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      formattedTime(timeInSecond: totalTime),
+      style: w700.size24.copyWith(
+        color: Colors.white,
       ),
     );
   }

@@ -2,9 +2,10 @@ import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/home/home.dart';
+import 'package:drag_drop/src/login/login_repo.dart';
+import 'package:drag_drop/src/login/signup_screen.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -173,7 +174,10 @@ class _LoginScreenState extends State<LoginScreen> {
         Padding(
           padding: const EdgeInsets.only(top: 20.0),
           child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => SignUpScreen()));
+            },
             child: RichText(
                 text: TextSpan(
                     text: "Don't have an account?",

@@ -96,9 +96,9 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
-              child: GraphWidget(
-                nodes: questionNodes,
-                edges: questionEdges,
+              child: GraphWidget(  nodes: questionNodes,
+                    edges: questionEdges,
+                  
               ),
             ),
             SizedBox(

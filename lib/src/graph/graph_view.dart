@@ -123,7 +123,11 @@ class _GraphWidgetState extends State<GraphWidget> {
                     child: GraphView(
                       graph: graph,
                       animated: false,
-                      algorithm: FruchtermanReingoldAlgorithm(),
+                      algorithm: FruchtermanReingoldAlgorithm(
+                        iterations: 1000,
+                        attractionRate: 0.1
+                        ,
+                      ),
                       paint: Paint()
                         ..color = Colors.green
                         ..strokeWidth = 1

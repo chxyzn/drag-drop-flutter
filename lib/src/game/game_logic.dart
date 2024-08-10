@@ -1,3 +1,8 @@
+import 'package:drag_drop/src/constants/Colors.dart';
+import 'package:drag_drop/src/game/game_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class GameLogic {
   List<List<int>> initBaseMatrix(int rowSize, int columnSize) {
     List<List<int>> baseMatrix = [];
@@ -11,77 +16,200 @@ class GameLogic {
 
     return baseMatrix;
   }
+}
 
-  List<List<int>> uShape(int id, int height, int width, int matrixSize) {
-    List<List<int>> shapeMatrix = List.generate(
-        matrixSize, (index) => List.generate(matrixSize, (index) => 0));
+MatrixCoords pickupCoords = const MatrixCoords(row: 0, col: 0);
 
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
-        //two pillars of u
-        if (j == 0 || j == width - 1) {
-          shapeMatrix[i][j] = id;
-        }
-        //base of u
-        if (i == height - 1) {
-          shapeMatrix[i][j] = id;
-        }
-      }
-    }
+class TargetBlockGenerator extends StatelessWidget {
+  final List<List<int>> shape;
+  final Function onAccept;
+  const TargetBlockGenerator(
+      {super.key, required this.shape, required this.onAccept});
 
-    return shapeMatrix;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (int i = 0; i < shape.length; i++)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              for (int j = 0; j < shape[i].length; j++) //row traversal
+                DragTarget<List<List<int>>>(
+                  onAcceptWithDetails:
+                      (DragTargetDetails<List<List<int>>>? data) {
+                    onAccept(MatrixCoords(row: i, col: j), data!.data);
+                  },
+                  builder: (context, candidates, rejects) {
+                    return const Block(
+                      opacity: 0,
+                      padding: EdgeInsets.all(1),
+                    );
+                  },
+                ),
+            ],
+          ),
+      ],
+    );
   }
 
-  List<List<int>> tShape(int id, int height, int width, int matrixSize) {
-    List<List<int>> shapeMatrix = List.generate(
-        matrixSize, (index) => List.generate(matrixSize, (index) => 0));
-
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
-        //horizontal line of t
-        if (i == 0) {
-          shapeMatrix[i][j] = id;
-        }
-        //vertical line of t
-        if (j == width ~/ 2) {
-          shapeMatrix[i][j] = id;
-        }
-      }
-    }
-
-    return shapeMatrix;
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 1),
+      ),
+    );
   }
+}
 
-  List<List<int>> rectangle(int id, int height, int width, int matrixSize) {
-    List<List<int>> shapeMatrix = List.generate(
-        matrixSize, (index) => List.generate(matrixSize, (index) => 0));
+class ShapeGenerator extends StatelessWidget {
+  final List<List<int>> shape;
+  final Color color;
+  final String text;
+  const ShapeGenerator({
+    super.key,
+    required this.shape,
+    required this.color,
+    this.text = '',
+  });
 
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
-        shapeMatrix[i][j] = id;
-      }
-    }
-
-    return shapeMatrix;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (int i = 0; i < shape.length; i++)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              for (int j = 0; j < shape[i].length; j++) //row traversal
+                (shape[i][j] > 0)
+                    ? GestureDetector(
+                        onTapUp: (_) {
+                          print('onTapUp picked shape at $i, $j');
+                        },
+                        onTapDown: (_) {
+                          print('onTapDown picked shape at $i, $j');
+                          pickupCoords = MatrixCoords(row: i, col: j);
+                        },
+                        child: Block(
+                          color: color,
+                          text: text,
+                          border: true,
+                        ),
+                      )
+                    : const Block(
+                        opacity: 0,
+                        smallSize: true,
+                      ),
+            ],
+          )
+      ],
+    );
   }
+}
 
-  List<List<int>> lShape(int id, int height, int width, int matrixSize) {
-    List<List<int>> shapeMatrix = List.generate(
-        matrixSize, (index) => List.generate(width, (index) => 0));
+class BaseBlockGenerator extends StatelessWidget {
+  final List<List<int>> matrix;
+  const BaseBlockGenerator({
+    super.key,
+    required this.matrix,
+  });
 
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
-        //vertical line of l
-        if (j == 0) {
-          shapeMatrix[i][j] = id;
-        }
-        //base of l
-        if (i == height - 1) {
-          shapeMatrix[i][j] = id;
-        }
-      }
-    }
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (int i = 0; i < matrix.length; i++)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              for (int j = 0; j < matrix[i].length; j++) //row traversal
+                BaseBlock(
+                  value: matrix[i][j],
+                  border: true,
+                ),
+            ],
+          )
+      ],
+    );
+  }
+}
 
-    return shapeMatrix;
+class BaseBlock extends StatelessWidget {
+  final int value;
+  final bool border;
+  const BaseBlock({super.key, required this.value, this.border = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 38.w,
+      width: 38.w,
+      decoration: BoxDecoration(
+          color: value > 0
+              ? GraphColors().getColorFromId(value)
+              : CustomColor.backgrondBlue,
+          border: border
+              ? Border.all(color: CustomColor.gridBorderColor, width: 1)
+              : null),
+      child: Center(
+          child: Text(
+        value > 0 ? value.toString() : '',
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      )),
+    );
+  }
+}
+
+class Block extends StatelessWidget {
+  final double opacity;
+  final EdgeInsets padding;
+  final Color color;
+  final String text;
+  final bool border;
+  final bool smallSize;
+  const Block({
+    super.key,
+    this.opacity = 1,
+    this.padding = EdgeInsets.zero,
+    this.color = Colors.black,
+    this.text = '',
+    this.border = false,
+    this.smallSize = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: padding,
+      height: (smallSize) ? 0 : 38.w,
+      width: (smallSize) ? 0 : 38.w,
+      decoration: BoxDecoration(
+        color: color.withOpacity(opacity),
+        border: border
+            ? Border.all(color: CustomColor.gridBorderColor, width: 2.w)
+            : null,
+      ),
+      child: Center(
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
+        ),
+      ),
+    );
   }
 }

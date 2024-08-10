@@ -1,6 +1,8 @@
 import 'package:drag_drop/src/constants/textstyles.dart';
+import 'package:drag_drop/src/login/login_repo.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../constants/Colors.dart';
 import '../constants/assets.dart';
@@ -42,9 +44,54 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
+  Future<String> onSubmit() async {
+    String validationMessage = validateInput();
+    if (validationMessage.isNotEmpty) {
+      return validationMessage;
+    }
+
+    SignUpModel signUpModel = SignUpModel(
+      username: usernameController.text,
+      email: emailController.text,
+      firstName: 'Chayan',
+      lastName: 'Jain',
+      password: passwordController.text,
+      age: _age,
+    );
+
+    String message = await signUpModel.signUp();
+
+    return message;
+  }
+
+  String validateInput() {
+    if (emailController.text.isEmpty) {
+      return 'Email cannot be empty';
+    }
+    if (usernameController.text.isEmpty) {
+      return 'Username cannot be empty';
+    }
+    if (passwordController.text.isEmpty) {
+      return 'Password cannot be empty';
+    }
+    if (confirmPasswordController.text.isEmpty) {
+      return 'Confirm Password cannot be empty';
+    }
+    if (passwordController.text != confirmPasswordController.text) {
+      return 'Passwords do not match';
+    }
+
+    //also write code to validate email i.e use regex
+    return emailController.text.contains('@') &&
+            emailController.text.contains('.')
+        ? ""
+        : 'Invalid Email';
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
+      verticalPadding: 24.h,
       backgroundColor: CustomColor.white,
       backgroundImage: DecorationImage(
         image: AssetImage(PngAssets.loginBackground),
@@ -108,7 +155,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ),
         TextField(
-          controller: emailController,
+          controller: usernameController,
           decoration: InputDecoration(
             enabledBorder: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4.0)),
@@ -235,17 +282,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
         SizedBox(
           height: 25,
         ),
-        Container(
-          //width: 300,
-          decoration: BoxDecoration(
-              color: CustomColor.primaryColor,
-              borderRadius: BorderRadius.circular(4.0)),
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: Text(
-                'Sign Up',
-                style: w700.size16.colorWhite,
+        InkWell(
+          onTap: () async {
+            String message = await onSubmit();
+            if (message.isNotEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(message),
+              ));
+            }
+          },
+          child: Container(
+            //width: 300,
+            decoration: BoxDecoration(
+                color: CustomColor.primaryColor,
+                borderRadius: BorderRadius.circular(4.0)),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Text(
+                  'Sign Up',
+                  style: w700.size16.colorWhite,
+                ),
               ),
             ),
           ),
