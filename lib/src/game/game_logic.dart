@@ -1,4 +1,5 @@
 import 'package:drag_drop/src/constants/Colors.dart';
+import 'package:drag_drop/src/constants/game.dart';
 import 'package:drag_drop/src/game/game_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -104,7 +105,6 @@ class ShapeGenerator extends StatelessWidget {
                       )
                     : const Block(
                         opacity: 0,
-                        smallSize: true,
                       ),
             ],
           )
@@ -150,8 +150,8 @@ class BaseBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 38.w,
-      width: 38.w,
+      height: GameConstants.blockSize,
+      width: GameConstants.blockSize,
       decoration: BoxDecoration(
           color: value > 0
               ? GraphColors().getColorFromId(value)
@@ -192,8 +192,8 @@ class Block extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: padding,
-      height: (smallSize) ? 0 : 38.w,
-      width: (smallSize) ? 0 : 38.w,
+      height: (smallSize) ? 0 : GameConstants.blockSize,
+      width: (smallSize) ? 0 : GameConstants.blockSize,
       decoration: BoxDecoration(
         color: color.withOpacity(opacity),
         border: border

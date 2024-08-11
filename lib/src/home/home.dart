@@ -4,8 +4,10 @@ import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/leaderboard/leaderboard_screen.dart';
 import 'package:drag_drop/src/levels/level_start_screen.dart';
 import 'package:drag_drop/src/levels/all_levels_screen.dart';
+import 'package:drag_drop/src/login/login_screen.dart';
 import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
+import 'package:drag_drop/src/utils/encrypted_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -42,8 +44,10 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               GestureDetector(
-                onTap: () {
-                  print('You tapped \"hints\"');
+                onTap: () async {
+                  await EncryptedStorage().deleteAll();
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => LoginScreen()));
                 },
                 child: Image(
                   image: AssetImage(PngAssets.cicrcleHelp),

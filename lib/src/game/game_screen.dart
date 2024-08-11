@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
+import 'package:drag_drop/src/constants/game.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/game/game_logic.dart';
 import 'package:drag_drop/src/game/game_result_screen.dart';
@@ -10,6 +11,7 @@ import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 List<String> graphTheoryLessons = [
@@ -89,7 +91,7 @@ class _GameScreenState extends State<GameScreen> {
   void onBlockAccept(
     MatrixCoords touchdownCoords,
     List<List<int>> shapeMatrix,
-  ) {
+  ) async {
     bool canUpdate = true;
     int num1 = -2;
     int num2 = -2;
@@ -148,6 +150,12 @@ class _GameScreenState extends State<GameScreen> {
 
         shapesPlacedOnGrid.add(idOfElementToRemove);
       });
+
+      final canVibrate = await Haptics.canVibrate();
+
+      if (canVibrate) {
+        await Haptics.vibrate(HapticsType.success);
+      }
     } else {
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -370,8 +378,8 @@ class _GameScreenState extends State<GameScreen> {
                   children: [
                     Center(
                       child: SizedBox(
-                        height: gridRowSize * 40.w,
-                        width: gridColumnSize * 40.w,
+                        height: gridRowSize * GameConstants.gridBlockSize,
+                        width: gridColumnSize * GameConstants.gridBlockSize,
                         child: Center(
                           child: BaseBlockGenerator(
                             matrix: baseMatrix,
@@ -381,8 +389,8 @@ class _GameScreenState extends State<GameScreen> {
                     ),
                     Center(
                       child: SizedBox(
-                        height: gridRowSize * 40.w,
-                        width: gridColumnSize * 40.w,
+                        height: gridRowSize * GameConstants.gridBlockSize,
+                        width: gridColumnSize * GameConstants.gridBlockSize,
                         child: Center(
                           child: TargetBlockGenerator(
                             shape: baseMatrix,
@@ -392,9 +400,6 @@ class _GameScreenState extends State<GameScreen> {
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(
-                  height: 15,
                 ),
                 BlockOptionsWidget(
                   maxGridLength: maxGridLength,

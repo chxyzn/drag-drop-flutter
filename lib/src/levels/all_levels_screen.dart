@@ -3,6 +3,7 @@ import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/home/home.dart';
 import 'package:drag_drop/src/levels/level_start_screen.dart';
+import 'package:drag_drop/src/levels/levels_repo.dart';
 import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
@@ -156,6 +157,7 @@ class LevelGridTile extends StatelessWidget {
     return !isLocked
         ? GestureDetector(
             onTap: () {
+              getLevel(id: 1);
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => LevelStartScreen(
