@@ -96,9 +96,9 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
-              child: GraphWidget(  nodes: questionNodes,
-                    edges: questionEdges,
-                  
+              child: GraphWidget(
+                nodes: questionNodes,
+                edges: questionEdges,
               ),
             ),
             SizedBox(
@@ -108,8 +108,8 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(
+                  onTap: () async {
+                    final result = await Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: ((context) {
                           return GameScreen(
@@ -117,6 +117,12 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
                             apiResonse: levels[widget.level - 1],
                           );
                         }),
+                      ),
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(result.toString()),
                       ),
                     );
                   },

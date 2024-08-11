@@ -497,7 +497,7 @@ class TimerText extends StatefulWidget {
 }
 
 class _TimerTextState extends State<TimerText> {
-  int totalTime = 240;
+  int totalTime = 20;
 
   String formattedTime({required int timeInSecond}) {
     int sec = timeInSecond % 60;
@@ -514,6 +514,10 @@ class _TimerTextState extends State<TimerText> {
     super.initState();
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
+        if (totalTime == 0) {
+          timer.cancel();
+          Navigator.pop(context, 'Time Up!');
+        }
         totalTime--;
       });
     });
