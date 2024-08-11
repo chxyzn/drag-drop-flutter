@@ -64,7 +64,7 @@ class LoginModel {
     };
   }
 
-  Future<(LoginResponseModel, int)> login() async {
+  Future<(LoginResponseModel?, int)> login() async {
     final response = await http.post(
       Uri.parse(GplanEndpoints.baseUrl + GplanEndpoints.login),
       headers: <String, String>{
@@ -74,33 +74,40 @@ class LoginModel {
     );
 
     try {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      final user = User(
-        username: data['user']['username'],
-        firstName: data['user']['firstname'],
-        lastName: data['user']['lastname'],
-        email: data['user']['email'],
-        age: data['user']['age'],
-      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        final user = User(
+          username: data['user']['username'],
+          firstName: data['user']['firstname'],
+          lastName: data['user']['lastname'],
+          email: data['user']['email'],
+          age: data['user']['age'],
+          totalScore: data['user']['totalScore'],
+        );
 
-      final List<LevelOverview> levels = [];
-      for (final level in data['levels']) {
-        levels.add(LevelOverview(
-          level: level['level'],
-          stars: level['stars'],
-          isCompleted: level['isCompleted'],
-        ));
+        final List<LevelOverview> levels = [];
+        for (final level in data['Levels']) {
+          levels.add(LevelOverview(
+            level: level['levelNumber'],
+            stars: level['score'],
+            isCompleted: level['completed'],
+          ));
+        }
+
+        return (
+          LoginResponseModel(
+            accessToken: data['accessToken'],
+            user: user,
+            levels: levels,
+          ),
+          response.statusCode
+        );
+      } else {
+        return (null, response.statusCode);
       }
-
-      return (
-        LoginResponseModel(
-          accessToken: data['accessToken'],
-          user: user,
-          levels: levels,
-        ),
-        response.statusCode
-      );
-    } catch (e) {
+    } catch (e, s) {
+      print(e);
+      print(s);
       throw Exception('Failed to login');
     }
   }
@@ -124,6 +131,7 @@ class User {
   final String lastName;
   final String email;
   final int age;
+  final int totalScore;
 
   User({
     required this.username,
@@ -131,6 +139,7 @@ class User {
     required this.lastName,
     required this.email,
     required this.age,
+    required this.totalScore,
   });
 }
 

@@ -5,6 +5,7 @@ import 'package:drag_drop/src/home/home.dart';
 import 'package:drag_drop/src/login/login_repo.dart';
 import 'package:drag_drop/src/login/signup_screen.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
+import 'package:drag_drop/src/utils/encrypted_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -16,13 +17,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  late TextEditingController emailController;
+  late TextEditingController usernameController;
   late TextEditingController passwordController;
   late bool _passwordVisible;
+  bool showLoader = false;
 
   @override
   void initState() {
-    emailController = TextEditingController();
+    usernameController = TextEditingController();
     passwordController = TextEditingController();
     _passwordVisible = false;
     super.initState();
@@ -30,9 +32,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    emailController.dispose();
+    usernameController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  void toggleLoader() {
+    setState(() {
+      showLoader = !showLoader;
+    });
   }
 
   @override
@@ -78,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         TextField(
-          controller: emailController,
+          controller: usernameController,
           decoration: InputDecoration(
             enabledBorder: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4.0)),
@@ -144,16 +152,48 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 30,
         ),
         GestureDetector(
-          onTap: () {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: ((context) => HomeScreen(
-                      currentNumberOfStars: 15,
-                      lastLevelCompleted: 12,
-                      totalNumberOfLevels: 34,
-                    )),
-              ),
-            );
+          onTap: () async {
+            toggleLoader();
+            try {
+              LoginModel loginModel = LoginModel(
+                  username: usernameController.text,
+                  password: passwordController.text);
+
+              final result = await loginModel.login();
+
+              print(result.$1);
+              print(result.$2);
+
+              if (result.$2 / 100 == 4) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text("Invalid username or password"),
+                ));
+                toggleLoader();
+                return;
+              }
+              if (result.$2 / 100 == 5) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text("Server error"),
+                ));
+                toggleLoader();
+                return;
+              }
+
+              EncryptedStorage()
+                  .write(key: "jwt", value: result.$1!.accessToken);
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: ((context) => HomeScreen(
+                        currentNumberOfStars: 15,
+                        lastLevelCompleted: 12,
+                        totalNumberOfLevels: 34,
+                      )),
+                ),
+              );
+              toggleLoader();
+            } catch (e) {
+              toggleLoader();
+            }
           },
           child: Container(
             width: 150.w,
@@ -163,10 +203,14 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Center(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 15.0),
-                child: Text(
-                  'Login',
-                  style: w700.size18.colorWhite,
-                ),
+                child: (showLoader)
+                    ? CircularProgressIndicator(
+                        color: CustomColor.white,
+                      )
+                    : Text(
+                        'Login',
+                        style: w700.size18.colorWhite,
+                      ),
               ),
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/login/login_repo.dart';
+import 'package:drag_drop/src/login/login_screen.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -290,6 +291,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 content: Text(message),
               ));
             }
+            if (message == "Success") {
+              print("hi");
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => LoginScreen()));
+            }
           },
           child: Container(
             //width: 300,
@@ -310,7 +316,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
         Padding(
           padding: const EdgeInsets.only(top: 20.0),
           child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => LoginScreen()));
+            },
             child: RichText(
                 text: TextSpan(
                     text: "Have an account?",

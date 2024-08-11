@@ -1,89 +1,38 @@
-import 'package:drag_drop/src/constants/levels.dart';
-import 'package:drag_drop/src/game/game_screen.dart';
-
+import 'package:drag_drop/src/home/home.dart';
 import 'package:drag_drop/src/login/login_screen.dart';
+import 'package:drag_drop/src/utils/encrypted_storage.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const App());
+void main() async {
+  await WidgetsFlutterBinding.ensureInitialized();
+
+  final jwt = await EncryptedStorage().read(key: 'jwt');
+  bool showLoginScreen = true;
+
+  if (jwt != null) {
+    showLoginScreen = false;
+  }
+
+  runApp(App(showLoginScreen: showLoginScreen));
 }
 
-//this widget will handle whether to show login screen or home screen
 class App extends StatelessWidget {
-  const App({super.key});
+  final bool showLoginScreen;
+  const App({super.key, required this.showLoginScreen});
 
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: Size(390, 844),
-      child: MaterialApp(home: LoginScreen()),
-    );
-  }
-}
-
-class Game extends StatefulWidget {
-  const Game({super.key});
-
-  @override
-  State<Game> createState() => _GameState();
-}
-
-class _GameState extends State<Game> {
-  late Map<String, dynamic> currentLevel;
-  int level = 1;
-
-  @override
-  void initState() {
-    currentLevel = levels.first;
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: SafeArea(
-        child: Scaffold(
-          drawer: Drawer(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: <Widget>[
-                const DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Levels',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                      ),
-                    ),
-                  ),
-                ),
-                for (var i = 0; i < levels.length; i++)
-                  ListTile(
-                    title: Text('Level ${i + 1}'),
-                    onTap: () {
-                      setState(() {
-                        currentLevel = levels[i];
-                        level = i + 1;
-                      });
-                    },
-                  ),
-              ],
-            ),
-          ),
-          appBar: AppBar(
-            title: Text('Level $level'),
-          ),
-          body: GameScreen(
-            key: ValueKey(currentLevel),
-            level: 1,
-            apiResonse: currentLevel,
-          ),
-        ),
+      child: MaterialApp(
+        home: (showLoginScreen)
+            ? LoginScreen()
+            : HomeScreen(
+                currentNumberOfStars: 12,
+                lastLevelCompleted: 7,
+                totalNumberOfLevels: 20,
+              ),
       ),
     );
   }
