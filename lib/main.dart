@@ -4,11 +4,19 @@ import 'package:drag_drop/src/utils/encrypted_storage.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 
+bool enableHaptics = true;
 void main() async {
   await WidgetsFlutterBinding.ensureInitialized();
 
   final jwt = await EncryptedStorage().read(key: 'jwt');
   bool showLoginScreen = true;
+  String? haptics = await EncryptedStorage().read(key: 'haptics');
+
+  if (haptics == null || haptics == 'true') {
+    enableHaptics = true;
+  } else {
+    enableHaptics = false;
+  }
 
   if (jwt != null) {
     showLoginScreen = false;

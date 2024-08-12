@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:drag_drop/main.dart';
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/game.dart';
@@ -153,7 +154,7 @@ class _GameScreenState extends State<GameScreen> {
 
       final canVibrate = await Haptics.canVibrate();
 
-      if (canVibrate) {
+      if (canVibrate && enableHaptics) {
         await Haptics.vibrate(HapticsType.success);
       }
     } else {
@@ -497,7 +498,7 @@ class TimerText extends StatefulWidget {
 }
 
 class _TimerTextState extends State<TimerText> {
-  int totalTime = 20;
+  int totalTime = 120;
 
   String formattedTime({required int timeInSecond}) {
     int sec = timeInSecond % 60;

@@ -1,9 +1,11 @@
+import 'package:drag_drop/main.dart';
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/login/login_screen.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
+import 'package:drag_drop/src/utils/encrypted_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -90,6 +92,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           leadingIcon: Image.asset(PngAssets.hapticsLogo),
           Text: 'Haptics',
           switchRequired: true,
+          switchOn: enableHaptics,
+          onSwitchChanged: (value) async {
+            enableHaptics = value;
+            await EncryptedStorage()
+                .write(key: "haptics", value: value.toString());
+          },
         ),
         CustomTile(
           leadingIcon: Icon(
@@ -141,6 +149,7 @@ class CustomTile extends StatefulWidget {
   final Widget? leadingIcon;
   final String Text;
   bool switchRequired;
+  final Function? onSwitchChanged;
   bool? switchOn;
 
   CustomTile({
@@ -148,6 +157,7 @@ class CustomTile extends StatefulWidget {
     this.leadingIcon,
     required this.Text,
     this.switchRequired = false,
+    this.onSwitchChanged,
     this.switchOn,
   });
 
@@ -190,6 +200,7 @@ class _CustomTileState extends State<CustomTile> {
                       setState(() {
                         widget.switchOn = value;
                       });
+                      widget.onSwitchChanged!(value);
                     }),
                     activeTrackColor: CustomColor.primaryColor,
                   )
