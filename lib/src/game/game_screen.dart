@@ -282,7 +282,7 @@ class _GameScreenState extends State<GameScreen> {
           onLeadingPressed: () {
             Navigator.of(context).pop();
           },
-          title: '<   Level ${widget.level.toString()}   >',
+          title: 'Level ${widget.level.toString()}',
           onTrailingPressed: () {
             Navigator.of(context).pop();
             Navigator.of(context).pop();
