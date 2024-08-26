@@ -1,20 +1,30 @@
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
-import 'package:drag_drop/src/constants/levels.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/game/game_screen.dart';
 import 'package:drag_drop/src/leaderboard/leaderboard_screen.dart';
 import 'package:drag_drop/src/levels/level_start_screen.dart';
+import 'package:drag_drop/src/settings/setting_repo.dart';
 import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
+import 'package:drag_drop/src/utils/encrypted_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class GameResultScreen extends StatelessWidget {
   final int level;
-  const GameResultScreen({super.key, required this.level});
+  final int stars;
+  final String currentTime;
+  final String bestTime;
+  const GameResultScreen({
+    super.key,
+    required this.level,
+    required this.stars,
+    required this.currentTime,
+    required this.bestTime,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +33,11 @@ class GameResultScreen extends StatelessWidget {
         leadingIconName: SvgAssets.homeIcon,
         trailingIconName: SvgAssets.settingsIcon,
         onLeadingPressed: () {
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
+          Navigator.popUntil(context, (Route<dynamic> route) => route.isFirst);
         },
         title: 'Level $level',
         onTrailingPressed: () {
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
+          Navigator.popUntil(context, (Route<dynamic> route) => route.isFirst);
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => SettingsScreen()));
         },
@@ -53,7 +59,7 @@ class GameResultScreen extends StatelessWidget {
               width: 16.5.w,
             ),
             Text(
-              '15/24',
+              '$GLOBAL_STARS',
               style: w700.size36.copyWith(
                 color: CustomColor.primaryColor,
               ),
@@ -72,7 +78,7 @@ class GameResultScreen extends StatelessWidget {
         SizedBox(
           height: 20.h,
         ),
-        StarsWidget(stars: 1),
+        StarsWidget(stars: stars),
         SizedBox(
           height: 25.h,
         ),
@@ -80,18 +86,16 @@ class GameResultScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             GestureDetector(
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+              onTap: () async {
+                int count = 0;
+                Navigator.of(context).popUntil((_) => count++ >= 3);
 
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => GameScreen(
-                      level: level + 1,
-                      apiResonse: levels[level],
-                    ),
-                  ),
-                );
+                await EncryptedStorage()
+                    .write(key: "recent", value: (level + 1).toString());
+
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => LevelStartScreen(level: level + 1),
+                ));
               },
               child: CustomContainer(
                 color: CustomColor.primaryColor,
@@ -102,30 +106,38 @@ class GameResultScreen extends StatelessWidget {
                 borderColor: CustomColor.primaryColor,
               ),
             ),
-            CustomButton(
-              width: 342.w,
-              color: CustomColor.backgrondBlue,
-              textColor: CustomColor.primaryColor,
-              primaryText: 'Try Again',
-              borderColor: CustomColor.primaryColor,
-              svgPath: SvgAssets.resetIcon,
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: CustomButton(
+                width: 342.w,
+                color: CustomColor.backgrondBlue,
+                textColor: CustomColor.primaryColor,
+                primaryText: 'Try Again',
+                borderColor: CustomColor.primaryColor,
+                svgPath: SvgAssets.resetIcon,
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CustomContainer(
-                  color: CustomColor.backgrondBlue,
-                  height: 43.h,
-                  width: 165.w,
-                  textColor: CustomColor.primaryColor,
-                  primaryText: 'Remove Ads',
-                  borderColor: CustomColor.primaryColor,
+                GestureDetector(
+                  onTap: () {},
+                  child: CustomContainer(
+                    color: CustomColor.backgrondBlue,
+                    height: 43.h,
+                    width: 165.w,
+                    textColor: CustomColor.primaryColor,
+                    primaryText: 'Remove Ads',
+                    borderColor: CustomColor.primaryColor,
+                  ),
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
+                    Navigator.popUntil(
+                        context, (Route<dynamic> route) => route.isFirst);
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => LeaderboardScreen()));
                   },
@@ -146,7 +158,7 @@ class GameResultScreen extends StatelessWidget {
               textColor: CustomColor.primaryColor,
               primaryText: 'Best Time',
               borderColor: CustomColor.primaryColor,
-              secondaryText: '05:00',
+              secondaryText: bestTime,
             ),
             CustomButton(
               width: 342.w,
@@ -154,7 +166,7 @@ class GameResultScreen extends StatelessWidget {
               textColor: CustomColor.primaryColor,
               primaryText: 'Current Time',
               borderColor: CustomColor.backgrondBlue,
-              secondaryText: '05:00',
+              secondaryText: currentTime,
             ),
           ],
         ),

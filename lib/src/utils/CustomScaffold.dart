@@ -1,3 +1,4 @@
+import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -38,6 +39,7 @@ class CustomScaffold extends StatelessWidget {
       bottom: false,
       child: Scaffold(
         appBar: appBar,
+        backgroundColor: CustomColor.white,
         body: Container(
           decoration: BoxDecoration(
             image: backgroundImage,

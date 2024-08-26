@@ -20,6 +20,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   late TextEditingController passwordController;
   late TextEditingController usernameController;
   late TextEditingController confirmPasswordController;
+  late TextEditingController firstNameController;
+  late TextEditingController lastNameController;
+
   int _age = 18;
   late bool _passwordVisible;
   late bool _confirmPasswordVisible;
@@ -30,6 +33,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     passwordController = TextEditingController();
     usernameController = TextEditingController();
     confirmPasswordController = TextEditingController();
+    firstNameController = TextEditingController();
+    lastNameController = TextEditingController();
+
     _passwordVisible = false;
     _confirmPasswordVisible = false;
 
@@ -42,6 +48,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     passwordController.dispose();
     usernameController.dispose();
     confirmPasswordController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
     super.dispose();
   }
 
@@ -54,8 +62,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     SignUpModel signUpModel = SignUpModel(
       username: usernameController.text,
       email: emailController.text,
-      firstName: 'Chayan',
-      lastName: 'Jain',
+      firstName: firstNameController.text,
+      lastName: lastNameController.text,
       password: passwordController.text,
       age: _age,
     );
@@ -75,6 +83,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (passwordController.text.isEmpty) {
       return 'Password cannot be empty';
     }
+    if (passwordController.text.length < 8) {
+      return 'Password must be atleast 8 characters long';
+    }
+    if (firstNameController.text.isEmpty) {
+      return 'First Name cannot be empty';
+    }
+    if (lastNameController.text.isEmpty) {
+      return 'Last Name cannot be empty';
+    }
+
     if (confirmPasswordController.text.isEmpty) {
       return 'Confirm Password cannot be empty';
     }
@@ -204,6 +222,58 @@ class _SignUpScreenState extends State<SignUpScreen> {
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
+            'First Name',
+            style: w500.size16.copyWith(color: CustomColor.primary60Color),
+          ),
+        ),
+        TextField(
+          controller: firstNameController,
+          decoration: InputDecoration(
+            enabledBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              borderSide: BorderSide(width: 1, color: CustomColor.primaryColor),
+            ),
+            focusedBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              borderSide: BorderSide(width: 1, color: CustomColor.primaryColor),
+            ),
+            fillColor: CustomColor.textfieldBGColor,
+            filled: true,
+          ),
+          style: w500.size18.copyWith(color: CustomColor.primaryColor),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Last Name',
+            style: w500.size16.copyWith(color: CustomColor.primary60Color),
+          ),
+        ),
+        TextField(
+          controller: lastNameController,
+          decoration: InputDecoration(
+            enabledBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              borderSide: BorderSide(width: 1, color: CustomColor.primaryColor),
+            ),
+            focusedBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              borderSide: BorderSide(width: 1, color: CustomColor.primaryColor),
+            ),
+            fillColor: CustomColor.textfieldBGColor,
+            filled: true,
+          ),
+          style: w500.size18.copyWith(color: CustomColor.primaryColor),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
             'Password',
             style: w500.size16.copyWith(color: CustomColor.primary60Color),
           ),
@@ -288,7 +358,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
             String message = await onSubmit();
             if (message.isNotEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(message),
+                content: Text(
+                  message,
+                  style: w700.size16.copyWith(color: CustomColor.white),
+                ),
               ));
             }
             if (message == "Success") {

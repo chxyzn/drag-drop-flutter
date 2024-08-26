@@ -1,0 +1,6 @@
+String GLOBAL_FIRSTNAME = "";
+String GLOBAL_LASTNAME = "";
+String GLOBAL_EMAIL = "";
+
+int GLOBAL_STARS = 0;
+int GLOBAL_RANK = 0;

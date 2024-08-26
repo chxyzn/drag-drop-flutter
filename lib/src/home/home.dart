@@ -1,26 +1,25 @@
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
+import 'package:drag_drop/src/constants/help_widgets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
+import 'package:drag_drop/src/home/encrypted_storage_widget.dart';
+import 'package:drag_drop/src/home/home_repo.dart';
 import 'package:drag_drop/src/leaderboard/leaderboard_screen.dart';
 import 'package:drag_drop/src/levels/level_start_screen.dart';
 import 'package:drag_drop/src/levels/all_levels_screen.dart';
-import 'package:drag_drop/src/login/login_screen.dart';
 import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
 import 'package:drag_drop/src/utils/encrypted_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class HomeScreen extends StatefulWidget {
-  final int currentNumberOfStars;
-  final int lastLevelCompleted;
-  final int totalNumberOfLevels;
+int GLOBAL_HOME_STAR_WIDGET_KEY = 0;
 
+class HomeScreen extends StatefulWidget {
+  final bool openedFromLogin;
   const HomeScreen({
     super.key,
-    required this.currentNumberOfStars,
-    required this.lastLevelCompleted,
-    required this.totalNumberOfLevels,
+    this.openedFromLogin = false,
   });
 
   @override
@@ -28,6 +27,27 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Widget StarsCountWidget(String stars) {
+    return Text(
+      stars,
+      style: w700.size18.copyWith(
+        color: CustomColor.primaryColor,
+      ),
+    );
+  }
+
+  Widget RankWidget(String rank) {
+    return Center(
+      child: Text(
+        'My Rank: $rank',
+        textAlign: TextAlign.center,
+        style: w700.size16.copyWith(
+          color: CustomColor.darkerDarkBlack,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -45,9 +65,17 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               GestureDetector(
                 onTap: () async {
-                  await EncryptedStorage().deleteAll();
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => LoginScreen()));
+                  showDialog(
+                      context: context,
+                      barrierColor: Colors.black.withOpacity(0.3),
+                      barrierDismissible: true,
+                      builder: ((context) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 100.h, horizontal: 40.w),
+                          child: GraphBoxHelp(),
+                        );
+                      }));
                 },
                 child: Image(
                   image: AssetImage(PngAssets.cicrcleHelp),
@@ -62,12 +90,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: CustomColor.goldStarColor,
                   ),
                   SizedBox(width: 8.w),
-                  Text(
-                    '${widget.currentNumberOfStars}/${(widget.lastLevelCompleted) * 3}',
-                    style: w700.size18.copyWith(
-                      color: CustomColor.primaryColor,
-                    ),
-                  ),
+                  // Text(
+                  //   '$GLOBAL_STARS',
+                  //   style: w700.size18.copyWith(
+                  //     color: CustomColor.primaryColor,
+                  //   ),
+                  // ),
+                  EncryptedStorageWidget(
+                    key: ValueKey(GLOBAL_HOME_STAR_WIDGET_KEY),
+                    provider: (widget.openedFromLogin)
+                        ? starsLoginScreenProvider
+                        : starsHomeScreenProvider,
+                    child: StarsCountWidget,
+                    value: "stars",
+                  )
                 ],
               ),
               GestureDetector(
@@ -117,11 +153,26 @@ class _HomeScreenState extends State<HomeScreen> {
           style: w700.size18.copyWith(color: CustomColor.greenTextColor),
         ),
         GestureDetector(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => LevelStartScreen(
-                  level: 9,
+          onTap: () async {
+            String? recentLevel = await EncryptedStorage().read(key: "recent");
+
+            if (recentLevel != null) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => LevelStartScreen(
+                    level: int.parse(recentLevel),
+                  ),
+                ),
+              );
+              return;
+            }
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: CustomColor.primaryColor,
+                content: Text(
+                  'No recent level found!, Go to All levels to start playing!',
+                  style: w700.size16.copyWith(color: CustomColor.white),
                 ),
               ),
             );
@@ -153,11 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => AllLevelsScreen(
-                  currentNumberOfStars: widget.currentNumberOfStars,
-                  lastLevelCompleted: widget.lastLevelCompleted,
-                  totalNumberOfLevels: widget.totalNumberOfLevels,
-                ),
+                builder: (context) => AllLevelsScreen(),
               ),
             );
           },
@@ -202,14 +249,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(8.r),
                     color: CustomColor.white,
                   ),
-                  child: Center(
-                    child: Text(
-                      'My Rank: 6',
-                      textAlign: TextAlign.center,
-                      style: w700.size16.copyWith(
-                        color: CustomColor.darkerDarkBlack,
-                      ),
-                    ),
+                  child: EncryptedStorageWidget(
+                    provider: myRankHomeScreenProvider,
+                    child: RankWidget,
+                    value: "rank",
                   ),
                 ),
               ),

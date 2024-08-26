@@ -4,9 +4,11 @@ import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/home/home.dart';
 import 'package:drag_drop/src/login/login_repo.dart';
 import 'package:drag_drop/src/login/signup_screen.dart';
+import 'package:drag_drop/src/settings/setting_repo.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
 import 'package:drag_drop/src/utils/encrypted_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -151,70 +153,95 @@ class _LoginScreenState extends State<LoginScreen> {
         SizedBox(
           height: 30,
         ),
-        GestureDetector(
-          onTap: () async {
-            toggleLoader();
-            try {
-              LoginModel loginModel = LoginModel(
-                  username: usernameController.text,
-                  password: passwordController.text);
+        Consumer(builder: (context, ref, child) {
+          return GestureDetector(
+            onTap: () async {
+              toggleLoader();
+              try {
+                LoginModel loginModel = LoginModel(
+                    username: usernameController.text,
+                    password: passwordController.text);
 
-              final result = await loginModel.login();
+                final result = await loginModel.login(ref);
 
-              print(result.$1);
-              print(result.$2);
+                print(result.$1);
+                print(result.$2);
 
-              if (result.$2 / 100 == 4) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text("Invalid username or password"),
-                ));
+                if (result.$2 / 100 == 4) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                      "Invalid username or password",
+                      style: w700.size16.copyWith(color: CustomColor.white),
+                    ),
+                  ));
+                  toggleLoader();
+                  return;
+                }
+                if (result.$2 / 100 == 5) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                      "Server error",
+                      style: w700.size16.copyWith(color: CustomColor.white),
+                    ),
+                  ));
+                  toggleLoader();
+                  return;
+                }
+
+                await EncryptedStorage()
+                    .write(key: "jwt", value: result.$1!.accessToken);
+
+                GLOBAL_FIRSTNAME = result.$1!.user.firstName;
+                GLOBAL_LASTNAME = result.$1!.user.lastName;
+                GLOBAL_EMAIL = result.$1!.user.email;
+
+                GLOBAL_STARS = result.$1!.user.totalScore;
+
+                await EncryptedStorage()
+                    .write(key: "firstname", value: result.$1!.user.firstName);
+                await EncryptedStorage()
+                    .write(key: "lastname", value: result.$1!.user.lastName);
+                await EncryptedStorage()
+                    .write(key: "email", value: result.$1!.user.email);
+
+                await EncryptedStorage().write(
+                    key: "stars", value: result.$1!.user.totalScore.toString());
+                await EncryptedStorage().write(
+                    key: "rank", value: result.$1!.user.currentRank.toString());
+
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: ((context) => HomeScreen(
+                          openedFromLogin: true,
+                        )),
+                  ),
+                );
                 toggleLoader();
-                return;
-              }
-              if (result.$2 / 100 == 5) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text("Server error"),
-                ));
+              } catch (e) {
                 toggleLoader();
-                return;
               }
-
-              EncryptedStorage()
-                  .write(key: "jwt", value: result.$1!.accessToken);
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: ((context) => HomeScreen(
-                        currentNumberOfStars: 15,
-                        lastLevelCompleted: 12,
-                        totalNumberOfLevels: 34,
-                      )),
+            },
+            child: Container(
+              width: 150.w,
+              decoration: BoxDecoration(
+                  color: CustomColor.primaryColor,
+                  borderRadius: BorderRadius.circular(4.0)),
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 15.0),
+                  child: (showLoader)
+                      ? CircularProgressIndicator(
+                          color: CustomColor.white,
+                        )
+                      : Text(
+                          'Login',
+                          style: w700.size18.colorWhite,
+                        ),
                 ),
-              );
-              toggleLoader();
-            } catch (e) {
-              toggleLoader();
-            }
-          },
-          child: Container(
-            width: 150.w,
-            decoration: BoxDecoration(
-                color: CustomColor.primaryColor,
-                borderRadius: BorderRadius.circular(4.0)),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15.0),
-                child: (showLoader)
-                    ? CircularProgressIndicator(
-                        color: CustomColor.white,
-                      )
-                    : Text(
-                        'Login',
-                        style: w700.size18.colorWhite,
-                      ),
               ),
             ),
-          ),
-        ),
+          );
+        }),
         Padding(
           padding: const EdgeInsets.only(top: 20.0),
           child: GestureDetector(

@@ -6,32 +6,45 @@ import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/game.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/game/game_logic.dart';
+import 'package:drag_drop/src/game/game_repo.dart';
 import 'package:drag_drop/src/game/game_result_screen.dart';
 import 'package:drag_drop/src/graph/graph_view.dart';
 import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pausable_timer/pausable_timer.dart';
 
-List<String> graphTheoryLessons = [
-  'The total sum of degrees of all the vertices in a graph is equal to twice the number of edges.',
-  'The maximum number of edges in a graph with n vertices is n(n-1)/2.',
-  'Cycle graph, Complete graph, Bipartite graph, and Complete Bipartite graph are some of the special types of graphs.',
-  'A graph is Eulerian if and only if all its vertices are of even degree.',
-];
+int TOTAL_TIME = 120;
 
-class GameScreen extends StatefulWidget {
+class GameScreen extends ConsumerStatefulWidget {
   final int level;
-  final Map<String, dynamic> apiResonse;
-  const GameScreen({super.key, required this.level, required this.apiResonse});
+  final int gridRowSize;
+  final int gridColumnSize;
+  final String hint;
+  final List<int> questionNodes;
+
+  final List<List<int>> questionEdges;
+  final List<Map<String, dynamic>> nodes;
+  const GameScreen({
+    super.key,
+    required this.level,
+    required this.gridRowSize,
+    required this.gridColumnSize,
+    required this.questionNodes,
+    required this.questionEdges,
+    required this.nodes,
+    required this.hint,
+  });
 
   @override
-  State<GameScreen> createState() => _GameScreenState();
+  ConsumerState<GameScreen> createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> {
+class _GameScreenState extends ConsumerState<GameScreen> {
   List<int> shapesPlacedOnGrid = [];
   late List<List<int>> baseMatrix;
   List<List<List<int>>> baseMatrixStates = [];
@@ -42,33 +55,30 @@ class _GameScreenState extends State<GameScreen> {
   List<List<int>> questionEdges = [];
   List<Map<String, dynamic>> availableNodes = [];
 
+  bool showSubmitLoader = false;
+
   @override
   void initState() {
-    gridRowSize = widget.apiResonse['grid']['row_size'];
-    gridColumnSize = widget.apiResonse['grid']['column_size'];
+    gridRowSize = widget.gridRowSize;
+    gridColumnSize = widget.gridColumnSize;
 
     //set available nodes i.e blocks
-    availableNodes = List.from(widget.apiResonse['graph']['nodes']);
+    availableNodes = List.from(widget.nodes);
 
     maxGridLength =
         gridRowSize >= gridColumnSize ? gridRowSize : gridColumnSize;
 
     baseMatrix = GameLogic().initBaseMatrix(gridRowSize, gridColumnSize);
 
-    List apiNodes = widget.apiResonse['graph']['nodes'];
-    for (var element in apiNodes) {
-      questionNodes.add(element['id']);
+    for (var element in widget.questionNodes) {
+      questionNodes.add(element);
     }
 
-    List apiEdges = widget.apiResonse['graph']['edges'];
-    print(apiEdges);
-    for (var element in apiEdges) {
+    for (var element in widget.questionEdges) {
       // element.first += 1;
       // element.last += 1;
       questionEdges.add(element);
     }
-
-    print('these are questionEdges $questionEdges');
 
     super.initState();
   }
@@ -80,12 +90,8 @@ class _GameScreenState extends State<GameScreen> {
         gridColumnSize,
       );
 
-      availableNodes = widget.apiResonse['graph']['nodes'];
-
-      print(
-          'this is the length of available nodes after reste ${availableNodes.length}');
-      print(
-          ' this is the length of widget.graph.nodes ${widget.apiResonse['graph']['nodes'].length}');
+      TOTAL_TIME = 120;
+      availableNodes = widget.nodes;
     });
   }
 
@@ -109,9 +115,12 @@ class _GameScreenState extends State<GameScreen> {
             if (baseMatrix[num1][num2] > 0) {
               canUpdate = false;
               ScaffoldMessenger.of(context).clearSnackBars();
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 backgroundColor: Colors.red,
-                content: Text('Block Clashing!!!'),
+                content: Text(
+                  'Block Clashing!!!',
+                  style: w700.size16.copyWith(color: CustomColor.white),
+                ),
               ));
               // break;
               return;
@@ -159,8 +168,12 @@ class _GameScreenState extends State<GameScreen> {
       }
     } else {
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(backgroundColor: Colors.red, content: Text('Error')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            'Error',
+            style: w700.size16.copyWith(color: CustomColor.white),
+          )));
     }
   }
 
@@ -254,8 +267,8 @@ class _GameScreenState extends State<GameScreen> {
 
       //adding the shape in options again
       int idToAdd = shapesPlacedOnGrid.last;
-      Map<String, dynamic> node = widget.apiResonse['graph']['nodes']
-          .firstWhere((element) => element['id'] == idToAdd);
+      Map<String, dynamic> node =
+          widget.nodes.firstWhere((element) => element['id'] == idToAdd);
       availableNodes.insert(0, node);
       shapesPlacedOnGrid.removeLast();
     });
@@ -270,6 +283,15 @@ class _GameScreenState extends State<GameScreen> {
         }
       }
     });
+  }
+
+  String formattedTime(int seconds) {
+    int sec = seconds % 60;
+    int min = (seconds / 60).floor();
+    String minute = min.toString().length <= 1 ? "0$min" : "$min";
+    String second = sec.toString().length <= 1 ? "0$sec" : "$sec";
+
+    return "00:$minute:$second";
   }
 
   @override
@@ -293,213 +315,247 @@ class _GameScreenState extends State<GameScreen> {
             );
           },
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  width: 321.w,
-                  margin: EdgeInsets.symmetric(horizontal: 25.0.w),
-                  decoration: BoxDecoration(
-                    color: CustomColor.primaryColor,
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            showDialog(
-                                context: context,
-                                barrierColor: Colors.black.withOpacity(0.3),
-                                barrierDismissible: true,
-                                builder: ((context) {
-                                  return HintWidget();
-                                }));
-                          },
-                          child: CustomGameButton(
-                            svgPath: SvgAssets.hintIcon,
-                            text: 'Hint',
-                          ),
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Time',
-                              style: w600.size15.copyWith(
-                                color: Colors.white,
-                              ),
-                            ),
-                            TimerText(),
-                          ],
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            resetBaseMatrix();
-                          },
-                          child: CustomGameButton(
-                            svgPath: SvgAssets.resetIcon,
-                            text: 'Reset',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 10.h,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: CustomColor.backgrondBlue,
-                    borderRadius: BorderRadius.all(Radius.circular(8.r)),
-                    border: Border.all(
-                      color: CustomColor.dividerGrey,
-                      width: 1.w,
-                    ),
-                  ),
-                  height: 140.h,
-                  width: 321.w,
-                  child: GraphWidget(
-                    nodes: questionNodes,
-                    edges: questionEdges,
-                  ),
-                ),
-                SizedBox(
-                  height: 10.h,
-                ),
-                Stack(
-                  children: [
-                    Center(
-                      child: SizedBox(
-                        height: gridRowSize * GameConstants.gridBlockSize,
-                        width: gridColumnSize * GameConstants.gridBlockSize,
-                        child: Center(
-                          child: BaseBlockGenerator(
-                            matrix: baseMatrix,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Center(
-                      child: SizedBox(
-                        height: gridRowSize * GameConstants.gridBlockSize,
-                        width: gridColumnSize * GameConstants.gridBlockSize,
-                        child: Center(
-                          child: TargetBlockGenerator(
-                            shape: baseMatrix,
-                            onAccept: onBlockAccept,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                BlockOptionsWidget(
-                  maxGridLength: maxGridLength,
-                  nodes: availableNodes,
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.only(bottom: 16.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      undo();
-                    },
-                    child: CustomContainer(
-                      color: CustomColor.backgrondBlue,
-                      height: 43.h,
-                      width: 160.w,
-                      textColor: CustomColor.primaryColor,
-                      primaryText: 'Undo',
-                      borderColor: CustomColor.primaryColor,
+                  Container(
+                    width: 321.w,
+                    margin: EdgeInsets.symmetric(horizontal: 25.0.w),
+                    decoration: BoxDecoration(
+                      color: CustomColor.primaryColor,
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              showDialog(
+                                  context: context,
+                                  barrierColor: Colors.black.withOpacity(0.3),
+                                  barrierDismissible: true,
+                                  builder: ((context) {
+                                    return HintWidget(hint: widget.hint);
+                                  }));
+                            },
+                            child: CustomGameButton(
+                              svgPath: SvgAssets.hintIcon,
+                              text: 'Hint',
+                            ),
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Time',
+                                style: w600.size15.copyWith(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              TimerText(),
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              resetBaseMatrix();
+                            },
+                            child: CustomGameButton(
+                              svgPath: SvgAssets.resetIcon,
+                              text: 'Reset',
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(
-                    width: 11.w,
+                    height: 10.h,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      List<List<int>> edges =
-                          removeDuplicates(getAdjacentEdges());
-
-                      List<int> nodes = [];
-                      for (List<int> edge in edges) {
-                        for (int node in edge) {
-                          if (!nodes.contains(node)) {
-                            nodes.add(node);
-                          }
-                        }
-                      }
-                      bool correctSolution =
-                          isSolutionCorrect(edges, questionEdges);
-
-                      if (correctSolution) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => GameResultScreen(
-                              level: widget.level,
+                  Container(
+                    decoration: BoxDecoration(
+                      color: CustomColor.backgrondBlue,
+                      borderRadius: BorderRadius.all(Radius.circular(8.r)),
+                      border: Border.all(
+                        color: CustomColor.dividerGrey,
+                        width: 1.w,
+                      ),
+                    ),
+                    height: 140.h,
+                    width: 321.w,
+                    child: GraphWidget(
+                      nodes: questionNodes,
+                      edges: questionEdges,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  Stack(
+                    children: [
+                      Center(
+                        child: SizedBox(
+                          height: gridRowSize * GameConstants.gridBlockSize,
+                          width: gridColumnSize * GameConstants.gridBlockSize,
+                          child: Center(
+                            child: BaseBlockGenerator(
+                              matrix: baseMatrix,
                             ),
                           ),
-                        );
-                        return;
-                      }
-
-                      showDialog(
-                          context: context,
-                          barrierColor: Colors.black.withOpacity(0.3),
-                          barrierDismissible: true,
-                          builder: ((context) {
-                            return BottomSheetWidget(
-                              resetFunction: resetBaseMatrix,
-                            );
-                          }));
-                    },
-                    child: CustomContainer(
-                      color: CustomColor.primaryColor,
-                      height: 43.h,
-                      width: 160.w,
-                      textColor: CustomColor.white,
-                      primaryText: 'Submit',
-                      borderColor: CustomColor.primaryColor,
-                    ),
+                        ),
+                      ),
+                      Center(
+                        child: SizedBox(
+                          height: gridRowSize * GameConstants.gridBlockSize,
+                          width: gridColumnSize * GameConstants.gridBlockSize,
+                          child: Center(
+                            child: TargetBlockGenerator(
+                              shape: baseMatrix,
+                              onAccept: onBlockAccept,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  BlockOptionsWidget(
+                    maxGridLength: maxGridLength,
+                    nodes: availableNodes,
+                  ),
+                  const SizedBox(
+                    height: 16,
                   ),
                 ],
               ),
-            ),
-          ],
+              Padding(
+                padding: EdgeInsets.only(bottom: 16.h),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        undo();
+                      },
+                      child: CustomContainer(
+                        color: CustomColor.backgrondBlue,
+                        height: 43.h,
+                        width: 160.w,
+                        textColor: CustomColor.primaryColor,
+                        primaryText: 'Undo',
+                        borderColor: CustomColor.primaryColor,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 11.w,
+                    ),
+                    Consumer(builder: (context, ref, child) {
+                      return GestureDetector(
+                        onTap: () async {
+                          List<List<int>> edges =
+                              removeDuplicates(getAdjacentEdges());
+
+                          List<int> nodes = [];
+                          for (List<int> edge in edges) {
+                            for (int node in edge) {
+                              if (!nodes.contains(node)) {
+                                nodes.add(node);
+                              }
+                            }
+                          }
+                          bool correctSolution =
+                              isSolutionCorrect(edges, questionEdges);
+
+                          if (correctSolution) {
+                            setState(() {
+                              showSubmitLoader = true;
+                            });
+
+                            String time = formattedTime(ref.read(timeProvider));
+                            int level = widget.level;
+                            SubmitSolutionResponse response =
+                                await submitSolution(time, level, ref);
+                            if (response.statusCode != 200) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                backgroundColor: Colors.red,
+                                content: Text(
+                                  'Server Error',
+                                  style: w700.size16
+                                      .copyWith(color: CustomColor.white),
+                                ),
+                              ));
+
+                              setState(() {
+                                showSubmitLoader = false;
+                              });
+                            }
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => GameResultScreen(
+                                  stars: response.score,
+                                  bestTime: response.bestTime,
+                                  currentTime:
+                                      formattedTime(ref.read(timeProvider)),
+                                  level: widget.level,
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+
+                          timer.pause();
+                          showDialog(
+                              context: context,
+                              barrierColor: Colors.black.withOpacity(0.3),
+                              barrierDismissible: true,
+                              builder: ((context) {
+                                return BottomSheetWidget(
+                                  resetFunction: resetBaseMatrix,
+                                );
+                              }));
+                        },
+                        child: CustomContainer(
+                          color: CustomColor.primaryColor,
+                          showLoader: showSubmitLoader,
+                          height: 43.h,
+                          width: 160.w,
+                          textColor: CustomColor.white,
+                          primaryText: 'Submit',
+                          borderColor: CustomColor.primaryColor,
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class TimerText extends StatefulWidget {
-  const TimerText({
+// ignore: must_be_immutable
+class TimerText extends ConsumerStatefulWidget {
+  TimerText({
     super.key,
   });
 
   @override
-  State<TimerText> createState() => _TimerTextState();
+  ConsumerState<TimerText> createState() => _TimerTextState();
 }
 
-class _TimerTextState extends State<TimerText> {
-  int totalTime = 120;
+late PausableTimer timer;
 
+class _TimerTextState extends ConsumerState<TimerText> {
   String formattedTime({required int timeInSecond}) {
     int sec = timeInSecond % 60;
     int min = (timeInSecond / 60).floor();
@@ -508,20 +564,28 @@ class _TimerTextState extends State<TimerText> {
     return "$minute : $second";
   }
 
-  late Timer timer;
+  int localTime = 120;
+
+  int getLocalTime() {
+    return localTime;
+  }
 
   @override
   void initState() {
     super.initState();
-    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        if (totalTime == 0) {
-          timer.cancel();
-          Navigator.pop(context, 'Time Up!');
-        }
-        totalTime--;
+
+    timer = PausableTimer.periodic(const Duration(seconds: 1), () {
+      if (localTime == 0) {
+        timer.cancel();
+        Navigator.pop(context, 'Time Up!');
+      }
+
+      localTime--;
+      ref.read(timeProvider.notifier).update((prev) {
+        return --prev;
       });
     });
+    timer.start();
   }
 
   @override
@@ -533,7 +597,8 @@ class _TimerTextState extends State<TimerText> {
   @override
   Widget build(BuildContext context) {
     return Text(
-      formattedTime(timeInSecond: totalTime),
+      formattedTime(timeInSecond: ref.watch(timeProvider)),
+      // ref.watch(timeProvider).toString(),
       style: w700.size24.copyWith(
         color: Colors.white,
       ),
@@ -541,15 +606,22 @@ class _TimerTextState extends State<TimerText> {
   }
 }
 
-class BottomSheetWidget extends StatelessWidget {
+class BottomSheetWidget extends ConsumerWidget {
   final Function resetFunction;
   const BottomSheetWidget({
     super.key,
     required this.resetFunction,
   });
+  String formattedTime({required int timeInSecond}) {
+    int sec = timeInSecond % 60;
+    int min = (timeInSecond / 60).floor();
+    String minute = min.toString().length <= 1 ? "0$min" : "$min";
+    String second = sec.toString().length <= 1 ? "0$sec" : "$sec";
+    return "$minute : $second";
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Center(
       child: Container(
         height: 409.h,
@@ -590,7 +662,8 @@ class BottomSheetWidget extends StatelessWidget {
                   ),
                   children: [
                     TextSpan(
-                      text: ' 4:00',
+                      text:
+                          ' ${formattedTime(timeInSecond: ref.watch(timeProvider))}',
                       style: w700.size16.copyWith(
                         color: CustomColor.primaryColor,
                       ),
@@ -606,6 +679,10 @@ class BottomSheetWidget extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () {
                       resetFunction();
+                      timer.start();
+                      ref.read(timeProvider.notifier).update((prev) {
+                        return TOTAL_TIME;
+                      });
                       Navigator.of(context).pop();
                     },
                     child: Container(
@@ -634,6 +711,7 @@ class BottomSheetWidget extends StatelessWidget {
                 Material(
                   child: GestureDetector(
                     onTap: () {
+                      timer.start();
                       Navigator.of(context).pop();
                     },
                     child: Container(
@@ -674,7 +752,14 @@ class BlockOptionsWidget extends StatelessWidget {
       {super.key, required this.maxGridLength, required this.nodes});
 
   List<List<int>> getShapeMatrix(Map<String, dynamic> node) {
-    List<List<int>> shape = node['shape'];
+    List dynamicShape = node['shape'];
+
+    List<List<int>> shape = [];
+
+    for (var e in dynamicShape) {
+      shape.add(List.from(e));
+    }
+
     for (int i = 0; i < shape.length; i++) {
       for (int j = 0; j < shape[i].length; j++) {
         if (shape[i][j] == 1) {
@@ -732,7 +817,7 @@ class CustomDraggable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LongPressDraggable<List<List<int>>>(
+    return Draggable<List<List<int>>>(
       data: shape,
       feedback: ShapeGenerator(
         shape: shape,
@@ -791,12 +876,14 @@ class CustomContainer extends StatelessWidget {
   final Color textColor;
   final Color borderColor;
   final String primaryText;
+  final bool showLoader;
   final double width;
   final double height;
   const CustomContainer({
     super.key,
     required this.color,
     required this.width,
+    this.showLoader = false,
     required this.height,
     required this.textColor,
     required this.primaryText,
@@ -818,18 +905,26 @@ class CustomContainer extends StatelessWidget {
         ),
       ),
       child: Center(
-        child: Text(
-          primaryText,
-          textAlign: TextAlign.center,
-          style: w700.size16.copyWith(color: textColor),
-        ),
+        child: (showLoader)
+            ? Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                child: LinearProgressIndicator(
+                  color: CustomColor.white,
+                ),
+              )
+            : Text(
+                primaryText,
+                textAlign: TextAlign.center,
+                style: w700.size16.copyWith(color: textColor),
+              ),
       ),
     );
   }
 }
 
 class HintWidget extends StatelessWidget {
-  const HintWidget({super.key});
+  final String hint;
+  const HintWidget({super.key, required this.hint});
 
   @override
   Widget build(BuildContext context) {
@@ -877,7 +972,7 @@ class HintWidget extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(left: 35.w, right: 35.w, top: 25.h),
                 child: Text(
-                  'Proident dolore esse do cillum velit ea excepteur mollit tempor adipisicing qui elit ullamco. Labore laborum esse tempor anim deserunt excepteur cupidatat Lorem ea dolor Lorem qui eiusmod ut. Et sunt commodo ea laboris quis dolor dolore.',
+                  hint,
                   textAlign: TextAlign.center,
                   style: w700.size16.copyWith(
                     color: CustomColor.primary60Color,

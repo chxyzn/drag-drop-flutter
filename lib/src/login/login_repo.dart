@@ -1,7 +1,14 @@
 import 'dart:convert';
 
 import 'package:drag_drop/src/constants/endpoints.dart';
+import 'package:drag_drop/src/home/home_repo.dart';
+import 'package:drag_drop/src/login/login_screen.dart';
+import 'package:drag_drop/src/utils/encrypted_storage.dart';
+import 'package:drag_drop/src/utils/isar_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:isar/isar.dart';
 
 class SignUpModel {
   final String username;
@@ -59,12 +66,12 @@ class LoginModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'username': username,
-      'password': password,
+      'username': username.trim(),
+      'password': password.trim(),
     };
   }
 
-  Future<(LoginResponseModel?, int)> login() async {
+  Future<(LoginResponseModel?, int)> login(WidgetRef ref) async {
     final response = await http.post(
       Uri.parse(GplanEndpoints.baseUrl + GplanEndpoints.login),
       headers: <String, String>{
@@ -77,28 +84,21 @@ class LoginModel {
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
         final user = User(
-          username: data['user']['username'],
-          firstName: data['user']['firstname'],
-          lastName: data['user']['lastname'],
-          email: data['user']['email'],
-          age: data['user']['age'],
-          totalScore: data['user']['totalScore'],
-        );
+            username: data['user']['username'],
+            firstName: data['user']['firstname'],
+            lastName: data['user']['lastname'],
+            email: data['user']['email'],
+            age: data['user']['age'],
+            totalScore: data['user']['totalScore'],
+            currentRank: data["CurrentRank"]);
 
-        final List<LevelOverview> levels = [];
-        for (final level in data['Levels']) {
-          levels.add(LevelOverview(
-            level: level['levelNumber'],
-            stars: level['score'],
-            isCompleted: level['completed'],
-          ));
-        }
+        ref.invalidate(starsLoginScreenProvider);
+        ref.invalidate(myRankHomeScreenProvider);
 
         return (
           LoginResponseModel(
             accessToken: data['accessToken'],
             user: user,
-            levels: levels,
           ),
           response.statusCode
         );
@@ -116,12 +116,10 @@ class LoginModel {
 class LoginResponseModel {
   final String accessToken;
   final User user;
-  final List<LevelOverview> levels;
 
   LoginResponseModel({
     required this.accessToken,
     required this.user,
-    required this.levels,
   });
 }
 
@@ -132,10 +130,12 @@ class User {
   final String email;
   final int age;
   final int totalScore;
+  final int currentRank;
 
   User({
     required this.username,
     required this.firstName,
+    required this.currentRank,
     required this.lastName,
     required this.email,
     required this.age,
@@ -147,11 +147,13 @@ class LevelOverview {
   final int level;
   final int stars;
   final bool isCompleted;
+  final bool isNext;
 
   LevelOverview({
     required this.level,
     required this.stars,
     required this.isCompleted,
+    required this.isNext,
   });
 }
 
@@ -162,4 +164,16 @@ void something() {
   print(data);
   print(data['nodes']);
   print(data['nodes'].first['id']);
+}
+
+Future<void> logout(BuildContext context) async {
+  await EncryptedStorage().deleteAll();
+
+  final isar = Isar.getInstance('levels');
+  await isar!.writeTxn(() async {
+    await isar.clear();
+  });
+
+  Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => LoginScreen()), (route) => false);
 }

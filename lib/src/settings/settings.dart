@@ -2,7 +2,8 @@ import 'package:drag_drop/main.dart';
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
-import 'package:drag_drop/src/login/login_screen.dart';
+import 'package:drag_drop/src/login/login_repo.dart';
+import 'package:drag_drop/src/settings/setting_repo.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
 import 'package:drag_drop/src/utils/encrypted_storage.dart';
@@ -62,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Erling Haaland",
+                  "${GLOBAL_FIRSTNAME} ${GLOBAL_LASTNAME}",
                   style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 18.sp,
@@ -70,7 +71,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       height: 0.7.h),
                 ),
                 Text(
-                  "erling.haaland@gmail.com",
+                  "${GLOBAL_EMAIL}",
                   style: w500.size15.copyWith(color: CustomColor.primaryColor),
                 ),
               ],
@@ -113,10 +114,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         SizedBox(height: 100.h),
         GestureDetector(
-          onTap: () {
-            Navigator.of(context).pop();
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: ((context) => LoginScreen())));
+          onTap: () async {
+            await logout(context);
           },
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 16.h),

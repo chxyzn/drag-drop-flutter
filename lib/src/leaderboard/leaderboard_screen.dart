@@ -1,6 +1,7 @@
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
+import 'package:drag_drop/src/leaderboard/leaderboard_repo.dart';
 import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
@@ -18,12 +19,9 @@ class LeaderboardScreen extends StatefulWidget {
 
 class _LeaderboardScreenState extends State<LeaderboardScreen> {
   late ScrollController _scrollController;
-  late int rank;
-  // late List<String> dataList;
 
   @override
   void initState() {
-    rank = 47;
     _scrollController = ScrollController(
       initialScrollOffset: _calculateInitialScrollOffset(),
     );
@@ -65,98 +63,220 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         },
       ),
       body: [
-        Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-                color: CustomColor.primaryColor,
-                borderRadius: BorderRadius.circular(8.0)),
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Your Rank',
-                    style: w500.size16.colorWhite,
-                  ),
-                  Text(
-                    rank.toString(),
-                    style: w700.size24.colorWhite,
-                  )
-                ],
-              ),
-            )),
-        SizedBox(
-          height: 50,
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            LeaderboardPlaceholder(
-                height: 115,
-                backgroundColor: CustomColor.primary60Color,
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20.0),
-                    bottomLeft: Radius.circular(20.0)),
-                profilePicHeight: 45,
-                profilePicWidth: 45,
-                topPadding: 7.0,
-                profilePic:
-                    'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', // Replace with your profile image URL
-                name: 'name',
-                starCount: 24,
-                rank: 3),
-            LeaderboardPlaceholder(
-                height: 180,
-                backgroundColor: CustomColor.primaryColor,
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20.0),
-                    topRight: Radius.circular(20.0)),
-                profilePicHeight: 90,
-                profilePicWidth: 90,
-                topPadding: 20,
-                bottomPadding: 7,
-                profilePic:
-                    'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', // Replace with your profile image URL
-                name: 'name',
-                starCount: 24,
-                rank: 1),
-            LeaderboardPlaceholder(
-                height: 140,
-                backgroundColor: CustomColor.primary60Color,
-                borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(20.0),
-                    bottomRight: Radius.circular(20.0)),
-                profilePicHeight: 60,
-                profilePicWidth: 60,
-                topPadding: 16.0,
-                profilePic:
-                    'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', // Replace with your profile image URL
-                name: 'name',
-                starCount: 24,
-                rank: 2)
-          ],
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        SizedBox(
-          height: 350,
-          child: ListView.builder(
-            controller: _scrollController,
-            itemCount: 10,
-            itemBuilder: (context, index) {
-              return LeaderboardTileWidget(
-                backgroundColor: CustomColor.primary60Color,
-                textColor: CustomColor.primaryColor,
-                name: 'name',
-                starCount: 24,
-                rank: 5,
+        FutureBuilder(
+          future: getLeaderboard(context),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasData && snapshot.data != null) {
+                return Column(
+                  children: [
+                    Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            color: CustomColor.primaryColor,
+                            borderRadius: BorderRadius.circular(8.0)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 15.0, vertical: 15.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Your Rank',
+                                style: w500.size16.colorWhite,
+                              ),
+                              Text(
+                                snapshot.data!.$2.toString(),
+                                style: w700.size24.colorWhite,
+                              )
+                            ],
+                          ),
+                        )),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        snapshot.data!.$1.length < 2
+                            ? SizedBox()
+                            : LeaderboardPlaceholder(
+                                height: 115,
+                                backgroundColor: CustomColor.primary60Color,
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20.0),
+                                    bottomLeft: Radius.circular(20.0)),
+                                profilePicHeight: 45,
+                                profilePicWidth: 45,
+                                topPadding: 7.0,
+                                profilePic:
+                                    'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', // Replace with your profile image URL
+                                name: snapshot.data!.$1[2].name,
+                                starCount: snapshot.data!.$1[2].score,
+                                rank: 3,
+                              ),
+                        LeaderboardPlaceholder(
+                          height: 180,
+                          backgroundColor: CustomColor.primaryColor,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20.0),
+                              topRight: Radius.circular(20.0)),
+                          profilePicHeight: 90,
+                          profilePicWidth: 90,
+                          topPadding: 20,
+                          bottomPadding: 7,
+                          profilePic:
+                              'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', // Replace with your profile image URL
+                          name: snapshot.data!.$1[0].name,
+                          starCount: snapshot.data!.$1[0].score,
+                          rank: 1,
+                        ),
+                        snapshot.data!.$1.length < 1
+                            ? SizedBox()
+                            : LeaderboardPlaceholder(
+                                height: 140,
+                                backgroundColor: CustomColor.primary60Color,
+                                borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(20.0),
+                                    bottomRight: Radius.circular(20.0)),
+                                profilePicHeight: 60,
+                                profilePicWidth: 60,
+                                topPadding: 16.0,
+                                profilePic:
+                                    'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', // Replace with your profile image URL
+                                name: snapshot.data!.$1[1].name,
+                                starCount: snapshot.data!.$1[1].score,
+                                rank: 2,
+                              )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    snapshot.data!.$1.length < 3
+                        ? SizedBox()
+                        : SizedBox(
+                            height: 350,
+                            child: ListView.builder(
+                              controller: _scrollController,
+                              itemCount: snapshot.data!.$1.length - 3,
+                              itemBuilder: (context, index) {
+                                return LeaderboardTileWidget(
+                                  backgroundColor: CustomColor.primary60Color,
+                                  textColor: CustomColor.primaryColor,
+                                  name: snapshot.data!.$1[index + 3].name,
+                                  starCount: snapshot.data!.$1[index + 3].score,
+                                  rank: index + 4,
+                                );
+                              },
+                            ),
+                          )
+                  ],
+                );
+              }
+            }
+            if (snapshot.hasError) {
+              return Center(
+                child: Text('An error occurred ${snapshot.error}'),
               );
-            },
-          ),
-        )
+            }
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
+        // Container(
+        //     width: double.infinity,
+        //     decoration: BoxDecoration(
+        //         color: CustomColor.primaryColor,
+        //         borderRadius: BorderRadius.circular(8.0)),
+        //     child: Padding(
+        //       padding:
+        //           const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15.0),
+        //       child: Row(
+        //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //         children: [
+        //           Text(
+        //             'Your Rank',
+        //             style: w500.size16.colorWhite,
+        //           ),
+        //           Text(
+        //             rank.toString(),
+        //             style: w700.size24.colorWhite,
+        //           )
+        //         ],
+        //       ),
+        //     )),
+        // SizedBox(
+        //   height: 50,
+        // ),
+        // Row(
+        //   crossAxisAlignment: CrossAxisAlignment.end,
+        //   children: [
+        //     LeaderboardPlaceholder(
+        //         height: 115,
+        //         backgroundColor: CustomColor.primary60Color,
+        //         borderRadius: BorderRadius.only(
+        //             topLeft: Radius.circular(20.0),
+        //             bottomLeft: Radius.circular(20.0)),
+        //         profilePicHeight: 45,
+        //         profilePicWidth: 45,
+        //         topPadding: 7.0,
+        //         profilePic:
+        //             'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', // Replace with your profile image URL
+        //         name: 'name',
+        //         starCount: 24,
+        //         rank: 3),
+        //     LeaderboardPlaceholder(
+        //         height: 180,
+        //         backgroundColor: CustomColor.primaryColor,
+        //         borderRadius: BorderRadius.only(
+        //             topLeft: Radius.circular(20.0),
+        //             topRight: Radius.circular(20.0)),
+        //         profilePicHeight: 90,
+        //         profilePicWidth: 90,
+        //         topPadding: 20,
+        //         bottomPadding: 7,
+        //         profilePic:
+        //             'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', // Replace with your profile image URL
+        //         name: 'name',
+        //         starCount: 24,
+        //         rank: 1),
+        //     LeaderboardPlaceholder(
+        //         height: 140,
+        //         backgroundColor: CustomColor.primary60Color,
+        //         borderRadius: BorderRadius.only(
+        //             topRight: Radius.circular(20.0),
+        //             bottomRight: Radius.circular(20.0)),
+        //         profilePicHeight: 60,
+        //         profilePicWidth: 60,
+        //         topPadding: 16.0,
+        //         profilePic:
+        //             'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', // Replace with your profile image URL
+        //         name: 'name',
+        //         starCount: 24,
+        //         rank: 2)
+        //   ],
+        // ),
+        // SizedBox(
+        //   height: 20,
+        // ),
+        // SizedBox(
+        //   height: 350,
+        //   child: ListView.builder(
+        //     controller: _scrollController,
+        //     itemCount: 10,
+        //     itemBuilder: (context, index) {
+        //       return LeaderboardTileWidget(
+        //         backgroundColor: CustomColor.primary60Color,
+        //         textColor: CustomColor.primaryColor,
+        //         name: 'name',
+        //         starCount: 24,
+        //         rank: 5,
+        //       );
+        //     },
+        //   ),
+        // )
       ],
     );
   }

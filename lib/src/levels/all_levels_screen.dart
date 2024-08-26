@@ -1,25 +1,21 @@
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
+import 'package:drag_drop/src/home/encrypted_storage_widget.dart';
 import 'package:drag_drop/src/home/home.dart';
+import 'package:drag_drop/src/home/home_repo.dart';
 import 'package:drag_drop/src/levels/level_start_screen.dart';
 import 'package:drag_drop/src/levels/levels_repo.dart';
 import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
+import 'package:drag_drop/src/utils/encrypted_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AllLevelsScreen extends StatefulWidget {
-  final int currentNumberOfStars;
-  final int lastLevelCompleted;
-  final int totalNumberOfLevels;
-
   const AllLevelsScreen({
     super.key,
-    required this.currentNumberOfStars,
-    required this.lastLevelCompleted,
-    required this.totalNumberOfLevels,
   });
 
   @override
@@ -64,6 +60,15 @@ class _AllLevelsScreenState extends State<AllLevelsScreen> {
     34: 1
   };
 
+  Widget StarsCountWidget(String stars) {
+    return Text(
+      stars,
+      style: w700.size18.copyWith(
+        color: CustomColor.primaryColor,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -80,11 +85,7 @@ class _AllLevelsScreenState extends State<AllLevelsScreen> {
         onLeadingPressed: () {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: ((context) => HomeScreen(
-                    currentNumberOfStars: widget.currentNumberOfStars,
-                    lastLevelCompleted: widget.lastLevelCompleted,
-                    totalNumberOfLevels: widget.totalNumberOfLevels,
-                  )),
+              builder: ((context) => HomeScreen()),
             ),
           );
         },
@@ -97,43 +98,108 @@ class _AllLevelsScreenState extends State<AllLevelsScreen> {
         },
       ),
       body: [
-        Container(
-          margin: EdgeInsets.only(top: 10.h, bottom: 30.h),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.star,
-                size: 20.h,
-                color: CustomColor.goldStarColor,
+        FutureBuilder(
+          future: getAllLevels(context),
+          builder: (context, snapshot) {
+            if (snapshot.data != null && snapshot.data?.$3 != "") {
+              return Text(
+                  "Error Occured with Status code ${snapshot.data?.$2} \nDescription: ${snapshot.data?.$3}");
+            }
+            if (snapshot.hasData && snapshot.data != null) {
+              return Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top: 10.h, bottom: 30.h),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.star,
+                          size: 20.h,
+                          color: CustomColor.goldStarColor,
+                        ),
+                        SizedBox(width: 08.w),
+                        // Text(
+                        //   '$GLOBAL_STARS',
+                        //   style: w700.size24.copyWith(
+                        //     color: CustomColor.primaryColor,
+                        //   ),
+                        // ),
+                        EncryptedStorageWidget(
+                          provider: starsHomeScreenProvider,
+                          child: StarsCountWidget,
+                          value: "stars",
+                        )
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 620.h,
+                    child: GridView.builder(
+                        itemCount: snapshot.data?.$1.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                        ),
+                        physics: BouncingScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return LevelGridTile(
+                            level: index + 1,
+                            stars: snapshot.data?.$1[index].stars ?? 0,
+                            isLocked: !((snapshot.data?.$1[index].isCompleted ??
+                                    false) ||
+                                (snapshot.data?.$1[index].isNext ?? false)),
+                            isNext: snapshot.data?.$1[index].isNext ?? false,
+                          );
+                        }),
+                  )
+                ],
+              );
+            }
+
+            return Center(
+              child: CircularProgressIndicator(
+                color: CustomColor.primaryColor,
               ),
-              SizedBox(width: 08.w),
-              Text(
-                '${widget.currentNumberOfStars}/${(widget.lastLevelCompleted) * 3}',
-                style: w700.size24.copyWith(
-                  color: CustomColor.primaryColor,
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         ),
-        SizedBox(
-          height: 620.h,
-          child: GridView.builder(
-              itemCount: widget.totalNumberOfLevels,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4, // number of items in each row
-              ),
-              physics: BouncingScrollPhysics(),
-              itemBuilder: (context, index) {
-                return LevelGridTile(
-                  level: index + 1,
-                  stars: levelsVSstars.values.elementAt(index),
-                  isLocked: index > widget.lastLevelCompleted,
-                  isNext: index == widget.lastLevelCompleted,
-                );
-              }),
-        )
+        // Container(
+        //   margin: EdgeInsets.only(top: 10.h, bottom: 30.h),
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     children: [
+        //       Icon(
+        //         Icons.star,
+        //         size: 20.h,
+        //         color: CustomColor.goldStarColor,
+        //       ),
+        //       SizedBox(width: 08.w),
+        //       Text(
+        //         '${widget.currentNumberOfStars}/${(widget.lastLevelCompleted) * 3}',
+        //         style: w700.size24.copyWith(
+        //           color: CustomColor.primaryColor,
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
+        // SizedBox(
+        //   height: 620.h,
+        //   child: GridView.builder(
+        //       itemCount: widget.totalNumberOfLevels,
+        //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        //         crossAxisCount: 4, // number of items in each row
+        //       ),
+        //       physics: BouncingScrollPhysics(),
+        //       itemBuilder: (context, index) {
+        //         return LevelGridTile(
+        //           level: index + 1,
+        //           stars: levelsVSstars.values.elementAt(index),
+        //           isLocked: index > widget.lastLevelCompleted,
+        //           isNext: index == widget.lastLevelCompleted,
+        //         );
+        //       }),
+        // )
       ],
     );
   }
@@ -156,8 +222,9 @@ class LevelGridTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return !isLocked
         ? GestureDetector(
-            onTap: () {
-              getLevel(id: 1);
+            onTap: () async {
+              await EncryptedStorage()
+                  .write(key: "recent", value: level.toString());
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => LevelStartScreen(
