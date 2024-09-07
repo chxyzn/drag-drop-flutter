@@ -50,7 +50,7 @@ class LeaderboardPlaceholder extends StatelessWidget {
               children: [
                 Padding(
                   padding: EdgeInsets.only(
-                      top: topPadding, bottom: bottomPadding ?? 0.0),
+                      top: topPadding, bottom: bottomPadding?.h ?? 0.0),
                   child: Container(
                     width: profilePicWidth, // Adjust width as needed
                     height: profilePicHeight, // Adjust height as needed

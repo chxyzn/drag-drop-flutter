@@ -127,7 +127,7 @@ Future<(List<LevelOverview>, int, String)> getAllLevels(
       ));
     }
 
-    setLevelsIsar(levels);
+    await setLevelsIsar(levels);
 
     return (levels, response.statusCode, "");
   } catch (e) {

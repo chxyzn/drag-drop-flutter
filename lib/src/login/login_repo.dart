@@ -4,7 +4,6 @@ import 'package:drag_drop/src/constants/endpoints.dart';
 import 'package:drag_drop/src/home/home_repo.dart';
 import 'package:drag_drop/src/login/login_screen.dart';
 import 'package:drag_drop/src/utils/encrypted_storage.dart';
-import 'package:drag_drop/src/utils/isar_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -49,6 +48,12 @@ class SignUpModel {
 
     if (response.statusCode == 200) {
       return "Success";
+    }
+    if (response.statusCode ~/ 100 == 4) {
+      return "Server error";
+    }
+    if (response.statusCode ~/ 100 == 5) {
+      return "Server error";
     } else {
       return ('Failed to sign up');
     }

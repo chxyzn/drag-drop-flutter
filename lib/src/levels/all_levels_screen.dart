@@ -10,6 +10,7 @@ import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
 import 'package:drag_drop/src/utils/encrypted_storage.dart';
+import 'package:drag_drop/src/utils/widgets/custom_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -23,6 +24,10 @@ class AllLevelsScreen extends StatefulWidget {
 }
 
 class _AllLevelsScreenState extends State<AllLevelsScreen> {
+  void setStateCallback() {
+    setState(() {});
+  }
+
   Map<int, int> levelsVSstars = {
     1: 2,
     2: 2,
@@ -83,11 +88,7 @@ class _AllLevelsScreenState extends State<AllLevelsScreen> {
         leadingIconName: SvgAssets.homeIcon,
         trailingIconName: SvgAssets.settingsIcon,
         onLeadingPressed: () {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: ((context) => HomeScreen()),
-            ),
-          );
+          Navigator.of(context).pop();
         },
         onTrailingPressed: () {
           Navigator.of(context).push(
@@ -102,8 +103,16 @@ class _AllLevelsScreenState extends State<AllLevelsScreen> {
           future: getAllLevels(context),
           builder: (context, snapshot) {
             if (snapshot.data != null && snapshot.data?.$3 != "") {
-              return Text(
-                  "Error Occured with Status code ${snapshot.data?.$2} \nDescription: ${snapshot.data?.$3}");
+              return SingleChildScrollView(
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    setState(() {});
+                  },
+                  child: Expanded(
+                    child: Text('An error occurred ${snapshot.error}'),
+                  ),
+                ),
+              );
             }
             if (snapshot.hasData && snapshot.data != null) {
               return Column(
@@ -144,6 +153,7 @@ class _AllLevelsScreenState extends State<AllLevelsScreen> {
                         itemBuilder: (context, index) {
                           return LevelGridTile(
                             level: index + 1,
+                            setStateFunc: setStateCallback,
                             stars: snapshot.data?.$1[index].stars ?? 0,
                             isLocked: !((snapshot.data?.$1[index].isCompleted ??
                                     false) ||
@@ -157,8 +167,9 @@ class _AllLevelsScreenState extends State<AllLevelsScreen> {
             }
 
             return Center(
-              child: CircularProgressIndicator(
-                color: CustomColor.primaryColor,
+              child: Padding(
+                padding: EdgeInsets.only(top: 250.h),
+                child: CustomLoadingIndicator(),
               ),
             );
           },
@@ -210,12 +221,14 @@ class LevelGridTile extends StatelessWidget {
   final int stars;
   final bool isLocked;
   final bool isNext;
+  final Function setStateFunc;
   const LevelGridTile({
     super.key,
     required this.level,
     required this.stars,
     required this.isLocked,
     required this.isNext,
+    required this.setStateFunc,
   });
 
   @override
@@ -225,13 +238,17 @@ class LevelGridTile extends StatelessWidget {
             onTap: () async {
               await EncryptedStorage()
                   .write(key: "recent", value: level.toString());
-              Navigator.of(context).push(
+              Navigator.of(context)
+                  .push(
                 MaterialPageRoute(
                   builder: (context) => LevelStartScreen(
                     level: level,
                   ),
                 ),
-              );
+              )
+                  .then((_) {
+                setStateFunc();
+              });
             },
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 6.w, vertical: 6.h),

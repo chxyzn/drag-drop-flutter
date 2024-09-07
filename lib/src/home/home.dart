@@ -11,9 +11,8 @@ import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomScaffold.dart';
 import 'package:drag_drop/src/utils/encrypted_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-int GLOBAL_HOME_STAR_WIDGET_KEY = 0;
 
 class HomeScreen extends StatefulWidget {
   final bool openedFromLogin;
@@ -97,10 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   //   ),
                   // ),
                   EncryptedStorageWidget(
-                    key: ValueKey(GLOBAL_HOME_STAR_WIDGET_KEY),
-                    provider: (widget.openedFromLogin)
-                        ? starsLoginScreenProvider
-                        : starsHomeScreenProvider,
+                    provider: starsHomeScreenProvider,
                     child: StarsCountWidget,
                     value: "stars",
                   )
@@ -200,36 +196,41 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        GestureDetector(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => AllLevelsScreen(),
+        Consumer(
+          builder: (context, ref, child) {
+            return GestureDetector(
+              onTap: () {
+                ref.invalidate(starsHomeScreenProvider);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => AllLevelsScreen(),
+                  ),
+                );
+              },
+              child: Container(
+                margin: EdgeInsets.symmetric(vertical: 8.h),
+                decoration: BoxDecoration(
+                  color: CustomColor.darkerDarkBlack,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                padding: EdgeInsets.all(18.w),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'All Levels',
+                      textAlign: TextAlign.center,
+                      style: w700.size16.copyWith(color: CustomColor.white),
+                    ),
+                    Image.asset(
+                      PngAssets.trophyLogo,
+                      height: 24.h,
+                    )
+                  ],
+                ),
               ),
             );
           },
-          child: Container(
-            margin: EdgeInsets.symmetric(vertical: 8.h),
-            decoration: BoxDecoration(
-              color: CustomColor.darkerDarkBlack,
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-            padding: EdgeInsets.all(18.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'All Levels',
-                  textAlign: TextAlign.center,
-                  style: w700.size16.copyWith(color: CustomColor.white),
-                ),
-                Image.asset(
-                  PngAssets.trophyLogo,
-                  height: 24.h,
-                )
-              ],
-            ),
-          ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

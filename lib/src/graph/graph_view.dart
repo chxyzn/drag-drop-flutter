@@ -52,6 +52,7 @@ class GraphViewPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 100),
             child: GraphWidget(
+              constrained: false,
               nodes: nodes,
               edges: edges,
             ),
@@ -65,10 +66,12 @@ class GraphViewPage extends StatelessWidget {
 class GraphWidget extends StatefulWidget {
   final List<int> nodes;
   final List<List<int>> edges;
+  final bool constrained;
   const GraphWidget({
     super.key,
     required this.nodes,
     required this.edges,
+    required this.constrained,
   });
 
   @override
@@ -77,6 +80,8 @@ class GraphWidget extends StatefulWidget {
 
 class _GraphWidgetState extends State<GraphWidget> {
   final Graph graph = Graph();
+  final TransformationController _transformationController =
+      TransformationController();
 
   @override
   void initState() {
@@ -101,72 +106,96 @@ class _GraphWidgetState extends State<GraphWidget> {
 
       graph.addEdge(graphNodes[a_index], graphNodes[b_index]);
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final currentScale = _transformationController.value.getMaxScaleOnAxis();
+      _transformationController.value = Matrix4.identity()
+        ..scale(currentScale * 1);
+    });
     graph.isTree = false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 200,
-      child: Column(
-        children: [
-          Expanded(
-            child: InteractiveViewer(
-                constrained: false,
-                alignment: Alignment.center,
-                boundaryMargin: EdgeInsets.all(10),
-                minScale: 1,
-                maxScale: 1,
-                child: ClipRect(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: GraphView(
-                      graph: graph,
-                      animated: false,
-                      algorithm: FruchtermanReingoldAlgorithm(
-                        iterations: 1000,
-                        attractionRate: 0.1
-                        ,
-                      ),
-                      paint: Paint()
-                        ..color = Colors.green
-                        ..strokeWidth = 1
-                        ..style = PaintingStyle.stroke,
-                      builder: (Node node) {
-                        // I can decide what widget should be shown here based on the id
-                        var a = node.key!.value as int?;
-                        return circularNode(a);
-                      },
-                    ),
-                  ),
-                )),
+    return InteractiveViewer(
+        constrained: false,
+        transformationController: _transformationController,
+        alignment: Alignment.bottomCenter,
+        boundaryMargin: EdgeInsets.all(00),
+        minScale: 1,
+        maxScale: 1,
+        scaleEnabled: true,
+        child: ClipRect(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: GraphView(
+              graph: graph,
+              animated: false,
+              algorithm: FruchtermanReingoldAlgorithm(
+                iterations: 1000,
+                attractionRate: 0.1,
+              ),
+              paint: Paint()
+                ..color = Colors.green
+                ..strokeWidth = 1
+                ..style = PaintingStyle.stroke,
+              builder: (Node node) {
+                // I can decide what widget should be shown here based on the id
+                var a = node.key!.value as int?;
+                return circularNode(a);
+              },
+            ),
           ),
-        ],
+        ));
+  }
+
+  Widget circularNode(int? i) {
+    return Container(
+      // height: 14.r,
+      // width: 14.r,
+      width: 35,
+      height: 35,
+      decoration: BoxDecoration(
+        color: GraphColors().getColorFromId(i ?? 0),
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Text(
+          '$i',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
 }
 
-Widget circularNode(int? i) {
-  return Container(
-    // height: 14.r,
-    // width: 14.r,
-    width: 35,
-    height: 35,
-    decoration: BoxDecoration(
-      color: GraphColors().getColorFromId(i ?? 0),
-      shape: BoxShape.circle,
-    ),
-    child: Center(
-      child: Text(
-        '$i',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    ),
-  );
+class GraphImageWidget extends StatelessWidget {
+  final String imgUrl;
+  const GraphImageWidget({super.key, required this.imgUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.network(
+      imgUrl,
+      fit: BoxFit.contain,
+      loadingBuilder: (BuildContext context, Widget child,
+          ImageChunkEvent? loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Center(
+          child: CircularProgressIndicator(
+            value: loadingProgress.expectedTotalBytes != null
+                ? loadingProgress.cumulativeBytesLoaded /
+                    loadingProgress.expectedTotalBytes!
+                : null,
+            color: CustomColor.primaryColor,
+          ),
+        );
+      },
+    );
+  }
 }

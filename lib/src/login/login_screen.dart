@@ -2,6 +2,8 @@ import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/home/home.dart';
+import 'package:drag_drop/src/home/home_repo.dart';
+import 'package:drag_drop/src/levels/levels_repo.dart';
 import 'package:drag_drop/src/login/login_repo.dart';
 import 'package:drag_drop/src/login/signup_screen.dart';
 import 'package:drag_drop/src/settings/setting_repo.dart';
@@ -155,72 +157,89 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         Consumer(builder: (context, ref, child) {
           return GestureDetector(
-            onTap: () async {
-              toggleLoader();
-              try {
-                LoginModel loginModel = LoginModel(
-                    username: usernameController.text,
-                    password: passwordController.text);
+            onTap: (showLoader)
+                ? null
+                : () async {
+                    toggleLoader();
+                    try {
+                      LoginModel loginModel = LoginModel(
+                          username: usernameController.text,
+                          password: passwordController.text);
 
-                final result = await loginModel.login(ref);
+                      final result = await loginModel.login(ref);
 
-                print(result.$1);
-                print(result.$2);
+                      print(result.$1);
+                      print(result.$2);
 
-                if (result.$2 / 100 == 4) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(
-                      "Invalid username or password",
-                      style: w700.size16.copyWith(color: CustomColor.white),
-                    ),
-                  ));
-                  toggleLoader();
-                  return;
-                }
-                if (result.$2 / 100 == 5) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(
-                      "Server error",
-                      style: w700.size16.copyWith(color: CustomColor.white),
-                    ),
-                  ));
-                  toggleLoader();
-                  return;
-                }
+                      if (result.$2 ~/ 100 == 4) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                            "Invalid username or password",
+                            style:
+                                w700.size16.copyWith(color: CustomColor.white),
+                          ),
+                        ));
+                        toggleLoader();
+                        return;
+                      }
+                      if (result.$2 ~/ 100 == 5) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                            "Server error",
+                            style:
+                                w700.size16.copyWith(color: CustomColor.white),
+                          ),
+                        ));
+                        toggleLoader();
+                        return;
+                      }
 
-                await EncryptedStorage()
-                    .write(key: "jwt", value: result.$1!.accessToken);
+                      await EncryptedStorage()
+                          .write(key: "jwt", value: result.$1!.accessToken);
 
-                GLOBAL_FIRSTNAME = result.$1!.user.firstName;
-                GLOBAL_LASTNAME = result.$1!.user.lastName;
-                GLOBAL_EMAIL = result.$1!.user.email;
+                      await getAllLevels(context);
+                      GLOBAL_FIRSTNAME = result.$1!.user.firstName;
+                      GLOBAL_LASTNAME = result.$1!.user.lastName;
+                      GLOBAL_EMAIL = result.$1!.user.email;
 
-                GLOBAL_STARS = result.$1!.user.totalScore;
+                      GLOBAL_STARS = result.$1!.user.totalScore;
 
-                await EncryptedStorage()
-                    .write(key: "firstname", value: result.$1!.user.firstName);
-                await EncryptedStorage()
-                    .write(key: "lastname", value: result.$1!.user.lastName);
-                await EncryptedStorage()
-                    .write(key: "email", value: result.$1!.user.email);
+                      await EncryptedStorage().write(
+                          key: "firstname", value: result.$1!.user.firstName);
+                      await EncryptedStorage().write(
+                          key: "lastname", value: result.$1!.user.lastName);
+                      await EncryptedStorage()
+                          .write(key: "email", value: result.$1!.user.email);
 
-                await EncryptedStorage().write(
-                    key: "stars", value: result.$1!.user.totalScore.toString());
-                await EncryptedStorage().write(
-                    key: "rank", value: result.$1!.user.currentRank.toString());
+                      await EncryptedStorage().write(
+                          key: "stars",
+                          value: result.$1!.user.totalScore.toString());
+                      await EncryptedStorage().write(
+                          key: "rank",
+                          value: result.$1!.user.currentRank.toString());
 
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: ((context) => HomeScreen(
-                          openedFromLogin: true,
-                        )),
-                  ),
-                );
-                toggleLoader();
-              } catch (e) {
-                toggleLoader();
-              }
-            },
+                      ref.invalidate(starsHomeScreenProvider);
+                      ref.invalidate(myRankHomeScreenProvider);
+
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: ((context) => HomeScreen(
+                                openedFromLogin: true,
+                              )),
+                        ),
+                      );
+                      toggleLoader();
+                    } catch (e, s) {
+                      print(s);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(
+                          "Error ${e.toString()}",
+                          style: w700.size16.copyWith(color: CustomColor.white),
+                        ),
+                      ));
+                      toggleLoader();
+                    }
+                  },
             child: Container(
               width: 150.w,
               decoration: BoxDecoration(
@@ -230,8 +249,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 15.0),
                   child: (showLoader)
-                      ? CircularProgressIndicator(
-                          color: CustomColor.white,
+                      ? Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.w),
+                          child: LinearProgressIndicator(
+                            color: CustomColor.white,
+                          ),
                         )
                       : Text(
                           'Login',

@@ -22,12 +22,12 @@ class LeaderboardTileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3.0),
+      padding: EdgeInsets.symmetric(vertical: 3.0.h),
       child: Container(
         decoration: BoxDecoration(
-            color: backgroundColor, borderRadius: BorderRadius.circular(8.0)),
+            color: backgroundColor, borderRadius: BorderRadius.circular(8.0.r)),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 20.0),
+          padding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 20.w),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

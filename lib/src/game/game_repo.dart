@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:drag_drop/src/constants/endpoints.dart';
-import 'package:drag_drop/src/home/home.dart';
 import 'package:drag_drop/src/home/home_repo.dart';
 import 'package:drag_drop/src/settings/setting_repo.dart';
 import 'package:drag_drop/src/utils/encrypted_storage.dart';
@@ -70,7 +69,6 @@ Future<SubmitSolutionResponse> submitSolution(
   ref.invalidate(starsHomeScreenProvider);
   ref.invalidate(myRankHomeScreenProvider);
 
-  GLOBAL_HOME_STAR_WIDGET_KEY = DateTime.now().microsecondsSinceEpoch;
   return SubmitSolutionResponse(
     bestTime: bestTime,
     rank: rank,

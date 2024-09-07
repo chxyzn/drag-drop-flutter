@@ -48,6 +48,7 @@ dependencies:
   path_provider: ^2.1.4
   haptic_feedback: ^0.5.1+1
   pausable_timer: ^3.1.0+3
+  loading_animation_widget: ^1.2.1
   # advanced_graphview: ^1.0.3
 
 dev_dependencies:

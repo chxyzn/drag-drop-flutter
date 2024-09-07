@@ -1,5 +1,4 @@
 import 'package:drag_drop/src/login/login_repo.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 
 part 'isar_storage.g.dart';
@@ -68,5 +67,6 @@ Future<int> getTotalStarsIsar() async {
     totalStars += level.stars;
   }
 
+  print("sending total stars $totalStars");
   return totalStars;
 }

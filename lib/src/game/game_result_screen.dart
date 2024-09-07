@@ -88,7 +88,7 @@ class GameResultScreen extends StatelessWidget {
             GestureDetector(
               onTap: () async {
                 int count = 0;
-                Navigator.of(context).popUntil((_) => count++ >= 3);
+                Navigator.of(context).popUntil((_) => count++ >= 2);
 
                 await EncryptedStorage()
                     .write(key: "recent", value: (level + 1).toString());
@@ -108,7 +108,6 @@ class GameResultScreen extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () {
-                Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
               child: CustomButton(

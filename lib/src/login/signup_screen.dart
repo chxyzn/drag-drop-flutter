@@ -24,6 +24,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   late TextEditingController lastNameController;
 
   int _age = 18;
+  bool showLoader = false;
   late bool _passwordVisible;
   late bool _confirmPasswordVisible;
 
@@ -119,8 +120,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       body: [
         Image.asset(
           PngAssets.gplanLogo,
-          width: 150,
-          height: 150,
+          width: 150.w,
+          height: 150.h,
         ),
         Text(
           'GPLAN',
@@ -131,14 +132,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
           style: w600.size20.copyWith(color: CustomColor.primaryColor),
         ),
         SizedBox(
-          height: 40,
+          height: 40.h,
         ),
         Text(
           'SignUp',
           style: w700.size24.copyWith(color: CustomColor.primaryColor),
         ),
         SizedBox(
-          height: 20,
+          height: 20.h,
         ),
         Align(
           alignment: Alignment.centerLeft,
@@ -164,7 +165,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           style: w500.size18.copyWith(color: CustomColor.primaryColor),
         ),
         SizedBox(
-          height: 10,
+          height: 10.h,
         ),
         Align(
           alignment: Alignment.centerLeft,
@@ -190,7 +191,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           style: w500.size18.copyWith(color: CustomColor.primaryColor),
         ),
         SizedBox(
-          height: 10,
+          height: 10.h,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -208,6 +209,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         Slider(
           value: _age.toDouble(),
           min: 0,
+          thumbColor: CustomColor.primaryColor,
+          activeColor: CustomColor.primaryColor,
           max: 100,
           divisions: 100,
           onChanged: (newValue) {
@@ -217,7 +220,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           },
         ),
         SizedBox(
-          height: 10,
+          height: 10.h,
         ),
         Align(
           alignment: Alignment.centerLeft,
@@ -243,7 +246,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           style: w500.size18.copyWith(color: CustomColor.primaryColor),
         ),
         SizedBox(
-          height: 10,
+          height: 10.h,
         ),
         Align(
           alignment: Alignment.centerLeft,
@@ -269,7 +272,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           style: w500.size18.copyWith(color: CustomColor.primaryColor),
         ),
         SizedBox(
-          height: 10,
+          height: 10.h,
         ),
         Align(
           alignment: Alignment.centerLeft,
@@ -309,7 +312,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           style: w500.size18.copyWith(color: CustomColor.primaryColor),
         ),
         SizedBox(
-          height: 10,
+          height: 10.h,
         ),
         Align(
           alignment: Alignment.centerLeft,
@@ -351,43 +354,63 @@ class _SignUpScreenState extends State<SignUpScreen> {
           style: w500.size18.copyWith(color: CustomColor.primaryColor),
         ),
         SizedBox(
-          height: 25,
+          height: 25.h,
         ),
         InkWell(
-          onTap: () async {
-            String message = await onSubmit();
-            if (message.isNotEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-                  message,
-                  style: w700.size16.copyWith(color: CustomColor.white),
-                ),
-              ));
-            }
-            if (message == "Success") {
-              print("hi");
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => LoginScreen()));
-            }
-          },
+          onTap: (showLoader)
+              ? null
+              : () async {
+                  try {
+                    setState(() {
+                      showLoader = true;
+                    });
+                    String message = await onSubmit();
+                    if (message.isNotEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(
+                          message,
+                          style: w700.size16.copyWith(color: CustomColor.white),
+                        ),
+                      ));
+                    }
+                    setState(() {
+                      showLoader = false;
+                    });
+                    if (message == "Success") {
+                      print("hi");
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => LoginScreen()));
+                    }
+                  } catch (e) {
+                    setState(() {
+                      showLoader = false;
+                    });
+                  }
+                },
           child: Container(
-            //width: 300,
             decoration: BoxDecoration(
                 color: CustomColor.primaryColor,
                 borderRadius: BorderRadius.circular(4.0)),
             child: Center(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: Text(
-                  'Sign Up',
-                  style: w700.size16.colorWhite,
-                ),
+                child: (showLoader)
+                    ? Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
+                        child: LinearProgressIndicator(
+                          color: CustomColor.white,
+                        ),
+                      )
+                    : Text(
+                        'Sign Up',
+                        style: w700.size16.colorWhite,
+                      ),
               ),
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 20.0),
+          padding: EdgeInsets.only(top: 20.h),
           child: GestureDetector(
             onTap: () {
               Navigator.of(context).pushReplacement(

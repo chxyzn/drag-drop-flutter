@@ -1,8 +1,7 @@
-import 'dart:async';
-
 import 'package:drag_drop/main.dart';
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
+import 'package:drag_drop/src/constants/endpoints.dart';
 import 'package:drag_drop/src/constants/game.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/game/game_logic.dart';
@@ -91,6 +90,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       );
 
       TOTAL_TIME = 120;
+      ref.read(timeProvider.notifier).update((prev) {
+        return TOTAL_TIME;
+      });
       availableNodes = widget.nodes;
     });
   }
@@ -315,11 +317,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             );
           },
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SingleChildScrollView(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
@@ -388,11 +390,12 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                         width: 1.w,
                       ),
                     ),
-                    height: 140.h,
+                    height: 200.h,
                     width: 321.w,
-                    child: GraphWidget(
-                      nodes: questionNodes,
-                      edges: questionEdges,
+                    child: GraphImageWidget(
+                      imgUrl: GplanEndpoints.baseUrl +
+                          GplanEndpoints.graphImageUrl +
+                          "${widget.level}.png",
                     ),
                   ),
                   SizedBox(
@@ -434,109 +437,114 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                   ),
                 ],
               ),
-              Padding(
-                padding: EdgeInsets.only(bottom: 16.h),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        undo();
+            ),
+            Padding(
+              padding: EdgeInsets.only(bottom: 20.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      undo();
+                    },
+                    child: CustomContainer(
+                      color: CustomColor.backgrondBlue,
+                      height: 43.h,
+                      width: 160.w,
+                      textColor: CustomColor.primaryColor,
+                      primaryText: 'Undo',
+                      borderColor: CustomColor.primaryColor,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 11.w,
+                  ),
+                  Consumer(builder: (context, ref, child) {
+                    return GestureDetector(
+                      onTap: () async {
+                        List<List<int>> edges =
+                            removeDuplicates(getAdjacentEdges());
+
+                        List<int> nodes = [];
+                        for (List<int> edge in edges) {
+                          for (int node in edge) {
+                            if (!nodes.contains(node)) {
+                              nodes.add(node);
+                            }
+                          }
+                        }
+                        bool correctSolution =
+                            isSolutionCorrect(edges, questionEdges);
+
+                        if (correctSolution) {
+                          setState(() {
+                            showSubmitLoader = true;
+                          });
+
+                          String time = formattedTime(
+                            TOTAL_TIME - ref.read(timeProvider),
+                          );
+                          int level = widget.level;
+                          SubmitSolutionResponse response =
+                              await submitSolution(time, level, ref);
+                          if (response.statusCode != 200) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: Colors.red,
+                              content: Text(
+                                'Server Error',
+                                style: w700.size16
+                                    .copyWith(color: CustomColor.white),
+                              ),
+                            ));
+
+                            setState(() {
+                              showSubmitLoader = false;
+                            });
+                          }
+                          timer.pause();
+                          Navigator.of(context)
+                              .pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => GameResultScreen(
+                                stars: response.score,
+                                bestTime: response.bestTime,
+                                currentTime: time,
+                                level: widget.level,
+                              ),
+                            ),
+                          )
+                              .then((_) {
+                            setState(() {});
+                          });
+                          return;
+                        }
+
+                        timer.pause();
+                        showDialog(
+                            context: context,
+                            barrierColor: Colors.black.withOpacity(0.3),
+                            barrierDismissible: true,
+                            builder: ((context) {
+                              return BottomSheetWidget(
+                                resetFunction: resetBaseMatrix,
+                              );
+                            }));
                       },
                       child: CustomContainer(
-                        color: CustomColor.backgrondBlue,
+                        color: CustomColor.primaryColor,
+                        showLoader: showSubmitLoader,
                         height: 43.h,
                         width: 160.w,
-                        textColor: CustomColor.primaryColor,
-                        primaryText: 'Undo',
+                        textColor: CustomColor.white,
+                        primaryText: 'Submit',
                         borderColor: CustomColor.primaryColor,
                       ),
-                    ),
-                    SizedBox(
-                      width: 11.w,
-                    ),
-                    Consumer(builder: (context, ref, child) {
-                      return GestureDetector(
-                        onTap: () async {
-                          List<List<int>> edges =
-                              removeDuplicates(getAdjacentEdges());
-
-                          List<int> nodes = [];
-                          for (List<int> edge in edges) {
-                            for (int node in edge) {
-                              if (!nodes.contains(node)) {
-                                nodes.add(node);
-                              }
-                            }
-                          }
-                          bool correctSolution =
-                              isSolutionCorrect(edges, questionEdges);
-
-                          if (correctSolution) {
-                            setState(() {
-                              showSubmitLoader = true;
-                            });
-
-                            String time = formattedTime(ref.read(timeProvider));
-                            int level = widget.level;
-                            SubmitSolutionResponse response =
-                                await submitSolution(time, level, ref);
-                            if (response.statusCode != 200) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                backgroundColor: Colors.red,
-                                content: Text(
-                                  'Server Error',
-                                  style: w700.size16
-                                      .copyWith(color: CustomColor.white),
-                                ),
-                              ));
-
-                              setState(() {
-                                showSubmitLoader = false;
-                              });
-                            }
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => GameResultScreen(
-                                  stars: response.score,
-                                  bestTime: response.bestTime,
-                                  currentTime:
-                                      formattedTime(ref.read(timeProvider)),
-                                  level: widget.level,
-                                ),
-                              ),
-                            );
-                            return;
-                          }
-
-                          timer.pause();
-                          showDialog(
-                              context: context,
-                              barrierColor: Colors.black.withOpacity(0.3),
-                              barrierDismissible: true,
-                              builder: ((context) {
-                                return BottomSheetWidget(
-                                  resetFunction: resetBaseMatrix,
-                                );
-                              }));
-                        },
-                        child: CustomContainer(
-                          color: CustomColor.primaryColor,
-                          showLoader: showSubmitLoader,
-                          height: 43.h,
-                          width: 160.w,
-                          textColor: CustomColor.white,
-                          primaryText: 'Submit',
-                          borderColor: CustomColor.primaryColor,
-                        ),
-                      );
-                    }),
-                  ],
-                ),
+                    );
+                  }),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -817,7 +825,7 @@ class CustomDraggable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Draggable<List<List<int>>>(
+    return LongPressDraggable<List<List<int>>>(
       data: shape,
       feedback: ShapeGenerator(
         shape: shape,

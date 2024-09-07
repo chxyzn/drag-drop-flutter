@@ -1,5 +1,6 @@
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
+import 'package:drag_drop/src/constants/endpoints.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/game/game_repo.dart';
 import 'package:drag_drop/src/game/game_screen.dart';
@@ -9,6 +10,7 @@ import 'package:drag_drop/src/home/home_repo.dart';
 import 'package:drag_drop/src/levels/levels_repo.dart';
 import 'package:drag_drop/src/settings/settings.dart';
 import 'package:drag_drop/src/utils/CustomAppBar.dart';
+import 'package:drag_drop/src/utils/widgets/custom_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -32,6 +34,10 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
   @override
   void initState() {
     super.initState();
+  }
+
+  void setStateCallback() {
+    setState(() {});
   }
 
   Widget StarsCountWidget(String stars) {
@@ -99,11 +105,21 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasError) {
-                    return Text("Unknown Error Occured ${snapshot.error}");
+                    return SingleChildScrollView(
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          setState(() {});
+                        },
+                        child: Expanded(
+                          child: Text('An error occurred ${snapshot.error}'),
+                        ),
+                      ),
+                    );
                   }
                   if (snapshot.data != null && snapshot.hasData) {
                     return LevelStartScreenWidget(
                       level: widget.level,
+                      setStateFunc: setStateCallback,
                       nodeMap: snapshot.data!.$1,
                       nodes: snapshot.data!.$2,
                       edges: snapshot.data!.$3,
@@ -114,7 +130,10 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
                     );
                   }
                 }
-                return CircularProgressIndicator();
+                return Padding(
+                  padding: EdgeInsets.only(top: 200.h),
+                  child: CustomLoadingIndicator(),
+                );
               },
             ),
           ],
@@ -190,6 +209,7 @@ class LevelStartScreenWidget extends StatelessWidget {
   final int colSize;
   final String hint;
   final String BestComletitionTime;
+  final Function setStateFunc;
   final List<int> nodes;
   final List<List<int>> edges;
   final List<Map<String, dynamic>> nodeMap;
@@ -202,6 +222,7 @@ class LevelStartScreenWidget extends StatelessWidget {
     required this.BestComletitionTime,
     required this.nodes,
     required this.nodeMap,
+    required this.setStateFunc,
     required this.edges,
   });
 
@@ -220,9 +241,13 @@ class LevelStartScreenWidget extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
-          child: GraphWidget(
-            nodes: nodes,
-            edges: edges,
+          child: Padding(
+            padding: EdgeInsets.all(12.h),
+            child: GraphImageWidget(
+              imgUrl: GplanEndpoints.baseUrl +
+                  GplanEndpoints.graphImageUrl +
+                  "$level.png",
+            ),
           ),
         ),
         SizedBox(
@@ -252,7 +277,9 @@ class LevelStartScreenWidget extends StatelessWidget {
                           );
                         }),
                       ),
-                    );
+                    ).then((_) {
+                      setStateFunc();
+                    });
 
                     if (result != null) {
                       ScaffoldMessenger.of(context).showSnackBar(
