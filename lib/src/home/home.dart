@@ -1,5 +1,6 @@
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
+import 'package:drag_drop/src/constants/enums.dart';
 import 'package:drag_drop/src/constants/help_widgets.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/home/encrypted_storage_widget.dart';
@@ -150,7 +151,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         GestureDetector(
           onTap: () async {
-            String? recentLevel = await EncryptedStorage().read(key: "recent");
+            String? recentLevel = await EncryptedStorage()
+                .read(key: EncryptedStorageKey.recent.value);
 
             if (recentLevel != null) {
               Navigator.of(context).push(
@@ -237,9 +239,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Expanded(
               child: GestureDetector(
-                onTap: () {
-                  print('You tapped \"My Rank: 6\"');
-                },
+                onTap: () {},
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 18.5.h),
                   decoration: BoxDecoration(
@@ -290,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         GestureDetector(
-          onTap: () {
+          onTap: () async {
             print("You chose to \"Remove Ads!\"");
           },
           child: Container(

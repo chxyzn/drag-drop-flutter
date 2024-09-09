@@ -1,3 +1,4 @@
+import 'package:drag_drop/src/constants/enums.dart';
 import 'package:drag_drop/src/home/home.dart';
 import 'package:drag_drop/src/login/login_screen.dart';
 import 'package:drag_drop/src/utils/encrypted_storage.dart';
@@ -12,10 +13,10 @@ bool enableHaptics = true;
 void main() async {
   await WidgetsFlutterBinding.ensureInitialized();
 
-  final jwt = await EncryptedStorage().read(key: 'jwt');
-  print(jwt);
+  final jwt = await EncryptedStorage().read(key: EncryptedStorageKey.jwt.value);
   bool showLoginScreen = true;
-  String? haptics = await EncryptedStorage().read(key: 'haptics');
+  String? haptics =
+      await EncryptedStorage().read(key: EncryptedStorageKey.haptics.value);
 
   if (haptics == null || haptics == 'true') {
     enableHaptics = true;

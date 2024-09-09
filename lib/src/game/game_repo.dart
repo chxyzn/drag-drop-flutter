@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:drag_drop/src/constants/endpoints.dart';
+import 'package:drag_drop/src/constants/enums.dart';
 import 'package:drag_drop/src/home/home_repo.dart';
 import 'package:drag_drop/src/settings/setting_repo.dart';
 import 'package:drag_drop/src/utils/encrypted_storage.dart';
@@ -30,7 +31,7 @@ Future<SubmitSolutionResponse> submitSolution(
           headers: {
             'Content-Type': 'application/json',
             "Authorization":
-                "Bearer ${await (EncryptedStorage().read(key: "jwt"))}"
+                "Bearer ${await (EncryptedStorage().read(key: EncryptedStorageKey.jwt.value))}"
           },
           body: jsonEncode({
             "time": time,
@@ -49,22 +50,9 @@ Future<SubmitSolutionResponse> submitSolution(
   GLOBAL_RANK = rank;
   GLOBAL_STARS = score;
 
-  await EncryptedStorage().write(key: "rank", value: rank.toString());
+  await EncryptedStorage()
+      .write(key: EncryptedStorageKey.rank.value, value: rank.toString());
   await setStarsIsar(levelNumber, score);
-
-  // int oldScore = await getStarsIsar(levelNumber);
-  // int currentScore =
-  // int.parse(await EncryptedStorage().read(key: "stars") ?? "0");
-
-  // await EncryptedStorage()
-  // .write(key: "stars", value: (currentScore + score).toString());
-
-  print("new rank: $rank");
-  print("new score: $score");
-
-  print(await EncryptedStorage().read(key: "rank"));
-  // print(await EncryptedStorage().read(key: "score"));
-  // print(await EncryptedStorage().read(key: "stars"));
 
   ref.invalidate(starsHomeScreenProvider);
   ref.invalidate(myRankHomeScreenProvider);

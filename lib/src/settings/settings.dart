@@ -1,6 +1,7 @@
 import 'package:drag_drop/main.dart';
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
+import 'package:drag_drop/src/constants/enums.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/login/login_repo.dart';
 import 'package:drag_drop/src/settings/setting_repo.dart';
@@ -30,9 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         onLeadingPressed: () {
           Navigator.of(context).pop();
         },
-        onTrailingPressed: () {
-          print('object');
-        },
+        onTrailingPressed: () {},
       ),
       body: [
         SizedBox(height: 22.h),
@@ -96,8 +95,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           switchOn: enableHaptics,
           onSwitchChanged: (value) async {
             enableHaptics = value;
-            await EncryptedStorage()
-                .write(key: "haptics", value: value.toString());
+            await EncryptedStorage().write(
+                key: EncryptedStorageKey.haptics.value,
+                value: value.toString());
           },
         ),
         CustomTile(

@@ -753,12 +753,17 @@ class BottomSheetWidget extends ConsumerWidget {
   }
 }
 
-class BlockOptionsWidget extends StatelessWidget {
+class BlockOptionsWidget extends StatefulWidget {
   final int maxGridLength;
   final List<Map<String, dynamic>> nodes;
   const BlockOptionsWidget(
       {super.key, required this.maxGridLength, required this.nodes});
 
+  @override
+  State<BlockOptionsWidget> createState() => _BlockOptionsWidgetState();
+}
+
+class _BlockOptionsWidgetState extends State<BlockOptionsWidget> {
   List<List<int>> getShapeMatrix(Map<String, dynamic> node) {
     List dynamicShape = node['shape'];
 
@@ -778,6 +783,25 @@ class BlockOptionsWidget extends StatelessWidget {
     return shape;
   }
 
+  List<List<int>> rotateMatrix(List<dynamic> matrix) {
+    int n = matrix.length;
+
+    for (int i = 0; i < n; i++) {
+      for (int j = i + 1; j < n; j++) {
+        int temp = matrix[i][j];
+        matrix[i][j] = matrix[j][i];
+        matrix[j][i] = temp;
+      }
+    }
+
+    for (int i = 0; i < n; i++) {
+      matrix[i] = matrix[i].reversed.toList();
+    }
+
+    // return matrix as List<List<int>>;
+    return [];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -791,12 +815,19 @@ class BlockOptionsWidget extends StatelessWidget {
             const SizedBox(
               width: 16,
             ),
-            for (int i = 0; i < nodes.length; i++)
+            for (int i = 0; i < widget.nodes.length; i++)
               Padding(
                 padding: const EdgeInsets.only(right: 16),
-                child: CustomDraggable(
-                  shape: getShapeMatrix(nodes[i]),
-                  color: GraphColors().getColorFromId(nodes[i]['id']),
+                child: GestureDetector(
+                  onDoubleTap: () {
+                    setState(() {
+                      rotateMatrix(widget.nodes[i]["shape"]);
+                    });
+                  },
+                  child: CustomDraggable(
+                    shape: getShapeMatrix(widget.nodes[i]),
+                    color: GraphColors().getColorFromId(widget.nodes[i]['id']),
+                  ),
                 ),
               )
           ],

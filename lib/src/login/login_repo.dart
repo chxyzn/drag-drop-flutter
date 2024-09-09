@@ -162,15 +162,6 @@ class LevelOverview {
   });
 }
 
-void something() {
-  String s =
-      "{\"nodes\":[{\"id\":1,\"shape\":[[1,0],[0,0]]},{\"id\":2,\"shape\":[[0,1],[0,0]]},{\"id\":3,\"shape\":[[0,0],[1,1]]}],\"edges\":[[1,2],[3,2],[3,1]]}";
-  Map<String, dynamic> data = jsonDecode(s);
-  print(data);
-  print(data['nodes']);
-  print(data['nodes'].first['id']);
-}
-
 Future<void> logout(BuildContext context) async {
   await EncryptedStorage().deleteAll();
 

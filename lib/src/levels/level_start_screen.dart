@@ -110,9 +110,7 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
                         onRefresh: () async {
                           setState(() {});
                         },
-                        child: Expanded(
-                          child: Text('An error occurred ${snapshot.error}'),
-                        ),
+                        child: Text('An error occurred ${snapshot.error}'),
                       ),
                     );
                   }

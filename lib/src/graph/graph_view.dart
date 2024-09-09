@@ -97,13 +97,6 @@ class _GraphWidgetState extends State<GraphWidget> {
       a_index = widget.nodes.indexOf(a);
       b_index = widget.nodes.indexOf(b);
 
-      if (a_index == -1 || b_index == -1) {
-        print('=================');
-        print(widget.nodes);
-        print(a);
-        print(b);
-      }
-
       graph.addEdge(graphNodes[a_index], graphNodes[b_index]);
     });
 

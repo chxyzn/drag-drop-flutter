@@ -1,8 +1,8 @@
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
+import 'package:drag_drop/src/constants/enums.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/home/encrypted_storage_widget.dart';
-import 'package:drag_drop/src/home/home.dart';
 import 'package:drag_drop/src/home/home_repo.dart';
 import 'package:drag_drop/src/levels/level_start_screen.dart';
 import 'package:drag_drop/src/levels/levels_repo.dart';
@@ -104,13 +104,12 @@ class _AllLevelsScreenState extends State<AllLevelsScreen> {
           builder: (context, snapshot) {
             if (snapshot.data != null && snapshot.data?.$3 != "") {
               return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 child: RefreshIndicator(
                   onRefresh: () async {
                     setState(() {});
                   },
-                  child: Expanded(
-                    child: Text('An error occurred ${snapshot.error}'),
-                  ),
+                  child: Text('An error occurred ${snapshot.error}'),
                 ),
               );
             }
@@ -236,8 +235,9 @@ class LevelGridTile extends StatelessWidget {
     return !isLocked
         ? GestureDetector(
             onTap: () async {
-              await EncryptedStorage()
-                  .write(key: "recent", value: level.toString());
+              await EncryptedStorage().write(
+                  key: EncryptedStorageKey.recent.value,
+                  value: level.toString());
               Navigator.of(context)
                   .push(
                 MaterialPageRoute(

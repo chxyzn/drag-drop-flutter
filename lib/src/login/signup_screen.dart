@@ -377,7 +377,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       showLoader = false;
                     });
                     if (message == "Success") {
-                      print("hi");
                       Navigator.of(context).pushReplacement(MaterialPageRoute(
                           builder: (context) => LoginScreen()));
                     }

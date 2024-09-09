@@ -172,13 +172,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             }
             if (snapshot.hasError) {
               return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 child: RefreshIndicator(
                   onRefresh: () async {
                     setState(() {});
                   },
-                  child: Expanded(
-                    child: Text('An error occurred ${snapshot.error}'),
-                  ),
+                  child: Text('An error occurred ${snapshot.error}'),
                 ),
               );
             }

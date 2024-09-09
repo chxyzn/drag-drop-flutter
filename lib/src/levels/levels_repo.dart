@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:drag_drop/src/constants/endpoints.dart';
+import 'package:drag_drop/src/constants/enums.dart';
 import 'package:drag_drop/src/login/login_repo.dart';
 import 'package:drag_drop/src/utils/encrypted_storage.dart';
 import 'package:drag_drop/src/utils/isar_storage.dart';
@@ -21,11 +22,9 @@ Future<
       Uri.parse(GplanEndpoints.baseUrl + GplanEndpoints.levels + '/$id'),
       headers: {
         'Content-Type': 'application/json',
-        "Authorization": "Bearer ${await (EncryptedStorage().read(key: "jwt"))}"
+        "Authorization":
+            "Bearer ${await (EncryptedStorage().read(key: EncryptedStorageKey.jwt.value))}"
       });
-
-  print(response.body);
-  print(response.statusCode);
 
   if (response.statusCode == 401) {
     logout(context);
@@ -33,9 +32,6 @@ Future<
 
   var data = jsonDecode(response.body);
   var graphString = jsonDecode(response.body)["graph"];
-  print("check this out");
-  print(jsonDecode(graphString).runtimeType);
-  print(graphString);
   var graphData = jsonDecode(graphString);
 
   List<Map<String, dynamic>> nodes = [];
@@ -87,7 +83,8 @@ Future<(List<LevelOverview>, int, String)> getAllLevels(
       Uri.parse(GplanEndpoints.baseUrl + GplanEndpoints.allLevels),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        "Authorization": "Bearer ${await (EncryptedStorage().read(key: "jwt"))}"
+        "Authorization":
+            "Bearer ${await (EncryptedStorage().read(key: EncryptedStorageKey.jwt.value))}"
       });
 
   if (response.statusCode == 401) {

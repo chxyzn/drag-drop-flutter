@@ -1,5 +1,6 @@
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
+import 'package:drag_drop/src/constants/enums.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/game/game_screen.dart';
 import 'package:drag_drop/src/leaderboard/leaderboard_screen.dart';
@@ -90,8 +91,9 @@ class GameResultScreen extends StatelessWidget {
                 int count = 0;
                 Navigator.of(context).popUntil((_) => count++ >= 2);
 
-                await EncryptedStorage()
-                    .write(key: "recent", value: (level + 1).toString());
+                await EncryptedStorage().write(
+                    key: EncryptedStorageKey.recent.value,
+                    value: (level + 1).toString());
 
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => LevelStartScreen(level: level + 1),

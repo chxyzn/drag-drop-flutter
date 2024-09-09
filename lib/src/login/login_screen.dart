@@ -1,5 +1,6 @@
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
+import 'package:drag_drop/src/constants/enums.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/home/home.dart';
 import 'package:drag_drop/src/home/home_repo.dart';
@@ -167,10 +168,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           password: passwordController.text);
 
                       final result = await loginModel.login(ref);
-
-                      print(result.$1);
-                      print(result.$2);
-
                       if (result.$2 ~/ 100 == 4) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text(
@@ -194,8 +191,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         return;
                       }
 
-                      await EncryptedStorage()
-                          .write(key: "jwt", value: result.$1!.accessToken);
+                      await EncryptedStorage().write(
+                          key: EncryptedStorageKey.jwt.value,
+                          value: result.$1!.accessToken);
 
                       await getAllLevels(context);
                       GLOBAL_FIRSTNAME = result.$1!.user.firstName;
@@ -205,17 +203,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       GLOBAL_STARS = result.$1!.user.totalScore;
 
                       await EncryptedStorage().write(
-                          key: "firstname", value: result.$1!.user.firstName);
+                          key: EncryptedStorageKey.firstname.value,
+                          value: result.$1!.user.firstName);
                       await EncryptedStorage().write(
-                          key: "lastname", value: result.$1!.user.lastName);
-                      await EncryptedStorage()
-                          .write(key: "email", value: result.$1!.user.email);
+                          key: EncryptedStorageKey.lastname.value,
+                          value: result.$1!.user.lastName);
+                      await EncryptedStorage().write(
+                          key: EncryptedStorageKey.email.value,
+                          value: result.$1!.user.email);
 
                       await EncryptedStorage().write(
-                          key: "stars",
+                          key: EncryptedStorageKey.stars.value,
                           value: result.$1!.user.totalScore.toString());
                       await EncryptedStorage().write(
-                          key: "rank",
+                          key: EncryptedStorageKey.rank.value,
                           value: result.$1!.user.currentRank.toString());
 
                       ref.invalidate(starsHomeScreenProvider);

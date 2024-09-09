@@ -67,6 +67,5 @@ Future<int> getTotalStarsIsar() async {
     totalStars += level.stars;
   }
 
-  print("sending total stars $totalStars");
   return totalStars;
 }

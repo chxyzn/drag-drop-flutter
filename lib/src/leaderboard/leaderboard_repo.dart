@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:drag_drop/src/constants/endpoints.dart';
+import 'package:drag_drop/src/constants/enums.dart';
 import 'package:drag_drop/src/login/login_repo.dart';
 import 'package:drag_drop/src/utils/encrypted_storage.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,8 @@ Future<(List<LeaderboardItem>, int)> getLeaderboard(
       Uri.parse(GplanEndpoints.baseUrl + GplanEndpoints.leaderboard),
       headers: {
         'Content-Type': 'application/json',
-        "Authorization": "Bearer ${await (EncryptedStorage().read(key: "jwt"))}"
+        "Authorization":
+            "Bearer ${await (EncryptedStorage().read(key: EncryptedStorageKey.jwt.value))}"
       });
 
   List<LeaderboardItem> leaderboard = [];
