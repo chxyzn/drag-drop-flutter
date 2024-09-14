@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:drag_drop/main.dart';
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
@@ -23,6 +25,7 @@ class GameScreen extends ConsumerStatefulWidget {
   final int level;
   final int gridRowSize;
   final int gridColumnSize;
+  final bool allowRotation;
   final String hint;
   final List<int> questionNodes;
 
@@ -33,6 +36,7 @@ class GameScreen extends ConsumerStatefulWidget {
     required this.level,
     required this.gridRowSize,
     required this.gridColumnSize,
+    required this.allowRotation,
     required this.questionNodes,
     required this.questionEdges,
     required this.nodes,
@@ -61,11 +65,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     gridRowSize = widget.gridRowSize;
     gridColumnSize = widget.gridColumnSize;
 
+    maxGridLength =
+        (gridRowSize >= gridColumnSize) ? gridRowSize : gridColumnSize;
+
     //set available nodes i.e blocks
     availableNodes = List.from(widget.nodes);
-
-    maxGridLength =
-        gridRowSize >= gridColumnSize ? gridRowSize : gridColumnSize;
 
     baseMatrix = GameLogic().initBaseMatrix(gridRowSize, gridColumnSize);
 
@@ -124,7 +128,6 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                   style: w700.size16.copyWith(color: CustomColor.white),
                 ),
               ));
-              // break;
               return;
             }
           } else {
@@ -320,122 +323,126 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 321.w,
-                    margin: EdgeInsets.symmetric(horizontal: 25.0.w),
-                    decoration: BoxDecoration(
-                      color: CustomColor.primaryColor,
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              showDialog(
-                                  context: context,
-                                  barrierColor: Colors.black.withOpacity(0.3),
-                                  barrierDismissible: true,
-                                  builder: ((context) {
-                                    return HintWidget(hint: widget.hint);
-                                  }));
-                            },
-                            child: CustomGameButton(
-                              svgPath: SvgAssets.hintIcon,
-                              text: 'Hint',
-                            ),
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Time',
-                                style: w600.size15.copyWith(
-                                  color: Colors.white,
-                                ),
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 321.w,
+                      margin: EdgeInsets.symmetric(horizontal: 25.0.w),
+                      decoration: BoxDecoration(
+                        color: CustomColor.primaryColor,
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 8.h),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                    context: context,
+                                    barrierColor: Colors.black.withOpacity(0.3),
+                                    barrierDismissible: true,
+                                    builder: ((context) {
+                                      return HintWidget(hint: widget.hint);
+                                    }));
+                              },
+                              child: CustomGameButton(
+                                svgPath: SvgAssets.hintIcon,
+                                text: 'Hint',
                               ),
-                              TimerText(),
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              resetBaseMatrix();
-                            },
-                            child: CustomGameButton(
-                              svgPath: SvgAssets.resetIcon,
-                              text: 'Reset',
                             ),
-                          ),
-                        ],
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Time',
+                                  style: w600.size15.copyWith(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                TimerText(),
+                              ],
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                resetBaseMatrix();
+                              },
+                              child: CustomGameButton(
+                                svgPath: SvgAssets.resetIcon,
+                                text: 'Reset',
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 10.h,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: CustomColor.backgrondBlue,
-                      borderRadius: BorderRadius.all(Radius.circular(8.r)),
-                      border: Border.all(
-                        color: CustomColor.dividerGrey,
-                        width: 1.w,
+                    SizedBox(
+                      height: 10.h,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: CustomColor.backgrondBlue,
+                        borderRadius: BorderRadius.all(Radius.circular(8.r)),
+                        border: Border.all(
+                          color: CustomColor.dividerGrey,
+                          width: 1.w,
+                        ),
+                      ),
+                      height: 200.h,
+                      width: 321.w,
+                      child: GraphImageWidget(
+                        imgUrl: GplanEndpoints.baseUrl +
+                            GplanEndpoints.graphImageUrl +
+                            "${widget.level}.png",
                       ),
                     ),
-                    height: 200.h,
-                    width: 321.w,
-                    child: GraphImageWidget(
-                      imgUrl: GplanEndpoints.baseUrl +
-                          GplanEndpoints.graphImageUrl +
-                          "${widget.level}.png",
+                    SizedBox(
+                      height: 10.h,
                     ),
-                  ),
-                  SizedBox(
-                    height: 10.h,
-                  ),
-                  Stack(
-                    children: [
-                      Center(
-                        child: SizedBox(
-                          height: gridRowSize * GameConstants.gridBlockSize,
-                          width: gridColumnSize * GameConstants.gridBlockSize,
-                          child: Center(
-                            child: BaseBlockGenerator(
-                              matrix: baseMatrix,
+                    Stack(
+                      children: [
+                        Center(
+                          child: SizedBox(
+                            height: gridRowSize * GameConstants.gridBlockSize,
+                            width: gridColumnSize * GameConstants.gridBlockSize,
+                            child: Center(
+                              child: BaseBlockGenerator(
+                                matrix: baseMatrix,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      Center(
-                        child: SizedBox(
-                          height: gridRowSize * GameConstants.gridBlockSize,
-                          width: gridColumnSize * GameConstants.gridBlockSize,
-                          child: Center(
-                            child: TargetBlockGenerator(
-                              shape: baseMatrix,
-                              onAccept: onBlockAccept,
+                        Center(
+                          child: SizedBox(
+                            height: gridRowSize * GameConstants.gridBlockSize,
+                            width: gridColumnSize * GameConstants.gridBlockSize,
+                            child: Center(
+                              child: TargetBlockGenerator(
+                                shape: baseMatrix,
+                                onAccept: onBlockAccept,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  BlockOptionsWidget(
-                    maxGridLength: maxGridLength,
-                    nodes: availableNodes,
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                ],
+                      ],
+                    ),
+                    BlockOptionsWidget(
+                      maxGridLength: maxGridLength,
+                      nodes: availableNodes,
+                      allowRotation: widget.allowRotation,
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                  ],
+                ),
               ),
             ),
             Padding(
@@ -755,9 +762,14 @@ class BottomSheetWidget extends ConsumerWidget {
 
 class BlockOptionsWidget extends StatefulWidget {
   final int maxGridLength;
+  final bool allowRotation;
   final List<Map<String, dynamic>> nodes;
-  const BlockOptionsWidget(
-      {super.key, required this.maxGridLength, required this.nodes});
+  const BlockOptionsWidget({
+    super.key,
+    required this.maxGridLength,
+    required this.allowRotation,
+    required this.nodes,
+  });
 
   @override
   State<BlockOptionsWidget> createState() => _BlockOptionsWidgetState();
@@ -780,26 +792,104 @@ class _BlockOptionsWidgetState extends State<BlockOptionsWidget> {
         }
       }
     }
+
     return shape;
   }
 
-  List<List<int>> rotateMatrix(List<dynamic> matrix) {
-    int n = matrix.length;
+  void rotateAndFit(List<dynamic> matrix) {
+    int originalRows = matrix.length;
+    int originalCols = matrix[0].length;
 
-    for (int i = 0; i < n; i++) {
-      for (int j = i + 1; j < n; j++) {
-        int temp = matrix[i][j];
-        matrix[i][j] = matrix[j][i];
-        matrix[j][i] = temp;
+    // Step 1: Rotate 90 degrees clockwise
+    List<List<int>> rotated =
+        List.generate(originalCols, (_) => List<int>.filled(originalRows, 0));
+    for (int i = 0; i < originalRows; i++) {
+      for (int j = 0; j < originalCols; j++) {
+        rotated[j][originalRows - 1 - i] = matrix[i][j];
       }
     }
 
-    for (int i = 0; i < n; i++) {
-      matrix[i] = matrix[i].reversed.toList();
+    // Step 2: Find bounding box
+    int minRow = originalCols, maxRow = -1, minCol = originalRows, maxCol = -1;
+    for (int i = 0; i < originalCols; i++) {
+      for (int j = 0; j < originalRows; j++) {
+        if (rotated[i][j] == 1) {
+          minRow = minRow < i ? minRow : i;
+          maxRow = maxRow > i ? maxRow : i;
+          minCol = minCol < j ? minCol : j;
+          maxCol = maxCol > j ? maxCol : j;
+        }
+      }
     }
 
-    // return matrix as List<List<int>>;
-    return [];
+    // Check if the rotated shape fits in the original dimensions
+    if (maxRow - minRow + 1 > originalRows ||
+        maxCol - minCol + 1 > originalCols) {
+      // If it doesn't fit, replace the original matrix with the rotated one
+      matrix.clear();
+      matrix.addAll(rotated);
+    } else {
+      // If it fits, place the rotated shape in the original matrix
+      for (int i = 0; i < originalRows; i++) {
+        for (int j = 0; j < originalCols; j++) {
+          matrix[i][j] = 0; // Clear the original matrix
+        }
+      }
+      for (int i = minRow; i <= maxRow; i++) {
+        for (int j = minCol; j <= maxCol; j++) {
+          if (i - minRow < originalRows && j - minCol < originalCols) {
+            matrix[i - minRow][j - minCol] = rotated[i][j];
+          }
+        }
+      }
+    }
+  }
+
+  void rotateMatrixClockwise(List<dynamic> matrix) {
+    // Get the number of rows and columns
+    int rows = matrix.length;
+    int cols = matrix[0].length;
+    // Create a new matrix with swapped dimensions
+    List<List<int>> rotated = List.generate(cols, (_) => List.filled(rows, 0));
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        rotated[j][rows - 1 - i] = matrix[i][j];
+      }
+    }
+
+    int newDimension = max(rotated.length, rotated.first.length);
+
+    matrix.clear();
+    for (int i = 0; i < newDimension; i++) {
+      matrix.add(List<int>.filled(newDimension, 0));
+    }
+    print("matrix");
+    print(matrix.length);
+    print(matrix.first.length);
+    for (int i = 0; i < matrix.length; i++) {
+      print(matrix[i]);
+    }
+    for (int i = 0; i < matrix.length; i++) {
+      for (int j = 0; j < matrix.first.length; j++) {
+        try {
+          matrix[i][j] = rotated[i][j];
+        } catch (e, s) {
+          print("real e ");
+          print(e);
+          print(s);
+          matrix[i][j] = 0;
+        }
+      }
+    }
+
+    print("matrix");
+    for (int i = 0; i < matrix.length; i++) {
+      print("${matrix[i]} \t\t\t $i");
+    }
+    print("rotate ${rotated.length} x ${rotated.first.length}");
+    for (int i = 0; i < rotated.length; i++) {
+      print("${rotated[i]} \t\t\t $i");
+    }
   }
 
   @override
@@ -819,11 +909,20 @@ class _BlockOptionsWidgetState extends State<BlockOptionsWidget> {
               Padding(
                 padding: const EdgeInsets.only(right: 16),
                 child: GestureDetector(
-                  onDoubleTap: () {
-                    setState(() {
-                      rotateMatrix(widget.nodes[i]["shape"]);
-                    });
-                  },
+                  onDoubleTap: (!widget.allowRotation)
+                      ? null
+                      : () {
+                          try {
+                            print("double tap happened");
+                            setState(() {
+                              rotateAndFit((widget.nodes[i]["shape"]));
+                            });
+                          } catch (e, s) {
+                            print("caught error");
+                            print(e);
+                            print(s);
+                          }
+                        },
                   child: CustomDraggable(
                     shape: getShapeMatrix(widget.nodes[i]),
                     color: GraphColors().getColorFromId(widget.nodes[i]['id']),

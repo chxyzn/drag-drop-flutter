@@ -125,6 +125,7 @@ class _LevelStartScreenState extends State<LevelStartScreen> {
                       colSize: snapshot.data!.$5,
                       hint: snapshot.data!.$6,
                       BestComletitionTime: snapshot.data!.$7,
+                      allowRotation: snapshot.data!.$8,
                     );
                   }
                 }
@@ -205,6 +206,7 @@ class LevelStartScreenWidget extends StatelessWidget {
   final int level;
   final int rowSize;
   final int colSize;
+  final bool allowRotation;
   final String hint;
   final String BestComletitionTime;
   final Function setStateFunc;
@@ -216,6 +218,7 @@ class LevelStartScreenWidget extends StatelessWidget {
     required this.level,
     required this.rowSize,
     required this.colSize,
+    required this.allowRotation,
     required this.hint,
     required this.BestComletitionTime,
     required this.nodes,
@@ -241,6 +244,7 @@ class LevelStartScreenWidget extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsets.all(12.h),
+            // child: GraphWidget(nodes: nodes, edges: edges, constrained: false)
             child: GraphImageWidget(
               imgUrl: GplanEndpoints.baseUrl +
                   GplanEndpoints.graphImageUrl +
@@ -268,6 +272,7 @@ class LevelStartScreenWidget extends StatelessWidget {
                             level: level,
                             gridRowSize: rowSize,
                             gridColumnSize: colSize,
+                            allowRotation: allowRotation,
                             questionNodes: nodes,
                             nodes: nodeMap,
                             questionEdges: edges,

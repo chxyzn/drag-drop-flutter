@@ -17,6 +17,7 @@ Future<
       int,
       String,
       String,
+      bool,
     )> getLevel({required int id, required BuildContext context}) async {
   final response = await http.get(
       Uri.parse(GplanEndpoints.baseUrl + GplanEndpoints.levels + '/$id'),
@@ -60,7 +61,8 @@ Future<
     data["grid"]["row_size"] as int,
     data["grid"]["column_size"] as int,
     data["hint"] as String,
-    data["BestComletitionTime"] as String,
+    (data["bestCompletitionTime"] ?? "NA") as String,
+    (data["allowRotation"] ?? false) as bool,
   );
 }
 
