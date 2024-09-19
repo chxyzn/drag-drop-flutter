@@ -126,7 +126,9 @@ class _GraphWidgetState extends State<GraphWidget> {
               animated: false,
               algorithm: FruchtermanReingoldAlgorithm(
                 iterations: 1000,
-                attractionRate: 0.1,
+                repulsionPercentage: 0.1,
+                attractionPercentage: 90.0,
+                attractionRate: 0.8,
               ),
               paint: Paint()
                 ..color = Colors.green

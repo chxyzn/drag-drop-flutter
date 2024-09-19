@@ -61,10 +61,12 @@ class ShapeGenerator extends StatelessWidget {
   final List<List<int>> shape;
   final Color color;
   final String text;
+  final bool compressed;
   const ShapeGenerator({
     super.key,
     required this.shape,
     required this.color,
+    this.compressed = false,
     this.text = '',
   });
 
@@ -94,9 +96,15 @@ class ShapeGenerator extends StatelessWidget {
                           border: true,
                         ),
                       )
-                    : const Block(
-                        opacity: 0,
-                      ),
+                    : (shape[i][j] == -1)
+                        ? Block(
+                            opacity: 0,
+                            smallSize: true,
+                          )
+                        : Block(
+                            opacity: 0,
+                            smallSize: compressed,
+                          ),
             ],
           )
       ],

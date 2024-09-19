@@ -776,20 +776,68 @@ class BlockOptionsWidget extends StatefulWidget {
 }
 
 class _BlockOptionsWidgetState extends State<BlockOptionsWidget> {
+  // List<List<int>> getShapeMatrix(Map<String, dynamic> node) {
+  //   List dynamicShape = node['shape'];
+
+  //   List<List<int>> shape = [];
+
+  //   for (var e in dynamicShape) {
+  //     shape.add(List.from(e));
+  //   }
+
+  //   for (int i = 0; i < shape.length; i++) {
+  //     for (int j = 0; j < shape[i].length; j++) {
+  //       if (shape[i][j] == 1) {
+  //         shape[i][j] = node['id'];
+  //       }
+  //     }
+  //   }
+
+  //   return shape;
+  // }
+
   List<List<int>> getShapeMatrix(Map<String, dynamic> node) {
     List dynamicShape = node['shape'];
-
     List<List<int>> shape = [];
-
     for (var e in dynamicShape) {
       shape.add(List.from(e));
     }
 
-    for (int i = 0; i < shape.length; i++) {
-      for (int j = 0; j < shape[i].length; j++) {
+    int id = node['id'];
+    int rows = shape.length;
+    int cols = shape[0].length;
+
+    // Find bounding box
+    int minRow = rows, maxRow = -1, minCol = cols, maxCol = -1;
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
         if (shape[i][j] == 1) {
-          shape[i][j] = node['id'];
+          minRow = minRow < i ? minRow : i;
+          maxRow = maxRow > i ? maxRow : i;
+          minCol = minCol < j ? minCol : j;
+          maxCol = maxCol > j ? maxCol : j;
         }
+      }
+    }
+
+    // Create a temporary matrix to hold the shifted shape
+    List<List<int>> temp = List.generate(rows, (_) => List.filled(cols, -1));
+
+    // Shift shape to top-left corner and replace 1s with id
+    for (int i = minRow; i <= maxRow; i++) {
+      for (int j = minCol; j <= maxCol; j++) {
+        if (shape[i][j] == 1) {
+          temp[i - minRow][j - minCol] = id;
+        } else if (shape[i][j] == 0) {
+          temp[i - minRow][j - minCol] = 0; // Maintain internal holes
+        }
+      }
+    }
+
+    // Update the original shape matrix
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        shape[i][j] = temp[i][j];
       }
     }
 
@@ -845,53 +893,6 @@ class _BlockOptionsWidgetState extends State<BlockOptionsWidget> {
     }
   }
 
-  void rotateMatrixClockwise(List<dynamic> matrix) {
-    // Get the number of rows and columns
-    int rows = matrix.length;
-    int cols = matrix[0].length;
-    // Create a new matrix with swapped dimensions
-    List<List<int>> rotated = List.generate(cols, (_) => List.filled(rows, 0));
-    for (int i = 0; i < rows; i++) {
-      for (int j = 0; j < cols; j++) {
-        rotated[j][rows - 1 - i] = matrix[i][j];
-      }
-    }
-
-    int newDimension = max(rotated.length, rotated.first.length);
-
-    matrix.clear();
-    for (int i = 0; i < newDimension; i++) {
-      matrix.add(List<int>.filled(newDimension, 0));
-    }
-    print("matrix");
-    print(matrix.length);
-    print(matrix.first.length);
-    for (int i = 0; i < matrix.length; i++) {
-      print(matrix[i]);
-    }
-    for (int i = 0; i < matrix.length; i++) {
-      for (int j = 0; j < matrix.first.length; j++) {
-        try {
-          matrix[i][j] = rotated[i][j];
-        } catch (e, s) {
-          print("real e ");
-          print(e);
-          print(s);
-          matrix[i][j] = 0;
-        }
-      }
-    }
-
-    print("matrix");
-    for (int i = 0; i < matrix.length; i++) {
-      print("${matrix[i]} \t\t\t $i");
-    }
-    print("rotate ${rotated.length} x ${rotated.first.length}");
-    for (int i = 0; i < rotated.length; i++) {
-      print("${rotated[i]} \t\t\t $i");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -920,7 +921,6 @@ class _BlockOptionsWidgetState extends State<BlockOptionsWidget> {
                           } catch (e, s) {
                             print("caught error");
                             print(e);
-                            print(s);
                           }
                         },
                   child: CustomDraggable(
