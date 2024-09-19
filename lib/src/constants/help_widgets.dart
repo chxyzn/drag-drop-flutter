@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 final List<Widget> helpWidgets = [
-  Help1(),
   HoldToDrag(),
   Logix(),
 ];
@@ -32,6 +31,16 @@ class _GraphBoxHelpState extends State<GraphBoxHelp> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            //add title text here
+            Material(
+              color: CustomColor.backgrondBlue,
+              child: Text(
+                "INSTRUCTIONS",
+                style: w700.size36.copyWith(
+                  color: CustomColor.primary60Color,
+                ),
+              ),
+            ),
             helpWidgets[i],
             Material(
               child: GestureDetector(
@@ -69,36 +78,6 @@ class _GraphBoxHelpState extends State<GraphBoxHelp> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class Help1 extends StatelessWidget {
-  const Help1({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Image.asset("assets/jpeg/graphbox1.jpeg"),
-        SizedBox(
-          height: 18.h,
-        ),
-        Material(
-          color: CustomColor.backgrondBlue,
-          child: Text(
-            "Side the Graph box to view the graph",
-            textAlign: TextAlign.center,
-            style: w700.size16.copyWith(
-              color: CustomColor.primary60Color,
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 18.h,
-        ),
-        Image.asset("assets/jpeg/graphbox2.jpeg"),
-      ],
     );
   }
 }

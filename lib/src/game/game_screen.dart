@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:drag_drop/main.dart';
 import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
@@ -918,7 +916,7 @@ class _BlockOptionsWidgetState extends State<BlockOptionsWidget> {
                             setState(() {
                               rotateAndFit((widget.nodes[i]["shape"]));
                             });
-                          } catch (e, s) {
+                          } catch (e) {
                             print("caught error");
                             print(e);
                           }

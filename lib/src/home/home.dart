@@ -2,6 +2,7 @@ import 'package:drag_drop/src/constants/Colors.dart';
 import 'package:drag_drop/src/constants/assets.dart';
 import 'package:drag_drop/src/constants/enums.dart';
 import 'package:drag_drop/src/constants/help_widgets.dart';
+import 'package:drag_drop/src/constants/instructions-screen.dart';
 import 'package:drag_drop/src/constants/textstyles.dart';
 import 'package:drag_drop/src/home/encrypted_storage_widget.dart';
 import 'package:drag_drop/src/home/home_repo.dart';
@@ -291,7 +292,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         GestureDetector(
           onTap: () async {
-            print("You chose to \"Remove Ads!\"");
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => InstructionsPage(),
+              ),
+            );
           },
           child: Container(
             margin: EdgeInsets.symmetric(vertical: 8.h),
@@ -308,15 +313,16 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Remove Ads',
+                  'Instructions',
                   textAlign: TextAlign.center,
                   style: w700.size16.copyWith(
                     color: CustomColor.darkerDarkBlack,
                   ),
                 ),
-                Image.asset(
-                  PngAssets.adRemovalLogo,
-                  height: 24.h,
+                Icon(
+                  (Icons.help_outline),
+                  color: CustomColor.darkerDarkBlack,
+                  size: 32.h,
                 )
               ],
             ),
