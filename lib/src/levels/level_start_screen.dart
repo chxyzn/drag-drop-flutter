@@ -253,7 +253,7 @@ class LevelStartScreenWidget extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 40.h,
+          height: 70.h,
         ),
         Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -316,14 +316,14 @@ class LevelStartScreenWidget extends StatelessWidget {
               secondaryText:
                   BestComletitionTime.isEmpty ? '-' : BestComletitionTime,
             ),
-            CustomButton(
-              width: 342.w,
-              color: Colors.white,
-              textColor: Colors.black,
-              primaryText: 'Remove Ads',
-              borderColor: Colors.black,
-              svgPath: SvgAssets.removeAdsIcon,
-            ),
+            // CustomButton(
+            //   width: 342.w,
+            //   color: Colors.white,
+            //   textColor: Colors.black,
+            //   primaryText: 'Remove Ads',
+            //   borderColor: Colors.black,
+            //   svgPath: SvgAssets.removeAdsIcon,
+            // ),
           ],
         )
       ],

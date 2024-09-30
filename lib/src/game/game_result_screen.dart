@@ -81,7 +81,7 @@ class GameResultScreen extends StatelessWidget {
         ),
         StarsWidget(stars: stars),
         SizedBox(
-          height: 25.h,
+          height: 15.h,
         ),
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -121,37 +121,20 @@ class GameResultScreen extends StatelessWidget {
                 svgPath: SvgAssets.resetIcon,
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () {},
-                  child: CustomContainer(
-                    color: CustomColor.backgrondBlue,
-                    height: 43.h,
-                    width: 165.w,
-                    textColor: CustomColor.primaryColor,
-                    primaryText: 'Remove Ads',
-                    borderColor: CustomColor.primaryColor,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.popUntil(
-                        context, (Route<dynamic> route) => route.isFirst);
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => LeaderboardScreen()));
-                  },
-                  child: CustomContainer(
-                    color: CustomColor.backgrondBlue,
-                    height: 43.h,
-                    width: 165.w,
-                    textColor: CustomColor.primaryColor,
-                    primaryText: 'Leaderboard',
-                    borderColor: CustomColor.primaryColor,
-                  ),
-                ),
-              ],
+            GestureDetector(
+              onTap: () {
+                Navigator.popUntil(
+                    context, (Route<dynamic> route) => route.isFirst);
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => LeaderboardScreen()));
+              },
+              child: CustomButton(
+                color: CustomColor.backgrondBlue,
+                width: 342.w,
+                textColor: CustomColor.primaryColor,
+                primaryText: 'Leaderboard',
+                borderColor: CustomColor.primaryColor,
+              ),
             ),
             CustomButton(
               width: 342.w,
@@ -166,7 +149,7 @@ class GameResultScreen extends StatelessWidget {
               color: CustomColor.backgrondBlue,
               textColor: CustomColor.primaryColor,
               primaryText: 'Current Time',
-              borderColor: CustomColor.backgrondBlue,
+              borderColor: CustomColor.primaryColor,
               secondaryText: currentTime,
             ),
           ],
