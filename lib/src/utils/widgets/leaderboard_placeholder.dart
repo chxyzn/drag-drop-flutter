@@ -68,7 +68,8 @@ class LeaderboardPlaceholder extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  name,
+                  name.split(' ')[0],
+                  overflow: TextOverflow.ellipsis,
                   style: w500.size18.colorWhite,
                 ),
                 Center(
