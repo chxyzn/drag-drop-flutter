@@ -291,7 +291,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40.0),
           child: Text(
-            "Hipster ipsum tattooed brunch I'm baby. Plant venmo vape squid intelligentsia glossier fanny tilde ",
+            "Login to Play, Learn & Compete.",
             textAlign: TextAlign.center,
             style: w700.size12.copyWith(color: CustomColor.primary60Color),
           ),

@@ -213,22 +213,29 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
   List<List<int>> removeDuplicates(List<List<int>> list) {
+    List<List<int>> uniqueEdges = [];
+    List<int> listHash = [];
     for (int i = 0; i < list.length; i++) {
-      for (int j = 0; j < list.length; j++) {
-        if (i != j && list[i][0] == list[j][0] && list[i][1] == list[j][1]) {
-          list.removeAt(j);
-        }
+      int temp = uniqueCommutativeBinaryOperation(list[i].first, list[i].last);
+      if (!listHash.contains(temp)) {
+        listHash.add(temp);
+        uniqueEdges.add(list[i]);
       }
     }
-    return list;
+    return uniqueEdges;
   }
 
   bool isSolutionCorrect(
       List<List<int>> inputEdges, List<List<int>> correctEdges) {
     List<List<int>> correctEdgesCopy = [];
+
+    print(correctEdges);
+    print(inputEdges);
+
     correctEdges.forEach((element) {
       correctEdgesCopy.add([element[0] + 1, element[1] + 1]);
     });
+
     if (inputEdges.length != correctEdgesCopy.length) {
       print('lengths are not equal');
       return false;
@@ -250,6 +257,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         }
       }
     }
+
+    print('solution is correct');
 
     return true;
   }

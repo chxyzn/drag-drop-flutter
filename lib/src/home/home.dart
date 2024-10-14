@@ -146,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
           height: 60.h,
         ),
         Text(
-          '25 minutes away from\nDaily Rewards!',
+          "",
           textAlign: TextAlign.center,
           style: w700.size18.copyWith(color: CustomColor.greenTextColor),
         ),

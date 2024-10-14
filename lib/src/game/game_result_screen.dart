@@ -45,7 +45,7 @@ class GameResultScreen extends StatelessWidget {
       ),
       body: [
         SizedBox(
-          height: 18.h,
+          height: 0.h,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -68,7 +68,7 @@ class GameResultScreen extends StatelessWidget {
           ],
         ),
         SizedBox(
-          height: 25.h,
+          height: 5.h,
         ),
         Text(
           'Amazing!',
