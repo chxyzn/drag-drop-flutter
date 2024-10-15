@@ -112,7 +112,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           leadingIcon: Image.asset(PngAssets.developersLogo),
           Text: 'Developers',
         ),
-        SizedBox(height: 100.h),
+        SizedBox(height: 50.h),
         GestureDetector(
           onTap: () async {
             await logout(context);
@@ -131,6 +131,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 Icon(
                   Icons.logout,
+                  size: 24.h,
+                  color: CustomColor.white,
+                )
+              ],
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 16.h,
+        ),
+        GestureDetector(
+          onTap: () async {
+            showDialog(context: context, builder: (context) => DeleteAccount());
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 16.h),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.r),
+              color: CustomColor.logOutDangerRed,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Delete Account",
+                  style: w600.size16.copyWith(color: CustomColor.tileBgBlue),
+                ),
+                Icon(
+                  Icons.delete,
                   size: 24.h,
                   color: CustomColor.white,
                 )
@@ -207,6 +236,44 @@ class _CustomTileState extends State<CustomTile> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class DeleteAccount extends StatelessWidget {
+  const DeleteAccount({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        "Delete Account",
+        style: w700.size16.copyWith(color: CustomColor.primaryColor),
+      ),
+      content: Text(
+        "Are you sure you want to delete your account?\nThis will delete all your data and you will be logged out.",
+        style: w500.size14.copyWith(color: CustomColor.primaryColor),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text(
+            "Cancel",
+            style: w600.size16.copyWith(color: CustomColor.primaryColor),
+          ),
+        ),
+        TextButton(
+          onPressed: () async {
+            await deleteAccount(context);
+          },
+          child: Text(
+            "Delete",
+            style: w600.size16.copyWith(color: CustomColor.logOutDangerRed),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -8,4 +8,5 @@ class GplanEndpoints {
   static const String leaderboard = "/leaderboard";
   static const String submit = "/submit";
   static const String graphImageUrl = "/static/image/levels/";
+  static const String userDelete = "/userdelete";
 }

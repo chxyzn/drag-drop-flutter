@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:drag_drop/src/constants/endpoints.dart';
+import 'package:drag_drop/src/constants/enums.dart';
 import 'package:drag_drop/src/home/home_repo.dart';
 import 'package:drag_drop/src/login/login_screen.dart';
 import 'package:drag_drop/src/utils/encrypted_storage.dart';
@@ -50,7 +51,7 @@ class SignUpModel {
       return "Success";
     }
     if (response.statusCode ~/ 100 == 4) {
-      return "Server error";
+      return "Failed with status code ${response.statusCode}";
     }
     if (response.statusCode ~/ 100 == 5) {
       return "Server error";
@@ -172,4 +173,25 @@ Future<void> logout(BuildContext context) async {
 
   Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => LoginScreen()), (route) => false);
+}
+
+Future<void> deleteAccount(BuildContext context) async {
+  final response = await http.delete(
+    Uri.parse(GplanEndpoints.baseUrl + GplanEndpoints.userDelete),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      "Authorization":
+          "Bearer ${await (EncryptedStorage().read(key: EncryptedStorageKey.jwt.value))}"
+    },
+  );
+
+  if (response.statusCode == 200) {
+    await logout(context);
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Failed to delete account'),
+      ),
+    );
+  }
 }
