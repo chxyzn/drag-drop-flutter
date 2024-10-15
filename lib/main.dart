@@ -1,6 +1,7 @@
 import 'package:drag_drop/src/constants/enums.dart';
 import 'package:drag_drop/src/home/home.dart';
 import 'package:drag_drop/src/login/login_screen.dart';
+import 'package:drag_drop/src/settings/setting_repo.dart';
 import 'package:drag_drop/src/utils/encrypted_storage.dart';
 import 'package:drag_drop/src/utils/isar_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,6 +37,9 @@ void main() async {
     inspector: true,
   );
 
+  GLOBAL_USERNAME =
+      await EncryptedStorage().read(key: EncryptedStorageKey.username.value) ??
+          "";
   runApp(App(showLoginScreen: showLoginScreen));
 }
 

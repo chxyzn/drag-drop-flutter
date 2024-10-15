@@ -21,6 +21,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
+    print("this is username $GLOBAL_USERNAME");
     return CustomScaffold(
       backgroundColor: CustomColor.white,
       appBar: CustomAppBar(
@@ -62,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${GLOBAL_FIRSTNAME} ${GLOBAL_LASTNAME}",
+                  GLOBAL_USERNAME,
                   style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 18.sp,
@@ -84,11 +85,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         SizedBox(height: 27.5.h),
         CustomTile(
-          leadingIcon: Image.asset(PngAssets.soundLogo),
-          Text: 'Sound',
-          switchRequired: true,
-        ),
-        CustomTile(
           leadingIcon: Image.asset(PngAssets.hapticsLogo),
           Text: 'Haptics',
           switchRequired: true,
@@ -99,18 +95,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 key: EncryptedStorageKey.haptics.value,
                 value: value.toString());
           },
-        ),
-        CustomTile(
-          leadingIcon: Icon(
-            Icons.design_services_outlined,
-            color: CustomColor.primaryColor,
-            size: 24.h,
-          ),
-          Text: 'Edit Username',
-        ),
-        CustomTile(
-          leadingIcon: Image.asset(PngAssets.developersLogo),
-          Text: 'Developers',
         ),
         SizedBox(height: 50.h),
         GestureDetector(

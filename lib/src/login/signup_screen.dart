@@ -16,26 +16,19 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  late TextEditingController emailController;
   late TextEditingController passwordController;
   late TextEditingController usernameController;
   late TextEditingController confirmPasswordController;
-  late TextEditingController firstNameController;
-  late TextEditingController lastNameController;
 
-  int _age = 18;
   bool showLoader = false;
   late bool _passwordVisible;
   late bool _confirmPasswordVisible;
 
   @override
   void initState() {
-    emailController = TextEditingController();
     passwordController = TextEditingController();
     usernameController = TextEditingController();
     confirmPasswordController = TextEditingController();
-    firstNameController = TextEditingController();
-    lastNameController = TextEditingController();
 
     _passwordVisible = false;
     _confirmPasswordVisible = false;
@@ -45,12 +38,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   void dispose() {
-    emailController.dispose();
     passwordController.dispose();
     usernameController.dispose();
     confirmPasswordController.dispose();
-    firstNameController.dispose();
-    lastNameController.dispose();
     super.dispose();
   }
 
@@ -62,11 +52,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     SignUpModel signUpModel = SignUpModel(
       username: usernameController.text,
-      email: emailController.text,
-      firstName: firstNameController.text,
-      lastName: lastNameController.text,
+      firstName: "",
+      lastName: "",
       password: passwordController.text,
-      age: _age,
+      age: 18,
     );
 
     String message = await signUpModel.signUp();
@@ -75,9 +64,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   String validateInput() {
-    if (emailController.text.isEmpty) {
-      return 'Email cannot be empty';
-    }
     if (usernameController.text.isEmpty) {
       return 'Username cannot be empty';
     }
@@ -87,12 +73,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (passwordController.text.length < 8) {
       return 'Password must be atleast 8 characters long';
     }
-    if (firstNameController.text.isEmpty) {
-      return 'First Name cannot be empty';
-    }
-    if (lastNameController.text.isEmpty) {
-      return 'Last Name cannot be empty';
-    }
 
     if (confirmPasswordController.text.isEmpty) {
       return 'Confirm Password cannot be empty';
@@ -101,11 +81,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return 'Passwords do not match';
     }
 
-    //also write code to validate email i.e use regex
-    return emailController.text.contains('@') &&
-            emailController.text.contains('.')
-        ? ""
-        : 'Invalid Email';
+    return "";
   }
 
   @override
@@ -144,119 +120,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            'Email ID',
-            style: w500.size16.copyWith(color: CustomColor.primary60Color),
-          ),
-        ),
-        TextField(
-          controller: emailController,
-          decoration: InputDecoration(
-            enabledBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
-              borderSide: BorderSide(width: 1, color: CustomColor.primaryColor),
-            ),
-            focusedBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
-              borderSide: BorderSide(width: 1, color: CustomColor.primaryColor),
-            ),
-            fillColor: CustomColor.textfieldBGColor,
-            filled: true,
-          ),
-          style: w500.size18.copyWith(color: CustomColor.primaryColor),
-        ),
-        SizedBox(
-          height: 10.h,
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
             'Username',
             style: w500.size16.copyWith(color: CustomColor.primary60Color),
           ),
         ),
         TextField(
           controller: usernameController,
-          decoration: InputDecoration(
-            enabledBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
-              borderSide: BorderSide(width: 1, color: CustomColor.primaryColor),
-            ),
-            focusedBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
-              borderSide: BorderSide(width: 1, color: CustomColor.primaryColor),
-            ),
-            fillColor: CustomColor.textfieldBGColor,
-            filled: true,
-          ),
-          style: w500.size18.copyWith(color: CustomColor.primaryColor),
-        ),
-        SizedBox(
-          height: 10.h,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Age',
-              style: w500.size16.copyWith(color: CustomColor.primary60Color),
-            ),
-            Text(
-              _age.toString(),
-              style: w700.size16.copyWith(color: CustomColor.primaryColor),
-            ),
-          ],
-        ),
-        Slider(
-          value: _age.toDouble(),
-          min: 0,
-          thumbColor: CustomColor.primaryColor,
-          activeColor: CustomColor.primaryColor,
-          max: 100,
-          divisions: 100,
-          onChanged: (newValue) {
-            setState(() {
-              _age = newValue.round();
-            });
-          },
-        ),
-        SizedBox(
-          height: 10.h,
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            'First Name',
-            style: w500.size16.copyWith(color: CustomColor.primary60Color),
-          ),
-        ),
-        TextField(
-          controller: firstNameController,
-          decoration: InputDecoration(
-            enabledBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
-              borderSide: BorderSide(width: 1, color: CustomColor.primaryColor),
-            ),
-            focusedBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
-              borderSide: BorderSide(width: 1, color: CustomColor.primaryColor),
-            ),
-            fillColor: CustomColor.textfieldBGColor,
-            filled: true,
-          ),
-          style: w500.size18.copyWith(color: CustomColor.primaryColor),
-        ),
-        SizedBox(
-          height: 10.h,
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            'Last Name',
-            style: w500.size16.copyWith(color: CustomColor.primary60Color),
-          ),
-        ),
-        TextField(
-          controller: lastNameController,
           decoration: InputDecoration(
             enabledBorder: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4.0)),

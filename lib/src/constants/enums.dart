@@ -6,7 +6,8 @@ enum EncryptedStorageKey {
   recent,
   email,
   rank,
-  stars
+  stars,
+  username
 }
 
 extension EncryptedStorageKeyExtension on EncryptedStorageKey {

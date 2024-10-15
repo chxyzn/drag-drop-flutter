@@ -196,12 +196,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           value: result.$1!.accessToken);
 
                       await getAllLevels(context);
+                      GLOBAL_USERNAME = result.$1!.user.username;
                       GLOBAL_FIRSTNAME = result.$1!.user.firstName;
                       GLOBAL_LASTNAME = result.$1!.user.lastName;
                       GLOBAL_EMAIL = result.$1!.user.email;
 
                       GLOBAL_STARS = result.$1!.user.totalScore;
 
+                      await EncryptedStorage().write(
+                          key: EncryptedStorageKey.username.value,
+                          value: result.$1!.user.username);
                       await EncryptedStorage().write(
                           key: EncryptedStorageKey.firstname.value,
                           value: result.$1!.user.firstName);

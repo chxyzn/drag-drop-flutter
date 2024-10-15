@@ -1,3 +1,4 @@
+String GLOBAL_USERNAME = "";
 String GLOBAL_FIRSTNAME = "";
 String GLOBAL_LASTNAME = "";
 String GLOBAL_EMAIL = "";

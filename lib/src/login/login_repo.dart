@@ -14,7 +14,6 @@ class SignUpModel {
   final String username;
   final String firstName;
   final String lastName;
-  final String email;
   final String password;
   final int age;
 
@@ -22,7 +21,6 @@ class SignUpModel {
     required this.username,
     required this.firstName,
     required this.lastName,
-    required this.email,
     required this.password,
     required this.age,
   });
@@ -30,11 +28,10 @@ class SignUpModel {
   Map<String, dynamic> toJson() {
     return {
       'username': username,
-      'firstname': firstName,
-      'lastname': lastName,
-      'email': email,
+      'firstname': " ",
+      'lastname': " ",
       'password': password,
-      'age': age,
+      'age': 18,
     };
   }
 
