@@ -146,13 +146,6 @@ class _LoginScreenState extends State<LoginScreen> {
           obscureText: !_passwordVisible,
           style: w500.size18.copyWith(color: CustomColor.primaryColor),
         ),
-        Align(
-          alignment: Alignment.centerRight,
-          child: Text(
-            'Forgot Password?',
-            style: w500.size16.copyWith(color: CustomColor.primaryColor),
-          ),
-        ),
         SizedBox(
           height: 30,
         ),
